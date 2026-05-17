@@ -10,6 +10,7 @@ import {
   parseFilters,
 } from "@/lib/filters";
 import { formatMileage, type Locale } from "@/lib/mock-listings";
+import { SaveSearchButton } from "./SaveSearchButton";
 
 function GridViewIcon() {
   return (
@@ -65,8 +66,11 @@ export function ResultsHeader({ count }: Props) {
 
   return (
     <div className="flex justify-between items-center gap-4 flex-wrap">
-      <div className="font-sans text-[13px] text-ink-muted">
-        {t("count", { count: countFormatted })}
+      <div className="flex items-center gap-3 flex-wrap">
+        <div className="font-sans text-[13px] text-ink-muted">
+          {t("count", { count: countFormatted })}
+        </div>
+        <SaveSearchButton />
       </div>
 
       <div className="flex items-center gap-3">
