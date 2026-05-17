@@ -113,6 +113,75 @@
       "manual": "Manual"
     }
   },
+  "NewListing": {
+    "title": "List a car",
+    "subtitle": "Fill the form — takes about 5 minutes",
+    "sections": {
+      "vehicle": "Vehicle",
+      "technical": "Technical specs",
+      "location": "Location & condition",
+      "price": "Price & description",
+      "photos": "Photos",
+      "premium": "Premium placement"
+    },
+    "fields": {
+      "brand": "Brand",
+      "model": "Model",
+      "year": "Year",
+      "mileage": "Mileage, km",
+      "fuel": "Fuel type",
+      "transmission": "Transmission",
+      "bodyType": "Body type",
+      "driveType": "Drivetrain",
+      "engineVolume": "Engine displacement, L",
+      "power": "Power, HP",
+      "color": "Color",
+      "vin": "VIN (optional)",
+      "country": "Country",
+      "city": "City",
+      "condition": "Condition",
+      "customs": "Customs cleared?",
+      "price": "Price, €",
+      "negotiable": "Open to negotiation",
+      "description": "Description",
+      "descriptionHint": "Max 2000 characters"
+    },
+    "vinHint": "17 characters",
+    "condition": {
+      "new": "New",
+      "used": "Used",
+      "damaged": "Damaged"
+    },
+    "customs": {
+      "yes": "Yes, cleared",
+      "no": "No, not cleared"
+    },
+    "photosDropzone": "Drop photos here or click to select",
+    "photosHint": "Up to 15 photos · first photo = main · JPG, PNG, WebP · max 5 MB each",
+    "tiers": {
+      "free": {
+        "title": "Free",
+        "price": "€0",
+        "desc": "Standard listing for 60 days"
+      },
+      "bump": {
+        "title": "Bump to top",
+        "price": "€4.99",
+        "desc": "One-time push higher in the list"
+      },
+      "premium14": {
+        "title": "Premium 14 days",
+        "price": "€9.99",
+        "desc": "PREMIUM badge + top placement for 14 days"
+      },
+      "premium30": {
+        "title": "Premium 30 days",
+        "price": "€19.99",
+        "desc": "PREMIUM badge + top placement for 30 days"
+      }
+    },
+    "publish": "Publish listing"
+  },
   "Auth": {
     "emailLabel": "Email",
     "passwordLabel": "Password",
