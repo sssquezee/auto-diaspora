@@ -90,6 +90,7 @@
       "manual": "Механика"
     },
     "apply": "Применить",
+    "reset": "Сбросить все фильтры",
     "saveToTelegram": "Сохранить поиск в Telegram"
   },
   "ListingCard": {

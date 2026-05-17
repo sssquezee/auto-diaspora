@@ -49,6 +49,7 @@ export type Listing = {
   photoCount: number;
   imageVariant: 1 | 2 | 3 | 4 | 5 | 6;
   postedAt: LocalizedString;
+  daysSincePosted: number;
   badges: ListingBadge[];
   premium: boolean;
   details: ListingDetail;
@@ -182,6 +183,7 @@ function makeListing(seed: ListingSeed): Listing {
     photoCount: seed.photoCount,
     imageVariant: seed.imageVariant,
     postedAt: postedAtFor(seed.daysAgo),
+    daysSincePosted: seed.daysAgo,
     badges: seed.badges ?? [],
     premium: seed.premium ?? false,
     details: {

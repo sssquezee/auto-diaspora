@@ -1,8 +1,15 @@
-import { getTranslations, getLocale } from "next-intl/server";
-import { formatMileage } from "@/lib/mock-listings";
-import type { Locale } from "@/lib/mock-listings";
+"use client";
 
-const MOCK_COUNT = 6842;
+import { useTranslations, useLocale } from "next-intl";
+import { useRouter, usePathname } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
+import {
+  type SortKey,
+  DEFAULT_SORT,
+  buildSearchString,
+  parseFilters,
+} from "@/lib/filters";
+import { formatMileage, type Locale } from "@/lib/mock-listings";
 
 function GridViewIcon() {
   return (
@@ -28,10 +35,33 @@ function ListViewIcon() {
   );
 }
 
-export async function ResultsHeader() {
-  const t = await getTranslations("Results");
-  const locale = (await getLocale()) as Locale;
-  const countFormatted = formatMileage(MOCK_COUNT, locale);
+type Props = { count: number };
+
+export function ResultsHeader({ count }: Props) {
+  const t = useTranslations("Results");
+  const locale = useLocale() as Locale;
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const raw: Record<string, string | string[] | undefined> = {};
+  searchParams.forEach((value, key) => {
+    raw[key] = value;
+  });
+  const filters = parseFilters(raw);
+
+  const handleSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const next = e.target.value as SortKey;
+    router.push(
+      `${pathname}${buildSearchString({
+        ...filters,
+        sortBy: next === DEFAULT_SORT ? undefined : next,
+        page: 1,
+      })}`
+    );
+  };
+
+  const countFormatted = formatMileage(count, locale);
 
   return (
     <div className="flex justify-between items-center gap-4 flex-wrap">
@@ -42,7 +72,8 @@ export async function ResultsHeader() {
       <div className="flex items-center gap-3">
         <select
           aria-label="Sort"
-          defaultValue="premium"
+          value={filters.sortBy}
+          onChange={handleSort}
           className="font-sans text-[13px] font-medium border-[1.5px] border-ink bg-white px-3 py-2 text-ink outline-none cursor-pointer appearance-none pr-8"
           style={{
             backgroundImage:

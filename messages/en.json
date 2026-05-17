@@ -90,6 +90,7 @@
       "manual": "Manual"
     },
     "apply": "Apply filters",
+    "reset": "Reset all filters",
     "saveToTelegram": "Save search to Telegram"
   },
   "ListingCard": {

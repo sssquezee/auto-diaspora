@@ -1,39 +1,27 @@
-import { getTranslations } from "next-intl/server";
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter, usePathname } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
+import {
+  buildSearchString,
+  countActiveFilters,
+  parseFilters,
+  type FilterState,
+} from "@/lib/filters";
+import type { FuelKey, TransmissionKey } from "@/lib/mock-listings";
 
 const BRANDS = [
-  "Audi",
-  "BMW",
-  "Mercedes-Benz",
-  "Škoda",
-  "Volkswagen",
-  "Renault",
-  "Peugeot",
-  "Citroën",
-  "Opel",
-  "Ford",
+  "Audi", "BMW", "Citroën", "Ford", "Mercedes", "Mercedes-Benz",
+  "Opel", "Peugeot", "Renault", "Škoda", "Tesla", "Toyota", "Volvo", "VW", "Volkswagen",
 ];
 
-const COUNTRIES = [
-  { code: "DE", count: "3,847", defaultChecked: true },
-  { code: "PL", count: "1,294", defaultChecked: true },
-  { code: "NL", count: "621", defaultChecked: false },
-  { code: "CZ", count: "438", defaultChecked: false },
-  { code: "BE", count: "312", defaultChecked: false },
-] as const;
+const COUNTRIES: string[] = ["DE", "PL", "NL", "CZ", "BE", "FR"];
 
-const FUELS = [
-  { key: "diesel", count: "2,841" },
-  { key: "petrol", count: "2,103" },
-  { key: "hybrid", count: "487" },
-  { key: "electric", count: "312" },
-] as const;
+const FUELS: FuelKey[] = ["diesel", "petrol", "hybrid", "electric"];
 
-const TRANSMISSIONS = [
-  { key: "auto", count: "3,124" },
-  { key: "manual", count: "2,398" },
-] as const;
-
-const ACTIVE_FILTER_COUNT = 3;
+const TRANSMISSIONS: TransmissionKey[] = ["auto", "manual"];
 
 function FilterLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -46,9 +34,132 @@ function FilterLabel({ children }: { children: React.ReactNode }) {
 const fieldClass =
   "w-full border border-line-strong bg-white px-2.5 py-2 font-sans text-[13px] text-ink outline-none focus:border-ink focus:border-2 focus:px-[9px] focus:py-[7px]";
 
-export async function Sidebar() {
-  const t = await getTranslations("Sidebar");
-  const fuelT = await getTranslations("ListingCard.fuel");
+type DraftState = {
+  brand: string;
+  countries: Set<string>;
+  fuels: Set<FuelKey>;
+  transmissions: Set<TransmissionKey>;
+  yearFrom: string;
+  yearTo: string;
+  priceFrom: string;
+  priceTo: string;
+  mileageFrom: string;
+  mileageTo: string;
+};
+
+function emptyDraft(): DraftState {
+  return {
+    brand: "",
+    countries: new Set(),
+    fuels: new Set(),
+    transmissions: new Set(),
+    yearFrom: "",
+    yearTo: "",
+    priceFrom: "",
+    priceTo: "",
+    mileageFrom: "",
+    mileageTo: "",
+  };
+}
+
+function filtersToDraft(f: FilterState): DraftState {
+  return {
+    brand: f.brand ?? "",
+    countries: new Set(f.countries ?? []),
+    fuels: new Set(f.fuels ?? []),
+    transmissions: new Set(f.transmissions ?? []),
+    yearFrom: f.yearFrom !== undefined ? String(f.yearFrom) : "",
+    yearTo: f.yearTo !== undefined ? String(f.yearTo) : "",
+    priceFrom: f.priceFrom !== undefined ? String(f.priceFrom) : "",
+    priceTo: f.priceTo !== undefined ? String(f.priceTo) : "",
+    mileageFrom: f.mileageFrom !== undefined ? String(f.mileageFrom) : "",
+    mileageTo: f.mileageTo !== undefined ? String(f.mileageTo) : "",
+  };
+}
+
+function draftToPartial(d: DraftState): Partial<FilterState> {
+  const num = (s: string) => {
+    const n = Number(s);
+    return s !== "" && Number.isFinite(n) ? n : undefined;
+  };
+  return {
+    brand: d.brand || undefined,
+    countries: d.countries.size > 0 ? Array.from(d.countries) : undefined,
+    fuels: d.fuels.size > 0 ? Array.from(d.fuels) : undefined,
+    transmissions: d.transmissions.size > 0 ? Array.from(d.transmissions) : undefined,
+    yearFrom: num(d.yearFrom),
+    yearTo: num(d.yearTo),
+    priceFrom: num(d.priceFrom),
+    priceTo: num(d.priceTo),
+    mileageFrom: num(d.mileageFrom),
+    mileageTo: num(d.mileageTo),
+  };
+}
+
+export function Sidebar() {
+  const t = useTranslations("Sidebar");
+  const fuelT = useTranslations("ListingCard.fuel");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Parse current URL into FilterState
+  const currentFilters = useMemo(() => {
+    const raw: Record<string, string | string[] | undefined> = {};
+    searchParams.forEach((value, key) => {
+      raw[key] = value;
+    });
+    return parseFilters(raw);
+  }, [searchParams]);
+
+  const activeCount = countActiveFilters(currentFilters);
+
+  // Draft state (form values being edited, not yet applied)
+  const [draft, setDraft] = useState<DraftState>(() => filtersToDraft(currentFilters));
+
+  // Re-sync draft when URL changes (e.g. back/forward, link from chip)
+  useEffect(() => {
+    setDraft(filtersToDraft(currentFilters));
+  }, [currentFilters]);
+
+  const apply = () => {
+    const next: Partial<FilterState> = {
+      ...draftToPartial(draft),
+      sortBy: currentFilters.sortBy,
+      page: 1, // reset to page 1 on new filter apply
+    };
+    router.push(`${pathname}${buildSearchString(next)}`);
+  };
+
+  const reset = () => {
+    setDraft(emptyDraft());
+    router.push(pathname);
+  };
+
+  const toggleCountry = (code: string) => {
+    setDraft((d) => {
+      const next = new Set(d.countries);
+      if (next.has(code)) next.delete(code);
+      else next.add(code);
+      return { ...d, countries: next };
+    });
+  };
+  const toggleFuel = (key: FuelKey) => {
+    setDraft((d) => {
+      const next = new Set(d.fuels);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return { ...d, fuels: next };
+    });
+  };
+  const toggleTransmission = (key: TransmissionKey) => {
+    setDraft((d) => {
+      const next = new Set(d.transmissions);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return { ...d, transmissions: next };
+    });
+  };
 
   return (
     <aside
@@ -58,33 +169,36 @@ export async function Sidebar() {
       {/* Header */}
       <div className="bg-ink text-white px-4 py-3 flex justify-between items-center font-sans font-extrabold text-[12px] tracking-[0.16em] uppercase">
         <span>{t("title")}</span>
-        {ACTIVE_FILTER_COUNT > 0 && (
+        {activeCount > 0 && (
           <span className="bg-accent text-white font-mono font-bold text-[10px] px-[7px] py-[2px]">
-            {ACTIVE_FILTER_COUNT}
+            {activeCount}
           </span>
         )}
       </div>
 
       {/* Body */}
-      <div className="p-4 flex flex-col gap-4">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          apply();
+        }}
+        className="p-4 flex flex-col gap-4"
+      >
         {/* Brand */}
         <div>
           <FilterLabel>{t("labels.brand")}</FilterLabel>
-          <select defaultValue="" className={fieldClass} aria-label={t("labels.brand")}>
+          <select
+            className={fieldClass}
+            value={draft.brand}
+            onChange={(e) => setDraft((d) => ({ ...d, brand: e.target.value }))}
+            aria-label={t("labels.brand")}
+          >
             <option value="">{t("placeholders.anyBrand")}</option>
             {BRANDS.map((b) => (
               <option key={b} value={b}>
                 {b}
               </option>
             ))}
-          </select>
-        </div>
-
-        {/* Model */}
-        <div>
-          <FilterLabel>{t("labels.model")}</FilterLabel>
-          <select defaultValue="" className={fieldClass} disabled aria-label={t("labels.model")}>
-            <option value="">{t("placeholders.anyModel")}</option>
           </select>
         </div>
 
@@ -96,12 +210,16 @@ export async function Sidebar() {
               type="number"
               placeholder={t("placeholders.yearFrom")}
               className={fieldClass}
+              value={draft.yearFrom}
+              onChange={(e) => setDraft((d) => ({ ...d, yearFrom: e.target.value }))}
               aria-label="Year from"
             />
             <input
               type="number"
               placeholder={t("placeholders.yearTo")}
               className={fieldClass}
+              value={draft.yearTo}
+              onChange={(e) => setDraft((d) => ({ ...d, yearTo: e.target.value }))}
               aria-label="Year to"
             />
           </div>
@@ -115,12 +233,16 @@ export async function Sidebar() {
               type="number"
               placeholder={t("placeholders.priceFrom")}
               className={fieldClass}
+              value={draft.priceFrom}
+              onChange={(e) => setDraft((d) => ({ ...d, priceFrom: e.target.value }))}
               aria-label="Price from"
             />
             <input
               type="number"
               placeholder={t("placeholders.priceTo")}
               className={fieldClass}
+              value={draft.priceTo}
+              onChange={(e) => setDraft((d) => ({ ...d, priceTo: e.target.value }))}
               aria-label="Price to"
             />
           </div>
@@ -134,12 +256,16 @@ export async function Sidebar() {
               type="number"
               placeholder={t("placeholders.mileageFrom")}
               className={fieldClass}
+              value={draft.mileageFrom}
+              onChange={(e) => setDraft((d) => ({ ...d, mileageFrom: e.target.value }))}
               aria-label="Mileage from"
             />
             <input
               type="number"
               placeholder={t("placeholders.mileageTo")}
               className={fieldClass}
+              value={draft.mileageTo}
+              onChange={(e) => setDraft((d) => ({ ...d, mileageTo: e.target.value }))}
               aria-label="Mileage to"
             />
           </div>
@@ -151,18 +277,16 @@ export async function Sidebar() {
           <div className="flex flex-col gap-1">
             {COUNTRIES.map((c) => (
               <label
-                key={c.code}
+                key={c}
                 className="flex items-center gap-2 text-[13px] text-ink-muted hover:text-ink py-[3px] cursor-pointer"
               >
                 <input
                   type="checkbox"
-                  defaultChecked={c.defaultChecked}
+                  checked={draft.countries.has(c)}
+                  onChange={() => toggleCountry(c)}
                   className="w-3.5 h-3.5 accent-[#0052ff]"
                 />
-                {t(`countries.${c.code}`)}
-                <span className="ml-auto font-mono text-[11px] text-ink-faded">
-                  {c.count}
-                </span>
+                {t(`countries.${c}`)}
               </label>
             ))}
           </div>
@@ -174,17 +298,16 @@ export async function Sidebar() {
           <div className="flex flex-col gap-1">
             {FUELS.map((f) => (
               <label
-                key={f.key}
+                key={f}
                 className="flex items-center gap-2 text-[13px] text-ink-muted hover:text-ink py-[3px] cursor-pointer"
               >
                 <input
                   type="checkbox"
+                  checked={draft.fuels.has(f)}
+                  onChange={() => toggleFuel(f)}
                   className="w-3.5 h-3.5 accent-[#0052ff]"
                 />
-                {fuelT(f.key)}
-                <span className="ml-auto font-mono text-[11px] text-ink-faded">
-                  {f.count}
-                </span>
+                {fuelT(f)}
               </label>
             ))}
           </div>
@@ -196,17 +319,16 @@ export async function Sidebar() {
           <div className="flex flex-col gap-1">
             {TRANSMISSIONS.map((tr) => (
               <label
-                key={tr.key}
+                key={tr}
                 className="flex items-center gap-2 text-[13px] text-ink-muted hover:text-ink py-[3px] cursor-pointer"
               >
                 <input
                   type="checkbox"
+                  checked={draft.transmissions.has(tr)}
+                  onChange={() => toggleTransmission(tr)}
                   className="w-3.5 h-3.5 accent-[#0052ff]"
                 />
-                {t(`transmission.${tr.key}`)}
-                <span className="ml-auto font-mono text-[11px] text-ink-faded">
-                  {tr.count}
-                </span>
+                {t(`transmission.${tr}`)}
               </label>
             ))}
           </div>
@@ -214,20 +336,31 @@ export async function Sidebar() {
 
         {/* Apply CTA */}
         <button
-          type="button"
+          type="submit"
           className="w-full bg-accent hover:bg-accent-2 text-white font-sans font-extrabold text-[12px] uppercase tracking-[0.13em] py-3 transition-colors cursor-pointer border-0 mt-1"
         >
           {t("apply")}
         </button>
 
-        {/* Save search link */}
+        {/* Reset (only when there are active filters) */}
+        {activeCount > 0 && (
+          <button
+            type="button"
+            onClick={reset}
+            className="text-center font-sans font-bold text-[12px] text-ink cursor-pointer bg-transparent border-0 underline decoration-line decoration-1 underline-offset-[3px] hover:text-accent hover:decoration-accent hover:decoration-2"
+          >
+            {t("reset")}
+          </button>
+        )}
+
+        {/* Save to Telegram */}
         <button
           type="button"
           className="text-center font-sans font-bold text-[12px] text-ink cursor-pointer bg-transparent border-0 underline decoration-accent decoration-2 underline-offset-[3px] hover:text-accent transition-colors"
         >
           {t("saveToTelegram")}
         </button>
-      </div>
+      </form>
     </aside>
   );
 }

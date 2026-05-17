@@ -4,9 +4,24 @@ type Props = {
   currentPage: number;
   totalPages: number;
   baseHref: string;
+  /** Existing query string to preserve, e.g. "?brand=BMW&fuel=diesel" — must start with "?" or be empty. */
+  preserveQuery?: string;
 };
 
-export function Pagination({ currentPage, totalPages, baseHref }: Props) {
+function buildHref(baseHref: string, preserve: string, page: number): string {
+  if (page === 1) {
+    return preserve ? `${baseHref}${preserve}` : baseHref;
+  }
+  if (!preserve) return `${baseHref}?page=${page}`;
+  return `${baseHref}${preserve}&page=${page}`;
+}
+
+export function Pagination({
+  currentPage,
+  totalPages,
+  baseHref,
+  preserveQuery = "",
+}: Props) {
   if (totalPages <= 1) return null;
 
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -19,13 +34,10 @@ export function Pagination({ currentPage, totalPages, baseHref }: Props) {
     "min-w-[36px] h-9 grid place-items-center border-[1.5px] border-line-strong bg-bg-subtle font-mono font-bold text-[13px] text-ink-faded px-2 cursor-not-allowed";
 
   return (
-    <nav
-      aria-label="Pagination"
-      className="flex justify-center gap-1 py-7"
-    >
+    <nav aria-label="Pagination" className="flex justify-center gap-1 py-7">
       {currentPage > 1 ? (
         <Link
-          href={`${baseHref}?page=${currentPage - 1}`}
+          href={buildHref(baseHref, preserveQuery, currentPage - 1)}
           className={linkClass}
           aria-label="Previous page"
         >
@@ -40,7 +52,7 @@ export function Pagination({ currentPage, totalPages, baseHref }: Props) {
       {pages.map((p) => (
         <Link
           key={p}
-          href={p === 1 ? baseHref : `${baseHref}?page=${p}`}
+          href={buildHref(baseHref, preserveQuery, p)}
           className={p === currentPage ? activeClass : linkClass}
           aria-current={p === currentPage ? "page" : undefined}
         >
@@ -50,7 +62,7 @@ export function Pagination({ currentPage, totalPages, baseHref }: Props) {
 
       {currentPage < totalPages ? (
         <Link
-          href={`${baseHref}?page=${currentPage + 1}`}
+          href={buildHref(baseHref, preserveQuery, currentPage + 1)}
           className={linkClass}
           aria-label="Next page"
         >
