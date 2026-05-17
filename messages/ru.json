@@ -113,6 +113,61 @@
       "manual": "МКПП"
     }
   },
+  "ListingDetail": {
+    "breadcrumb": {
+      "home": "Главная",
+      "catalog": "Каталог"
+    },
+    "actions": {
+      "writeToSeller": "Написать продавцу",
+      "showPhone": "Показать телефон",
+      "addToFavorites": "В избранное",
+      "share": "Поделиться",
+      "report": "Пожаловаться"
+    },
+    "specsTitle": "Технические характеристики",
+    "descriptionTitle": "Описание",
+    "sellerTitle": "Продавец",
+    "specs": {
+      "year": "Год выпуска",
+      "mileage": "Пробег",
+      "fuel": "Топливо",
+      "engine": "Двигатель",
+      "power": "Мощность",
+      "transmission": "Коробка",
+      "bodyType": "Тип кузова",
+      "driveType": "Привод",
+      "color": "Цвет",
+      "customs": "Растаможка",
+      "customsYes": "Растаможен",
+      "customsNo": "Не растаможен",
+      "location": "Локация"
+    },
+    "bodyType": {
+      "sedan": "Седан",
+      "suv": "Внедорожник",
+      "wagon": "Универсал",
+      "hatchback": "Хэтчбек",
+      "coupe": "Купе"
+    },
+    "driveType": {
+      "fwd": "Передний",
+      "rwd": "Задний",
+      "awd": "Полный"
+    },
+    "seller": {
+      "memberSince": "На сайте с {year}",
+      "listingsCount": "{count} объявлений",
+      "verified": "✓ Проверенный продавец",
+      "viewProfile": "Все объявления →"
+    },
+    "stats": {
+      "views": "просмотров",
+      "favorites": "в избранном"
+    },
+    "powerUnit": "л.с.",
+    "kmUnit": "км"
+  },
   "Footer": {
     "tagline": "Маркетплейс проверенных авто из 14 стран ЕС для украинской и русскоязычной диаспоры.",
     "buyers": {

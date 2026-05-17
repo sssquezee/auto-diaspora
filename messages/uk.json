@@ -113,6 +113,61 @@
       "manual": "МКПП"
     }
   },
+  "ListingDetail": {
+    "breadcrumb": {
+      "home": "Головна",
+      "catalog": "Каталог"
+    },
+    "actions": {
+      "writeToSeller": "Написати продавцю",
+      "showPhone": "Показати телефон",
+      "addToFavorites": "В обране",
+      "share": "Поділитись",
+      "report": "Поскаржитись"
+    },
+    "specsTitle": "Технічні характеристики",
+    "descriptionTitle": "Опис",
+    "sellerTitle": "Продавець",
+    "specs": {
+      "year": "Рік випуску",
+      "mileage": "Пробіг",
+      "fuel": "Паливо",
+      "engine": "Двигун",
+      "power": "Потужність",
+      "transmission": "Коробка",
+      "bodyType": "Тип кузова",
+      "driveType": "Привід",
+      "color": "Колір",
+      "customs": "Розмитнення",
+      "customsYes": "Розмитнено",
+      "customsNo": "Не розмитнено",
+      "location": "Локація"
+    },
+    "bodyType": {
+      "sedan": "Седан",
+      "suv": "Позашляховик",
+      "wagon": "Універсал",
+      "hatchback": "Хетчбек",
+      "coupe": "Купе"
+    },
+    "driveType": {
+      "fwd": "Передній",
+      "rwd": "Задній",
+      "awd": "Повний"
+    },
+    "seller": {
+      "memberSince": "На сайті з {year}",
+      "listingsCount": "{count} оголошень",
+      "verified": "✓ Перевірений продавець",
+      "viewProfile": "Усі оголошення →"
+    },
+    "stats": {
+      "views": "переглядів",
+      "favorites": "в обраному"
+    },
+    "powerUnit": "к.с.",
+    "kmUnit": "км"
+  },
   "Footer": {
     "tagline": "Маркетплейс перевірених авто з 14 країн ЄС для української та російськомовної діаспори.",
     "buyers": {

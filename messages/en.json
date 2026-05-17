@@ -113,6 +113,61 @@
       "manual": "Manual"
     }
   },
+  "ListingDetail": {
+    "breadcrumb": {
+      "home": "Home",
+      "catalog": "Catalog"
+    },
+    "actions": {
+      "writeToSeller": "Write to seller",
+      "showPhone": "Show phone",
+      "addToFavorites": "Add to favorites",
+      "share": "Share",
+      "report": "Report listing"
+    },
+    "specsTitle": "Technical specs",
+    "descriptionTitle": "Description",
+    "sellerTitle": "Seller",
+    "specs": {
+      "year": "Year",
+      "mileage": "Mileage",
+      "fuel": "Fuel",
+      "engine": "Engine",
+      "power": "Power",
+      "transmission": "Transmission",
+      "bodyType": "Body type",
+      "driveType": "Drivetrain",
+      "color": "Color",
+      "customs": "Customs",
+      "customsYes": "Cleared",
+      "customsNo": "Not cleared",
+      "location": "Location"
+    },
+    "bodyType": {
+      "sedan": "Sedan",
+      "suv": "SUV",
+      "wagon": "Wagon",
+      "hatchback": "Hatchback",
+      "coupe": "Coupe"
+    },
+    "driveType": {
+      "fwd": "FWD",
+      "rwd": "RWD",
+      "awd": "AWD"
+    },
+    "seller": {
+      "memberSince": "Member since {year}",
+      "listingsCount": "{count} listings",
+      "verified": "✓ Verified seller",
+      "viewProfile": "View all listings →"
+    },
+    "stats": {
+      "views": "views",
+      "favorites": "favorited"
+    },
+    "powerUnit": "HP",
+    "kmUnit": "km"
+  },
   "Footer": {
     "tagline": "Marketplace of verified cars from 14 EU countries for the Ukrainian and Russian-speaking diaspora.",
     "buyers": {
