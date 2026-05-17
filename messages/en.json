@@ -56,6 +56,29 @@
       "mileage": "Mileage"
     }
   },
+  "Search": {
+    "kicker": "Catalog search",
+    "title": "Find your car",
+    "placeholder": "BMW X5, Tesla, Berlin…",
+    "submit": "Search",
+    "clear": "Clear",
+    "hint": "Search by brand or model. Use sidebar filters to narrow by year, price, country and more.",
+    "echo": "<strong>{count}</strong> results for <strong>“{query}”</strong>"
+  },
+  "SavedSearches": {
+    "save": "Save search",
+    "saved": "Saved",
+    "saveHint": "Save these {count} filters to your account",
+    "allListings": "All listings",
+    "modal": {
+      "kicker": "New saved search",
+      "title": "Name this search",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. BMW under €25k",
+      "cancel": "Cancel",
+      "save": "Save"
+    }
+  },
   "Sidebar": {
     "title": "Filters",
     "labels": {
@@ -159,12 +182,33 @@
     },
     "messages": {
       "title": "Messages",
-      "subtitle": "{count} active conversations"
+      "subtitle": "{count} active conversations",
+      "chat": {
+        "back": "Back to inbox",
+        "online": "Online now",
+        "offline": "Offline",
+        "about": "Re:",
+        "day": {
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "earlier": "Earlier"
+        },
+        "composer": {
+          "placeholder": "Write a message…",
+          "send": "Send",
+          "sendHint": "Enter to send · Shift+Enter for new line"
+        }
+      }
     },
     "searches": {
       "title": "Saved searches",
+      "subtitle": "Reopen any saved filter set with one click. Telegram notifications coming soon.",
       "empty": "Save a search from the catalog — we'll ping you on Telegram or email the moment a new car matches.",
-      "newButton": "Open catalog"
+      "newButton": "Open search",
+      "open": "Open",
+      "remove": "Delete",
+      "confirmRemove": "Delete saved search “{name}”?",
+      "createdAt": "Saved"
     },
     "settings": {
       "title": "Settings",
@@ -266,6 +310,44 @@
     },
     "publish": "Publish listing"
   },
+  "Payment": {
+    "kicker": "Checkout",
+    "title": "Review & pay",
+    "summary": {
+      "heading": "Selected plan",
+      "provider": "Mollie · Test mode",
+      "subtotal": "Subtotal",
+      "vat": "VAT",
+      "vatIncluded": "Included",
+      "total": "Total"
+    },
+    "mock": {
+      "label": "Demo",
+      "note": "Mollie is not connected yet. The Pay button routes you to a success page without a real charge. Real payment activates once MOLLIE_API_KEY and Supabase are wired."
+    },
+    "payCta": "Pay with Mollie",
+    "payPending": "Redirecting to Mollie…",
+    "payError": "Payment error",
+    "methods": {
+      "heading": "We accept"
+    },
+    "backToForm": "Back to listing form",
+    "success": {
+      "kicker": "Done",
+      "title": "Payment received",
+      "body": "The “{tier}” plan is now active on your listing.",
+      "simulatedNote": "Demo mode — no real payment was processed.",
+      "viewListings": "My listings →",
+      "backToCatalog": "Back to catalog"
+    },
+    "cancel": {
+      "kicker": "Cancelled",
+      "title": "Payment cancelled",
+      "body": "Your payment didn't complete. The listing keeps free placement; you can retry anytime.",
+      "retry": "Retry payment",
+      "backToForm": "Back to form"
+    }
+  },
   "Auth": {
     "emailLabel": "Email",
     "passwordLabel": "Password",
@@ -300,8 +382,14 @@
       "writeToSeller": "Write to seller",
       "showPhone": "Show phone",
       "addToFavorites": "Add to favorites",
+      "removeFromFavorites": "Saved",
       "share": "Share",
       "report": "Report listing"
+    },
+    "gallery": {
+      "prev": "Previous photo",
+      "next": "Next photo",
+      "thumb": "Photo"
     },
     "specsTitle": "Technical specs",
     "descriptionTitle": "Description",
@@ -344,7 +432,11 @@
       "favorites": "favorited"
     },
     "powerUnit": "HP",
-    "kmUnit": "km"
+    "kmUnit": "km",
+    "similar": {
+      "title": "Similar listings",
+      "subtitle": "Same segment, close price"
+    }
   },
   "About": {
     "kicker": "Who we are",
