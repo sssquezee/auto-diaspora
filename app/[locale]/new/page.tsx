@@ -1,11 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-
-const BRANDS = [
-  "Audi", "BMW", "Citroën", "Ford", "Mercedes-Benz",
-  "Opel", "Peugeot", "Renault", "Škoda", "Tesla", "Volkswagen", "Volvo",
-];
+import { useRouter } from "@/i18n/navigation";
+import { isValidTier } from "@/lib/tiers";
+import { BRANDS, getModelsForBrand } from "@/lib/brands";
 
 const COUNTRIES = ["DE", "PL", "NL", "CZ", "BE", "FR"] as const;
 
@@ -120,6 +119,25 @@ export default function NewListingPage() {
   const tListing = useTranslations("ListingCard");
   const tDetail = useTranslations("ListingDetail");
   const tSidebar = useTranslations("Sidebar");
+  const router = useRouter();
+
+  const [brand, setBrand] = useState("");
+  const [model, setModel] = useState("");
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const tierInput = form.querySelector<HTMLInputElement>(
+      'input[name="tier"]:checked'
+    );
+    const tier = tierInput?.value ?? "free";
+    if (isValidTier(tier) && tier !== "free") {
+      router.push(`/new/payment?tier=${tier}`);
+    } else {
+      // Free tier: mock as if listing was published — back to catalog
+      router.push("/?published=1");
+    }
+  };
 
   return (
     <div className="max-w-[860px] w-full mx-auto px-6 py-8">
@@ -133,7 +151,7 @@ export default function NewListingPage() {
       </header>
 
       <form
-        onSubmit={(e) => e.preventDefault()}
+        onSubmit={handleSubmit}
         className="flex flex-col gap-4"
       >
         {/* 1. Vehicle */}
@@ -141,7 +159,15 @@ export default function NewListingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <FieldLabel>{t("fields.brand")}</FieldLabel>
-              <select defaultValue="" className={fieldClass} required>
+              <select
+                value={brand}
+                onChange={(e) => {
+                  setBrand(e.target.value);
+                  setModel("");
+                }}
+                className={fieldClass}
+                required
+              >
                 <option value="" disabled>
                   {tSidebar("placeholders.anyBrand")}
                 </option>
@@ -154,8 +180,21 @@ export default function NewListingPage() {
             </div>
             <div>
               <FieldLabel>{t("fields.model")}</FieldLabel>
-              <select defaultValue="" className={fieldClass} disabled>
-                <option value="">{tSidebar("placeholders.anyModel")}</option>
+              <select
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                className={`${fieldClass} disabled:cursor-not-allowed disabled:text-ink-faded`}
+                disabled={!brand}
+                required={!!brand}
+              >
+                <option value="" disabled>
+                  {tSidebar("placeholders.anyModel")}
+                </option>
+                {getModelsForBrand(brand).map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
               </select>
             </div>
             <div>

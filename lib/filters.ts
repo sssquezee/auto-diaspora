@@ -8,6 +8,7 @@ import type {
   FuelKey,
   TransmissionKey,
 } from "./mock-listings";
+import { listingMatchesModel } from "./brands";
 
 export type SortKey =
   | "premium"
@@ -23,7 +24,10 @@ const TRANSMISSION_KEYS: TransmissionKey[] = ["auto", "manual"];
 const COUNTRY_CODES = ["DE", "PL", "NL", "CZ", "BE", "FR"] as const;
 
 export type FilterState = {
+  /** Free-text query — matched against brand + model. */
+  q?: string;
   brand?: string;
+  model?: string;
   countries?: string[];
   fuels?: FuelKey[];
   transmissions?: TransmissionKey[];
@@ -76,7 +80,9 @@ export function parseFilters(
   const page = pageRaw && pageRaw >= 1 ? Math.floor(pageRaw) : 1;
 
   return {
+    q: pickString(raw.q),
     brand: pickString(raw.brand),
+    model: pickString(raw.model),
     countries: pickList(raw.country, COUNTRY_CODES),
     fuels: pickList<FuelKey>(raw.fuel, FUEL_KEYS),
     transmissions: pickList<TransmissionKey>(raw.transmission, TRANSMISSION_KEYS),
@@ -94,8 +100,21 @@ export function parseFilters(
 // === Application ===
 
 export function applyFilters(listings: Listing[], f: FilterState): Listing[] {
+  const qTokens = f.q
+    ? f.q
+        .toLowerCase()
+        .split(/\s+/)
+        .map((t) => t.trim())
+        .filter(Boolean)
+    : null;
+
   return listings.filter((l) => {
+    if (qTokens) {
+      const haystack = `${l.brand} ${l.model}`.toLowerCase();
+      if (!qTokens.every((tok) => haystack.includes(tok))) return false;
+    }
     if (f.brand && l.brand !== f.brand) return false;
+    if (f.model && !listingMatchesModel(l.model, f.model)) return false;
     if (f.countries && f.countries.length > 0 && !f.countries.includes(l.country))
       return false;
     if (f.fuels && f.fuels.length > 0 && !f.fuels.includes(l.fuel)) return false;
@@ -144,7 +163,9 @@ export function applySort(listings: Listing[], sort: SortKey): Listing[] {
 
 export function buildSearchString(f: Partial<FilterState>): string {
   const sp = new URLSearchParams();
+  if (f.q) sp.set("q", f.q);
   if (f.brand) sp.set("brand", f.brand);
+  if (f.model) sp.set("model", f.model);
   if (f.countries && f.countries.length > 0) sp.set("country", f.countries.join(","));
   if (f.fuels && f.fuels.length > 0) sp.set("fuel", f.fuels.join(","));
   if (f.transmissions && f.transmissions.length > 0)
@@ -165,7 +186,9 @@ export function buildSearchString(f: Partial<FilterState>): string {
 
 export function countActiveFilters(f: FilterState): number {
   let n = 0;
+  if (f.q) n++;
   if (f.brand) n++;
+  if (f.model) n++;
   if (f.countries && f.countries.length > 0) n++;
   if (f.fuels && f.fuels.length > 0) n++;
   if (f.transmissions && f.transmissions.length > 0) n++;

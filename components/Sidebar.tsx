@@ -11,11 +11,7 @@ import {
   type FilterState,
 } from "@/lib/filters";
 import type { FuelKey, TransmissionKey } from "@/lib/mock-listings";
-
-const BRANDS = [
-  "Audi", "BMW", "Citroën", "Ford", "Mercedes", "Mercedes-Benz",
-  "Opel", "Peugeot", "Renault", "Škoda", "Tesla", "Toyota", "Volvo", "VW", "Volkswagen",
-];
+import { BRANDS, getModelsForBrand } from "@/lib/brands";
 
 const COUNTRIES: string[] = ["DE", "PL", "NL", "CZ", "BE", "FR"];
 
@@ -36,6 +32,7 @@ const fieldClass =
 
 type DraftState = {
   brand: string;
+  model: string;
   countries: Set<string>;
   fuels: Set<FuelKey>;
   transmissions: Set<TransmissionKey>;
@@ -50,6 +47,7 @@ type DraftState = {
 function emptyDraft(): DraftState {
   return {
     brand: "",
+    model: "",
     countries: new Set(),
     fuels: new Set(),
     transmissions: new Set(),
@@ -65,6 +63,7 @@ function emptyDraft(): DraftState {
 function filtersToDraft(f: FilterState): DraftState {
   return {
     brand: f.brand ?? "",
+    model: f.model ?? "",
     countries: new Set(f.countries ?? []),
     fuels: new Set(f.fuels ?? []),
     transmissions: new Set(f.transmissions ?? []),
@@ -84,6 +83,7 @@ function draftToPartial(d: DraftState): Partial<FilterState> {
   };
   return {
     brand: d.brand || undefined,
+    model: d.model || undefined,
     countries: d.countries.size > 0 ? Array.from(d.countries) : undefined,
     fuels: d.fuels.size > 0 ? Array.from(d.fuels) : undefined,
     transmissions: d.transmissions.size > 0 ? Array.from(d.transmissions) : undefined,
@@ -184,19 +184,39 @@ export function Sidebar() {
         }}
         className="p-4 flex flex-col gap-4"
       >
-        {/* Brand */}
+        {/* Brand + Model */}
         <div>
           <FilterLabel>{t("labels.brand")}</FilterLabel>
           <select
             className={fieldClass}
             value={draft.brand}
-            onChange={(e) => setDraft((d) => ({ ...d, brand: e.target.value }))}
+            onChange={(e) =>
+              setDraft((d) => ({ ...d, brand: e.target.value, model: "" }))
+            }
             aria-label={t("labels.brand")}
           >
             <option value="">{t("placeholders.anyBrand")}</option>
             {BRANDS.map((b) => (
               <option key={b} value={b}>
                 {b}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <FilterLabel>{t("labels.model")}</FilterLabel>
+          <select
+            className={`${fieldClass} disabled:cursor-not-allowed disabled:text-ink-faded`}
+            value={draft.model}
+            onChange={(e) => setDraft((d) => ({ ...d, model: e.target.value }))}
+            disabled={!draft.brand}
+            aria-label={t("labels.model")}
+          >
+            <option value="">{t("placeholders.anyModel")}</option>
+            {getModelsForBrand(draft.brand).map((m) => (
+              <option key={m} value={m}>
+                {m}
               </option>
             ))}
           </select>
