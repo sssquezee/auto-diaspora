@@ -1,37 +1,57 @@
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { Logo } from "./Logo";
+
+type LinkItem = { label: string; href: string };
 
 export async function Footer() {
   const t = await getTranslations("Footer");
 
-  const sections = [
+  const sections: Array<{ title: string; links: LinkItem[] }> = [
     {
       title: t("buyers.title"),
       links: [
-        t("buyers.allCars"),
-        t("buyers.howToBuy"),
-        t("buyers.vinCheck"),
-        t("buyers.deliveryToUkraine"),
+        { label: t("buyers.allCars"), href: "/" },
+        { label: t("buyers.howToBuy"), href: "/how-it-works" },
+        { label: t("buyers.vinCheck"), href: "#" },
+        { label: t("buyers.deliveryToUkraine"), href: "#" },
       ],
     },
     {
       title: t("sellers.title"),
       links: [
-        t("sellers.publish"),
-        t("sellers.premium"),
-        t("sellers.forDealers"),
+        { label: t("sellers.publish"), href: "/new" },
+        { label: t("sellers.premium"), href: "#" },
+        { label: t("sellers.forDealers"), href: "#" },
       ],
     },
     {
       title: t("company.title"),
       links: [
-        t("company.about"),
-        t("company.contacts"),
-        t("company.terms"),
-        t("company.privacy"),
+        { label: t("company.about"), href: "/about" },
+        { label: t("company.contacts"), href: "#" },
+        { label: t("company.terms"), href: "/terms" },
+        { label: t("company.privacy"), href: "/privacy" },
       ],
     },
   ];
+
+  const renderLink = (item: LinkItem) => {
+    const className =
+      "text-[13px] text-[#888] hover:text-accent no-underline transition-colors";
+    if (item.href === "#") {
+      return (
+        <a key={item.label} href="#" className={className}>
+          {item.label}
+        </a>
+      );
+    }
+    return (
+      <Link key={item.label} href={item.href} className={className}>
+        {item.label}
+      </Link>
+    );
+  };
 
   return (
     <footer className="bg-bg-dark text-[#888]">
@@ -48,15 +68,7 @@ export async function Footer() {
             <h4 className="text-white text-[12px] font-sans font-extrabold uppercase tracking-[0.12em] mb-1">
               {section.title}
             </h4>
-            {section.links.map((label) => (
-              <a
-                key={label}
-                href="#"
-                className="text-[13px] text-[#888] hover:text-accent no-underline transition-colors"
-              >
-                {label}
-              </a>
-            ))}
+            {section.links.map(renderLink)}
           </div>
         ))}
       </div>

@@ -343,6 +343,129 @@
     "powerUnit": "HP",
     "kmUnit": "km"
   },
+  "About": {
+    "kicker": "Who we are",
+    "title": "A trusted-cars marketplace for the diaspora",
+    "subtitle": "Auto Diaspora is where Ukrainians and Russian-speakers across the EU find cars without middlemen, resellers, or opaque commissions.",
+    "mission": {
+      "title": "Mission",
+      "body": "We build an honest marketplace for European cars aimed at the Ukrainian and Russian-speaking diaspora. Direct contact between sellers and buyers, transparent prices in €, verified listings, free access, and paid upgrades only for those who want to amplify their listing."
+    },
+    "why": {
+      "title": "Why Auto Diaspora",
+      "items": {
+        "verified": "Verified sellers earn a badge after manual vetting — less risk of running into a scammer.",
+        "noFees": "€0 buyer fee. Only sellers pay, and only if they want premium placement.",
+        "languages": "Three languages (UK / RU / EN) — communicate the way you and your counterpart prefer.",
+        "telegram": "Telegram bot with alerts on new cars matching your filters — instant, no need to refresh the site."
+      }
+    },
+    "team": {
+      "title": "Team",
+      "body": "Auto Diaspora is an early-stage startup. Right now it's a one-person project run from the Netherlands (eenmanszaak, KVK). The team is growing — email us below if you want to join as a dealer, developer, or investor."
+    },
+    "contact": {
+      "email": "Email",
+      "legal": "Legal entity"
+    }
+  },
+  "HowItWorks": {
+    "kicker": "Guide",
+    "title": "How it works",
+    "subtitle": "Four steps from first search to deal closed. No middlemen, no hidden fees.",
+    "stepLabel": "Step {num}",
+    "steps": {
+      "search": {
+        "title": "Find a car",
+        "body": "Browse the catalog with filters for brand, model, year, price, mileage, country, fuel, transmission. Save searches — get notified about fresh matches."
+      },
+      "contact": {
+        "title": "Contact the seller",
+        "body": "Use the in-platform real-time chat or call (phone unlocked after login). No middlemen — communication is direct between you and the seller."
+      },
+      "verify": {
+        "title": "Verify the car",
+        "body": "Browse all photos, read the description, ask for extra angles. Arrange a test drive or bring a mechanic. VIN check arrives post-MVP."
+      },
+      "buy": {
+        "title": "Buy",
+        "body": "The deal happens between you and the seller. We don't take a cut from the buyer. Paperwork and shipping to Ukraine are arranged directly."
+      }
+    },
+    "telegram": {
+      "label": "Bonus",
+      "title": "Connect the Telegram bot",
+      "body": "Get instant pings in Telegram for new cars matching your saved filters. Track favorites and watch for price drops without ever refreshing.",
+      "cta": "Connect →"
+    },
+    "finalCta": "Open the catalog →"
+  },
+  "Terms": {
+    "kicker": "Legal",
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated: May 2026",
+    "draftLabel": "Draft",
+    "draftNote": "Final Terms of Service are being prepared via iubenda and will be published before public launch. The text below is the working outline.",
+    "sections": {
+      "account": {
+        "title": "Account",
+        "body": "Users create an account via email or Google OAuth, provide truthful information, and are responsible for any activity from that account. One person, one account."
+      },
+      "listings": {
+        "title": "Listings",
+        "body": "The poster is responsible for accuracy of description, photos, and price. Posting stolen cars, vehicles without papers, or with tampered VINs is forbidden and grounds for ban."
+      },
+      "payments": {
+        "title": "Payments",
+        "body": "Paid services (bump, premium placement, extra listings) are processed through Mollie. Refunds are issued only in cases of technical failure on our side."
+      },
+      "disputes": {
+        "title": "Disputes",
+        "body": "Auto Diaspora is a platform. Deals between users are between them. We don't bear liability for transactions but help mediate in case of complaints."
+      },
+      "termination": {
+        "title": "Termination",
+        "body": "Admins may suspend an account or remove a listing without warning in cases of fraud, spam, user complaints, or violation of these Terms."
+      },
+      "liability": {
+        "title": "Liability",
+        "body": "Auto Diaspora provides the service \"as is\". We do not warrant uninterrupted operation and accept no liability for damages arising from use of the platform."
+      }
+    }
+  },
+  "Privacy": {
+    "kicker": "Legal",
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: May 2026",
+    "draftLabel": "Draft",
+    "draftNote": "Final Privacy Policy is being prepared via iubenda and will be GDPR-compliant before public launch. The text below is the working outline.",
+    "sections": {
+      "collected": {
+        "title": "Data we collect",
+        "body": "Email, name, phone (optional), country and city, profile photo. When you post a listing: VIN, photos, vehicle location. IP address and cookies for analytics and security."
+      },
+      "usage": {
+        "title": "How we use it",
+        "body": "To run the platform (auth, chat, notifications), to send alerts about new cars matching your saved searches, for safety and fraud prevention, and for anonymized analytics."
+      },
+      "sharing": {
+        "title": "Who we share with",
+        "body": "Data is never sold to third parties. Technical providers (Supabase, Vercel, Mollie, Resend, Telegram) process data solely to deliver the service. Mollie sees payment data."
+      },
+      "cookies": {
+        "title": "Cookies",
+        "body": "A session cookie for authentication. Analytics is privacy-friendly (Plausible or Umami) with no third-party tracking. We use no marketing cookies."
+      },
+      "rights": {
+        "title": "Your GDPR rights",
+        "body": "Right to access your data, correct it, delete it, port it (JSON export), and restrict processing. Send requests to the email below; we respond within 30 days."
+      },
+      "contact": {
+        "title": "Contact",
+        "body": "Auto Diaspora · eenmanszaak (Netherlands, KVK) · privacy@autodiaspora.com. You may also file complaints with the national data protection authority (Autoriteit Persoonsgegevens)."
+      }
+    }
+  },
   "Footer": {
     "tagline": "Marketplace of verified cars from 14 EU countries for the Ukrainian and Russian-speaking diaspora.",
     "buyers": {
