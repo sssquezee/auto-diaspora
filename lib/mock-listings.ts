@@ -210,11 +210,11 @@ const SEEDS: ListingSeed[] = [
   { id: "3", brand: "Škoda", model: "Octavia A7", year: 2019, mileageKm: 98500, engineSpecLatin: "1.6 TDI", priceEur: 11200, fuel: "diesel", transmission: "manual", country: "CZ", city: "prague", photoCount: 9, imageVariant: 3, daysAgo: 0, badges: ["new", "verified"], bodyType: "sedan", driveType: "fwd", powerHp: 115, engineVolumeL: 1.6, color: "white", views: 384, favorites: 22, seller: "tomasH" },
   { id: "4", brand: "Audi", model: "A6 Avant Quattro", year: 2017, mileageKm: 178000, engineSpecLatin: "3.0 TDI", priceEur: 19800, fuel: "diesel", transmission: "auto", country: "DE", city: "berlin", photoCount: 24, imageVariant: 4, daysAgo: 1, badges: ["top"], bodyType: "wagon", driveType: "awd", powerHp: 218, engineVolumeL: 3.0, color: "grey", customsCleared: true, views: 892, favorites: 47, seller: "olexandrK" },
   { id: "5", brand: "Tesla", model: "Model 3 LR", year: 2022, mileageKm: 42000, engineSpecLatin: "Electric", priceEur: 28500, fuel: "electric", transmission: "auto", country: "NL", city: "amsterdam", photoCount: 15, imageVariant: 5, daysAgo: 2, premium: true, bodyType: "sedan", driveType: "awd", powerHp: 366, color: "red", views: 1583, favorites: 124, seller: "pieterV" },
-  { id: "6", brand: "Mercedes", model: "E220d W213", year: 2019, mileageKm: 124000, engineSpecLatin: "2.0 TDI", priceEur: 24300, fuel: "diesel", transmission: "auto", country: "BE", city: "antwerp", photoCount: 11, imageVariant: 6, daysAgo: 3, badges: ["verified"], bodyType: "sedan", driveType: "rwd", powerHp: 194, engineVolumeL: 2.0, color: "darkBlue", customsCleared: true, views: 521, favorites: 28, seller: "andriyB" },
+  { id: "6", brand: "Mercedes", model: "E-Class E220d W213", year: 2019, mileageKm: 124000, engineSpecLatin: "2.0 TDI", priceEur: 24300, fuel: "diesel", transmission: "auto", country: "BE", city: "antwerp", photoCount: 11, imageVariant: 6, daysAgo: 3, badges: ["verified"], bodyType: "sedan", driveType: "rwd", powerHp: 194, engineVolumeL: 2.0, color: "darkBlue", customsCleared: true, views: 521, favorites: 28, seller: "andriyB" },
 
   // BMW expansion
-  { id: "7", brand: "BMW", model: "320d F30", year: 2017, mileageKm: 167000, engineSpecLatin: "2.0 TDI", priceEur: 12800, fuel: "diesel", transmission: "auto", country: "DE", city: "hamburg", photoCount: 14, imageVariant: 2, daysAgo: 1, badges: ["verified"], bodyType: "sedan", driveType: "rwd", powerHp: 190, engineVolumeL: 2.0, color: "white", customsCleared: true, views: 412, favorites: 18, seller: "klausW" },
-  { id: "8", brand: "BMW", model: "530d G30", year: 2019, mileageKm: 95000, engineSpecLatin: "3.0 TDI", priceEur: 32500, fuel: "diesel", transmission: "auto", country: "DE", city: "frankfurt", photoCount: 22, imageVariant: 1, daysAgo: 4, badges: ["top"], premium: true, bodyType: "sedan", driveType: "rwd", powerHp: 265, engineVolumeL: 3.0, color: "black", views: 1102, favorites: 67, seller: "hansM" },
+  { id: "7", brand: "BMW", model: "3 Series 320d F30", year: 2017, mileageKm: 167000, engineSpecLatin: "2.0 TDI", priceEur: 12800, fuel: "diesel", transmission: "auto", country: "DE", city: "hamburg", photoCount: 14, imageVariant: 2, daysAgo: 1, badges: ["verified"], bodyType: "sedan", driveType: "rwd", powerHp: 190, engineVolumeL: 2.0, color: "white", customsCleared: true, views: 412, favorites: 18, seller: "klausW" },
+  { id: "8", brand: "BMW", model: "5 Series 530d G30", year: 2019, mileageKm: 95000, engineSpecLatin: "3.0 TDI", priceEur: 32500, fuel: "diesel", transmission: "auto", country: "DE", city: "frankfurt", photoCount: 22, imageVariant: 1, daysAgo: 4, badges: ["top"], premium: true, bodyType: "sedan", driveType: "rwd", powerHp: 265, engineVolumeL: 3.0, color: "black", views: 1102, favorites: 67, seller: "hansM" },
   { id: "9", brand: "BMW", model: "X3 xDrive20d", year: 2018, mileageKm: 118000, engineSpecLatin: "2.0 TDI", priceEur: 21900, fuel: "diesel", transmission: "auto", country: "PL", city: "krakow", photoCount: 16, imageVariant: 4, daysAgo: 5, badges: ["verified"], bodyType: "suv", driveType: "awd", powerHp: 190, engineVolumeL: 2.0, color: "silver", customsCleared: true, views: 723, favorites: 35, seller: "annaK" },
 
   // Audi expansion
@@ -223,7 +223,7 @@ const SEEDS: ListingSeed[] = [
   { id: "12", brand: "Audi", model: "A3 Sportback", year: 2017, mileageKm: 134000, engineSpecLatin: "1.6 TDI", priceEur: 10400, fuel: "diesel", transmission: "manual", country: "PL", city: "wroclaw", photoCount: 10, imageVariant: 6, daysAgo: 1, badges: ["new"], bodyType: "hatchback", driveType: "fwd", powerHp: 110, engineVolumeL: 1.6, color: "red", customsCleared: true, views: 298, favorites: 14, seller: "sergiyM" },
 
   // Mercedes expansion
-  { id: "13", brand: "Mercedes", model: "C220d W205", year: 2018, mileageKm: 137000, engineSpecLatin: "2.0 TDI", priceEur: 17600, fuel: "diesel", transmission: "auto", country: "DE", city: "berlin", photoCount: 17, imageVariant: 1, daysAgo: 8, badges: ["verified"], bodyType: "sedan", driveType: "rwd", powerHp: 194, engineVolumeL: 2.0, color: "silver", views: 583, favorites: 29, seller: "hansM" },
+  { id: "13", brand: "Mercedes", model: "C-Class C220d W205", year: 2018, mileageKm: 137000, engineSpecLatin: "2.0 TDI", priceEur: 17600, fuel: "diesel", transmission: "auto", country: "DE", city: "berlin", photoCount: 17, imageVariant: 1, daysAgo: 8, badges: ["verified"], bodyType: "sedan", driveType: "rwd", powerHp: 194, engineVolumeL: 2.0, color: "silver", views: 583, favorites: 29, seller: "hansM" },
   { id: "14", brand: "Mercedes", model: "GLC 220d", year: 2019, mileageKm: 88000, engineSpecLatin: "2.0 TDI", priceEur: 29900, fuel: "diesel", transmission: "auto", country: "BE", city: "brussels", photoCount: 21, imageVariant: 2, daysAgo: 3, badges: ["top"], premium: true, bodyType: "suv", driveType: "awd", powerHp: 194, engineVolumeL: 2.0, color: "darkBlue", customsCleared: true, views: 1042, favorites: 71, seller: "andriyB" },
 
   // VW + Škoda
@@ -255,14 +255,38 @@ export const MOCK_LISTINGS: Listing[] = SEEDS.map(makeListing);
 
 // =========== Image gradients & formatters ===========
 
-export const IMAGE_GRADIENTS: Record<Listing["imageVariant"], string> = {
-  1: "linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%)",
-  2: "linear-gradient(135deg, #2a2a2a 0%, #5e5e5e 100%)",
-  3: "linear-gradient(135deg, #1f1f1f 0%, #525252 100%)",
-  4: "linear-gradient(135deg, #0f0f0f 0%, #3a3a3a 100%)",
-  5: "linear-gradient(135deg, #2e2e2e 0%, #6a6a6a 100%)",
-  6: "linear-gradient(135deg, #181818 0%, #404040 100%)",
+const VARIANT_COLORS: Record<Listing["imageVariant"], { dark: string; light: string }> = {
+  1: { dark: "#1a1a1a", light: "#4a4a4a" },
+  2: { dark: "#2a2a2a", light: "#5e5e5e" },
+  3: { dark: "#1f1f1f", light: "#525252" },
+  4: { dark: "#0f0f0f", light: "#3a3a3a" },
+  5: { dark: "#2e2e2e", light: "#6a6a6a" },
+  6: { dark: "#181818", light: "#404040" },
 };
+
+export const IMAGE_GRADIENTS: Record<Listing["imageVariant"], string> = {
+  1: `linear-gradient(135deg, ${VARIANT_COLORS[1].dark} 0%, ${VARIANT_COLORS[1].light} 100%)`,
+  2: `linear-gradient(135deg, ${VARIANT_COLORS[2].dark} 0%, ${VARIANT_COLORS[2].light} 100%)`,
+  3: `linear-gradient(135deg, ${VARIANT_COLORS[3].dark} 0%, ${VARIANT_COLORS[3].light} 100%)`,
+  4: `linear-gradient(135deg, ${VARIANT_COLORS[4].dark} 0%, ${VARIANT_COLORS[4].light} 100%)`,
+  5: `linear-gradient(135deg, ${VARIANT_COLORS[5].dark} 0%, ${VARIANT_COLORS[5].light} 100%)`,
+  6: `linear-gradient(135deg, ${VARIANT_COLORS[6].dark} 0%, ${VARIANT_COLORS[6].light} 100%)`,
+};
+
+/**
+ * Deterministic set of gradient strings — one per "photo" in a listing.
+ * Same brand palette, but rotated angle so consecutive shots feel different.
+ */
+export function getPhotoGradients(
+  variant: Listing["imageVariant"],
+  count: number
+): string[] {
+  const { dark, light } = VARIANT_COLORS[variant];
+  return Array.from({ length: count }, (_, i) => {
+    const angle = 105 + ((i * 37) % 200);
+    return `linear-gradient(${angle}deg, ${dark} 0%, ${light} 100%)`;
+  });
+}
 
 export function formatMileage(km: number, locale: Locale): string {
   const tag = locale === "uk" ? "uk-UA" : locale === "ru" ? "ru-RU" : "en-US";
@@ -278,10 +302,68 @@ export function getListingById(id: string): Listing | null {
   return MOCK_LISTINGS.find((l) => l.id === id) ?? null;
 }
 
+const COUNTRY_DIAL: Record<string, string> = {
+  DE: "+49",
+  PL: "+48",
+  NL: "+31",
+  CZ: "+420",
+  BE: "+32",
+  FR: "+33",
+};
+
+function hashString(s: string): number {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+/** Stable mock phone for a listing — used on the detail page contact reveal. */
+export function getMockPhone(listing: Listing): { full: string; masked: string } {
+  const code = COUNTRY_DIAL[listing.country] ?? "+49";
+  const digits = (hashString(listing.id + listing.country) % 1_000_000_000)
+    .toString()
+    .padStart(9, "0");
+  const grouped = `${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6)}`;
+  const full = `${code} ${grouped}`;
+  const masked = `${code} ${"•••".padEnd(3, "•")} ••• •${digits.slice(-2)}`;
+  return { full, masked };
+}
+
 export function getListingsByIds(ids: string[]): Listing[] {
   return ids
     .map((id) => MOCK_LISTINGS.find((l) => l.id === id))
     .filter((l): l is Listing => l !== undefined);
+}
+
+/**
+ * Pick listings similar to the given one. Scored by:
+ *   same brand        +4
+ *   same body type    +2
+ *   same fuel         +1
+ *   close price (±25%) +1
+ * Excludes the listing itself. Ties broken by premium-first, then newer.
+ */
+export function getSimilarListings(listing: Listing, count: number): Listing[] {
+  const priceLow = listing.priceEur * 0.75;
+  const priceHigh = listing.priceEur * 1.25;
+
+  return MOCK_LISTINGS.filter((l) => l.id !== listing.id)
+    .map((l) => {
+      let score = 0;
+      if (l.brand === listing.brand) score += 4;
+      if (l.details.bodyType === listing.details.bodyType) score += 2;
+      if (l.fuel === listing.fuel) score += 1;
+      if (l.priceEur >= priceLow && l.priceEur <= priceHigh) score += 1;
+      return { listing: l, score };
+    })
+    .filter((x) => x.score > 0)
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      if (a.listing.premium !== b.listing.premium) return a.listing.premium ? -1 : 1;
+      return a.listing.daysSincePosted - b.listing.daysSincePosted;
+    })
+    .slice(0, count)
+    .map((x) => x.listing);
 }
 
 export const PAGE_SIZE = 12;

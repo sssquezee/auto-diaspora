@@ -1,12 +1,18 @@
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { ListingGallery } from "@/components/ListingGallery";
+import { ListingActions } from "@/components/ListingActions";
+import { ListingCard } from "@/components/ListingCard";
 import {
-  IMAGE_GRADIENTS,
   MOCK_LISTINGS,
   formatMileage,
   formatPriceEur,
   getListingById,
+  getMockPhone,
+  getPhotoGradients,
+  getSimilarListings,
+  type Listing,
   type Locale,
 } from "@/lib/mock-listings";
 
@@ -28,7 +34,6 @@ export default async function ListingDetailPage({
 
   const t = await getTranslations("ListingDetail");
   const tCard = await getTranslations("ListingCard");
-  const tSidebar = await getTranslations("Sidebar");
 
   const price = formatPriceEur(listing.priceEur, locale);
   const mileage = formatMileage(listing.mileageKm, locale);
@@ -92,23 +97,25 @@ export default async function ListingDetailPage({
         <span className="text-ink">{listing.brand} {listing.model}</span>
       </nav>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_320px] gap-5">
         {/* LEFT — gallery + content */}
         <div className="flex flex-col gap-3">
           {/* Gallery */}
-          <div className="bg-white border-[1.5px] border-ink">
-            <div
-              className="aspect-[16/10] w-full relative"
-              style={{ background: IMAGE_GRADIENTS[listing.imageVariant] }}
-            >
-              {/* Badges */}
-              {listing.badges.length > 0 && (
-                <div className="absolute top-3 left-3 flex flex-wrap gap-1">
+          <ListingGallery
+            gradients={getPhotoGradients(listing.imageVariant, listing.photoCount)}
+            prevLabel={t("gallery.prev")}
+            nextLabel={t("gallery.next")}
+            thumbLabel={t("gallery.thumb")}
+            badges={
+              listing.badges.length > 0 ? (
+                <div className="absolute top-3 left-3 flex flex-wrap gap-1 z-[2]">
                   {listing.badges.map((b) => {
                     const labelKey =
-                      b === "verified" ? "✓ " + tCard("badges.verified") :
-                      b === "top" ? "★ " + tCard("badges.top") :
-                      tCard(`badges.${b}`);
+                      b === "verified"
+                        ? "✓ " + tCard("badges.verified")
+                        : b === "top"
+                        ? "★ " + tCard("badges.top")
+                        : tCard(`badges.${b}`);
                     const variantClass =
                       b === "top"
                         ? "bg-accent text-white"
@@ -127,27 +134,9 @@ export default async function ListingDetailPage({
                     );
                   })}
                 </div>
-              )}
-              {/* Photo counter */}
-              <span className="absolute bottom-3 right-3 bg-ink text-white font-mono font-bold text-[12px] px-2 py-1">
-                1 / {listing.photoCount}
-              </span>
-            </div>
-            {/* Thumb strip */}
-            <div className="flex gap-1 p-2 border-t-[1.5px] border-ink overflow-x-auto">
-              {Array.from({ length: Math.min(8, listing.photoCount) }).map(
-                (_, i) => (
-                  <div
-                    key={i}
-                    className={`w-[88px] h-[64px] flex-shrink-0 ${
-                      i === 0 ? "outline outline-2 outline-accent outline-offset-[-2px]" : ""
-                    }`}
-                    style={{ background: IMAGE_GRADIENTS[listing.imageVariant] }}
-                  />
-                )
-              )}
-            </div>
-          </div>
+              ) : null
+            }
+          />
 
           {/* Title + Price */}
           <div className="bg-white border-[1.5px] border-ink p-5 flex flex-wrap justify-between items-start gap-4">
@@ -218,31 +207,16 @@ export default async function ListingDetailPage({
         </div>
 
         {/* RIGHT — actions + seller (sticky on desktop) */}
-        <aside className="flex flex-col gap-3 lg:sticky lg:top-3.5 lg:h-fit">
+        <aside className="flex flex-col gap-3 md:sticky md:top-3.5 md:h-fit">
           {/* Action card */}
-          <div className="bg-white border-[1.5px] border-ink p-4 flex flex-col gap-2">
-            <button
-              type="button"
-              className="w-full bg-accent hover:bg-accent-2 text-white font-sans font-extrabold text-[13px] uppercase tracking-[0.12em] py-3.5 cursor-pointer border-0 transition-colors"
-            >
-              {t("actions.writeToSeller")}
-            </button>
-            <button
-              type="button"
-              className="w-full bg-white text-ink border-[1.5px] border-ink hover:bg-ink hover:text-white font-sans font-extrabold text-[13px] uppercase tracking-[0.12em] py-[10px] cursor-pointer transition-colors"
-            >
-              {t("actions.showPhone")}
-            </button>
-            <button
-              type="button"
-              className="w-full bg-white text-ink border-[1.5px] border-ink hover:bg-ink hover:text-white font-sans font-semibold text-[12px] uppercase tracking-[0.12em] py-[10px] cursor-pointer transition-colors flex items-center justify-center gap-2"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-              </svg>
-              {t("actions.addToFavorites")}
-            </button>
-          </div>
+          <ListingActions
+            listingId={listing.id}
+            phone={getMockPhone(listing)}
+            writeLabel={t("actions.writeToSeller")}
+            showPhoneLabel={t("actions.showPhone")}
+            addFavLabel={t("actions.addToFavorites")}
+            removeFavLabel={t("actions.removeFromFavorites")}
+          />
 
           {/* Seller card */}
           <div className="bg-white border-[1.5px] border-ink p-4">
@@ -291,6 +265,36 @@ export default async function ListingDetailPage({
           </div>
         </aside>
       </div>
+
+      {/* Similar listings */}
+      <SimilarListings listing={listing} />
     </div>
+  );
+}
+
+async function SimilarListings({ listing }: { listing: Listing }) {
+  const t = await getTranslations("ListingDetail.similar");
+  const similar = getSimilarListings(listing, 4);
+  if (similar.length === 0) return null;
+
+  return (
+    <section className="mt-10 pt-8 border-t-[1.5px] border-ink">
+      <div className="flex items-baseline justify-between mb-5 gap-4">
+        <h2 className="font-sans font-black text-[22px] sm:text-[28px] uppercase tracking-[-0.03em] text-ink">
+          <span className="border-b-[3px] border-accent pb-1">
+            {t("title")}
+          </span>
+        </h2>
+        <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+          {t("subtitle")}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+        {await Promise.all(
+          similar.map((l) => <ListingCard key={l.id} listing={l} />)
+        )}
+      </div>
+    </section>
   );
 }
