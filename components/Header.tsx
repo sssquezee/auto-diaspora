@@ -63,7 +63,7 @@ export async function Header() {
           </button>
 
           <Link
-            href="/auth/login"
+            href="/account"
             title={t("profile")}
             aria-label={t("profile")}
             className="w-10 h-10 border-[1.5px] border-ink bg-white grid place-items-center text-ink hover:bg-ink hover:text-white transition-colors cursor-pointer relative no-underline"

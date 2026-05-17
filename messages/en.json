@@ -113,6 +113,87 @@
       "manual": "Manual"
     }
   },
+  "Account": {
+    "nav": {
+      "title": "Account",
+      "overview": "Dashboard",
+      "listings": "My listings",
+      "favorites": "Favorites",
+      "messages": "Messages",
+      "searches": "Saved searches",
+      "settings": "Settings",
+      "logout": "Sign out",
+      "memberSince": "Member since {year}"
+    },
+    "overview": {
+      "title": "Hi, {name}",
+      "subtitle": "A quick overview of what's happening in your account",
+      "cards": {
+        "listings": "Active listings",
+        "favorites": "Favorited",
+        "messages": "Unread messages"
+      },
+      "telegram": {
+        "label": "Integration",
+        "title": "Connect the Telegram bot",
+        "desc": "Get instant pings for new matches on your saved searches and messages from buyers.",
+        "cta": "Connect →"
+      }
+    },
+    "listings": {
+      "title": "My listings",
+      "newButton": "+ List a car",
+      "tabs": {
+        "active": "Active",
+        "paused": "Paused",
+        "sold": "Sold",
+        "expired": "Expired"
+      }
+    },
+    "favorites": {
+      "title": "Favorites",
+      "subtitle": "{count} saved cars"
+    },
+    "messages": {
+      "title": "Messages",
+      "subtitle": "{count} active conversations"
+    },
+    "searches": {
+      "title": "Saved searches",
+      "empty": "Save a search from the catalog — we'll ping you on Telegram or email the moment a new car matches.",
+      "newButton": "Open catalog"
+    },
+    "settings": {
+      "title": "Settings",
+      "sections": {
+        "profile": "Profile",
+        "telegram": "Telegram alerts",
+        "notifications": "Email notifications",
+        "language": "Interface language",
+        "danger": "Danger zone"
+      },
+      "fields": {
+        "name": "Name",
+        "phone": "Phone"
+      },
+      "changeAvatar": "Change photo",
+      "telegram": {
+        "desc": "Link your account to @AutoDiasporaBot — get notified about messages and new cars matching your saved filters.",
+        "cta": "Connect Telegram"
+      },
+      "notifications": {
+        "newMessages": "New messages from buyers",
+        "newOnSavedSearch": "New cars matching saved searches",
+        "priceDrops": "Price drops on favorited cars",
+        "weekly": "Weekly market digest"
+      },
+      "saveButton": "Save changes",
+      "danger": {
+        "desc": "Account deletion is permanent. All your listings, chats, favorites, and settings will be erased. We'll send a confirmation email before removal.",
+        "cta": "Delete account"
+      }
+    }
+  },
   "NewListing": {
     "title": "List a car",
     "subtitle": "Fill the form — takes about 5 minutes",
