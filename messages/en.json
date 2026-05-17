@@ -22,11 +22,60 @@
       "publish": "List a car"
     }
   },
+  "NavCats": {
+    "all": "All cars",
+    "cars": "Passenger",
+    "suv": "SUV",
+    "electric": "Electric",
+    "hybrid": "Hybrid",
+    "moto": "Motorcycles",
+    "commercial": "Commercial",
+    "trailers": "Trailers",
+    "parts": "Parts"
+  },
   "Hero": {
-    "tagline": "Marketplace of verified European cars for the Ukrainian and Russian-speaking diaspora.",
-    "dayLabel": "Day 1 / 7",
-    "daySubtitle": "Foundation · Setup",
-    "comingSoon": "Catalog coming soon"
+    "liveBadge": "{count} cars online",
+    "headline": "Cars from Europe.",
+    "headlineAccent": "For our people.",
+    "tagline": "Marketplace of verified cars from Ukrainian-speaking sellers across 14 EU countries. No middlemen, no hidden fees.",
+    "stats": {
+      "cars": "Cars",
+      "sellers": "Sellers",
+      "countries": "EU countries",
+      "fee": "Buyer fee"
+    }
+  },
+  "Results": {
+    "count": "{count} listings found",
+    "soon": "Catalog launches in the coming days",
+    "sort": {
+      "premium": "Premium first",
+      "newest": "Newest first",
+      "priceAsc": "Price: low to high",
+      "priceDesc": "Price: high to low",
+      "mileage": "Mileage"
+    }
+  },
+  "ListingCard": {
+    "favorite": "Add to favorites",
+    "thousand": "k",
+    "badges": {
+      "top": "TOP",
+      "new": "NEW",
+      "urgent": "URGENT",
+      "verified": "Verified",
+      "premium": "PREMIUM"
+    },
+    "fuel": {
+      "diesel": "Diesel",
+      "petrol": "Petrol",
+      "electric": "Electric",
+      "hybrid": "Hybrid"
+    },
+    "transmission": {
+      "auto": "Auto",
+      "manual": "Manual"
+    }
   },
   "Footer": {
     "tagline": "Marketplace of verified cars from 14 EU countries for the Ukrainian and Russian-speaking diaspora.",

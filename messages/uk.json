@@ -22,11 +22,60 @@
       "publish": "Подати"
     }
   },
+  "NavCats": {
+    "all": "Всі авто",
+    "cars": "Легкові",
+    "suv": "Позашляховики",
+    "electric": "Електро",
+    "hybrid": "Гібриди",
+    "moto": "Мотоцикли",
+    "commercial": "Комерційні",
+    "trailers": "Причепи",
+    "parts": "Запчастини"
+  },
   "Hero": {
-    "tagline": "Маркетплейс перевірених авто з Європи для української та російськомовної діаспори.",
-    "dayLabel": "Day 1 / 7",
-    "daySubtitle": "Foundation · Setup",
-    "comingSoon": "Каталог незабаром"
+    "liveBadge": "{count} авто онлайн",
+    "headline": "Авто з Європи.",
+    "headlineAccent": "Для своїх.",
+    "tagline": "Маркетплейс перевірених авто від українських продавців у 14 країнах ЄС. Без посередників і прихованих комісій.",
+    "stats": {
+      "cars": "Авто",
+      "sellers": "Продавців",
+      "countries": "Країн ЄС",
+      "fee": "Комісія покупця"
+    }
+  },
+  "Results": {
+    "count": "{count} оголошень знайдено",
+    "soon": "Каталог запускаємо найближчими днями",
+    "sort": {
+      "premium": "Спочатку преміум",
+      "newest": "Спочатку нові",
+      "priceAsc": "Ціна: дешеві",
+      "priceDesc": "Ціна: дорогі",
+      "mileage": "Пробіг"
+    }
+  },
+  "ListingCard": {
+    "favorite": "В обране",
+    "thousand": "тис.",
+    "badges": {
+      "top": "TOP",
+      "new": "NEW",
+      "urgent": "URGENT",
+      "verified": "Verified",
+      "premium": "PREMIUM"
+    },
+    "fuel": {
+      "diesel": "Дизель",
+      "petrol": "Бензин",
+      "electric": "Електро",
+      "hybrid": "Гібрид"
+    },
+    "transmission": {
+      "auto": "Авто",
+      "manual": "МКПП"
+    }
   },
   "Footer": {
     "tagline": "Маркетплейс перевірених авто з 14 країн ЄС для української та російськомовної діаспори.",

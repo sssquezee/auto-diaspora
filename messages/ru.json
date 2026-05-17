@@ -22,11 +22,60 @@
       "publish": "Подать"
     }
   },
+  "NavCats": {
+    "all": "Все авто",
+    "cars": "Легковые",
+    "suv": "Внедорожники",
+    "electric": "Электро",
+    "hybrid": "Гибриды",
+    "moto": "Мотоциклы",
+    "commercial": "Коммерческие",
+    "trailers": "Прицепы",
+    "parts": "Запчасти"
+  },
   "Hero": {
-    "tagline": "Маркетплейс проверенных авто из Европы для украинской и русскоязычной диаспоры.",
-    "dayLabel": "Day 1 / 7",
-    "daySubtitle": "Foundation · Setup",
-    "comingSoon": "Каталог скоро"
+    "liveBadge": "{count} авто онлайн",
+    "headline": "Авто из Европы.",
+    "headlineAccent": "Для своих.",
+    "tagline": "Маркетплейс проверенных авто от украинских продавцов в 14 странах ЕС. Без посредников и скрытых комиссий.",
+    "stats": {
+      "cars": "Авто",
+      "sellers": "Продавцов",
+      "countries": "Стран ЕС",
+      "fee": "Комиссия покупателя"
+    }
+  },
+  "Results": {
+    "count": "{count} объявлений найдено",
+    "soon": "Каталог запускаем в ближайшие дни",
+    "sort": {
+      "premium": "Сначала премиум",
+      "newest": "Сначала новые",
+      "priceAsc": "Цена: дешёвые",
+      "priceDesc": "Цена: дорогие",
+      "mileage": "Пробег"
+    }
+  },
+  "ListingCard": {
+    "favorite": "В избранное",
+    "thousand": "тыс.",
+    "badges": {
+      "top": "TOP",
+      "new": "NEW",
+      "urgent": "URGENT",
+      "verified": "Verified",
+      "premium": "PREMIUM"
+    },
+    "fuel": {
+      "diesel": "Дизель",
+      "petrol": "Бензин",
+      "electric": "Электро",
+      "hybrid": "Гибрид"
+    },
+    "transmission": {
+      "auto": "Авто",
+      "manual": "МКПП"
+    }
   },
   "Footer": {
     "tagline": "Маркетплейс проверенных авто из 14 стран ЕС для украинской и русскоязычной диаспоры.",
