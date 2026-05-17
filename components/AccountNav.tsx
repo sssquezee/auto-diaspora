@@ -2,19 +2,28 @@
 
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
+import { useFavorites } from "@/hooks/useFavorites";
 
-const NAV_ITEMS = [
+type NavItem = {
+  key: "overview" | "listings" | "favorites" | "messages" | "searches" | "settings";
+  href: string;
+  badge?: string | "favoritesLive";
+};
+
+const NAV_ITEMS: NavItem[] = [
   { key: "overview", href: "/account" },
   { key: "listings", href: "/account/listings", badge: "2" },
-  { key: "favorites", href: "/account/favorites", badge: "3" },
+  { key: "favorites", href: "/account/favorites", badge: "favoritesLive" },
   { key: "messages", href: "/account/messages", badge: "1" },
   { key: "searches", href: "/account/searches" },
   { key: "settings", href: "/account/settings" },
-] as const;
+];
 
 export function AccountNav() {
   const t = useTranslations("Account.nav");
   const pathname = usePathname();
+  const { favorites, hydrated } = useFavorites();
+  const favoritesCount = hydrated ? favorites.length : 0;
 
   return (
     <aside
@@ -42,17 +51,22 @@ export function AccountNav() {
               }`}
             >
               <span>{t(item.key)}</span>
-              {"badge" in item && item.badge && (
-                <span
-                  className={`font-mono text-[10px] font-bold px-1.5 py-px ${
-                    isActive
-                      ? "bg-accent text-white"
-                      : "bg-bg-subtle text-ink-muted border border-line-strong"
-                  }`}
-                >
-                  {item.badge}
-                </span>
-              )}
+              {item.badge && (() => {
+                const value =
+                  item.badge === "favoritesLive" ? favoritesCount : Number(item.badge);
+                if (item.badge === "favoritesLive" && value === 0) return null;
+                return (
+                  <span
+                    className={`font-mono text-[10px] font-bold px-1.5 py-px ${
+                      isActive
+                        ? "bg-accent text-white"
+                        : "bg-bg-subtle text-ink-muted border border-line-strong"
+                    }`}
+                  >
+                    {value}
+                  </span>
+                );
+              })()}
             </Link>
           );
         })}

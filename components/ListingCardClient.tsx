@@ -1,4 +1,6 @@
-import { getLocale, getTranslations } from "next-intl/server";
+"use client";
+
+import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { FavoriteButton } from "./FavoriteButton";
 import {
@@ -47,9 +49,10 @@ function ElectricIcon() {
 
 type Props = { listing: Listing };
 
-export async function ListingCard({ listing }: Props) {
-  const locale = (await getLocale()) as Locale;
-  const t = await getTranslations("ListingCard");
+/** Client mirror of ListingCard for use inside other client components. */
+export function ListingCardClient({ listing }: Props) {
+  const locale = useLocale() as Locale;
+  const t = useTranslations("ListingCard");
 
   const mileage = formatMileage(listing.mileageKm, locale);
   const price = formatPriceEur(listing.priceEur, locale);
@@ -63,14 +66,12 @@ export async function ListingCard({ listing }: Props) {
     <article
       className={`relative bg-bg-card border-[1.5px] border-ink overflow-hidden transition-all duration-150 hover:-translate-x-[3px] hover:-translate-y-[3px] hover:shadow-[6px_6px_0_var(--accent)] ${baseShadow}`}
     >
-      {/* Premium ribbon (outside Link) */}
       {listing.premium && (
         <span className="absolute top-2 right-2 z-[3] bg-accent text-white font-mono font-extrabold text-[10px] tracking-[0.12em] px-2 py-[3px] pointer-events-none">
           {t("badges.premium")}
         </span>
       )}
 
-      {/* Favorite button (outside Link so it doesn't trigger navigation) */}
       <FavoriteButton
         listingId={listing.id}
         label={t("favorite")}
@@ -79,12 +80,10 @@ export async function ListingCard({ listing }: Props) {
         }`}
       />
 
-
       <Link
         href={`/listing/${listing.id}`}
         className="block no-underline text-ink"
       >
-        {/* Photo placeholder */}
         <div
           className="aspect-[4/3] w-full relative border-b-[1.5px] border-ink"
           style={{ background: IMAGE_GRADIENTS[listing.imageVariant] }}
@@ -121,7 +120,6 @@ export async function ListingCard({ listing }: Props) {
           </span>
         </div>
 
-        {/* Body */}
         <div className="px-3.5 py-3">
           <h3 className="font-sans font-bold text-[14px] text-ink leading-[1.25] tracking-[-0.02em] uppercase line-clamp-1 mb-1">
             {listing.brand} {listing.model}
@@ -130,7 +128,6 @@ export async function ListingCard({ listing }: Props) {
             {listing.year} · {mileage} км · {listing.engineSpec[locale]}
           </p>
 
-          {/* Price row */}
           <div className="flex items-baseline gap-2 mb-2.5 pb-2.5 border-b border-dashed border-line-strong">
             <span className="font-mono font-bold text-[22px] text-ink tracking-[-0.02em]">
               {price}
@@ -140,7 +137,6 @@ export async function ListingCard({ listing }: Props) {
             </span>
           </div>
 
-          {/* Specs grid */}
           <div className="grid grid-cols-2 gap-x-2 gap-y-1 mb-2.5">
             <div className="flex items-center gap-[5px] text-[11.5px] text-ink-muted">
               <span className="text-accent">
@@ -162,7 +158,6 @@ export async function ListingCard({ listing }: Props) {
             </div>
           </div>
 
-          {/* Footer */}
           <div className="flex justify-between items-center font-mono text-[11px] text-ink-faded">
             <div className="flex items-center gap-[5px] text-ink font-bold uppercase tracking-[0.04em]">
               <span className="bg-ink text-white text-[9px] font-bold px-1 py-px tracking-[0.04em]">

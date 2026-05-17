@@ -1,9 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { FavoritesCountText } from "@/components/FavoritesCountBadge";
 
 const STATS = {
   listings: 2,
-  favorites: 3,
   messages: 1,
 };
 
@@ -15,7 +15,7 @@ function StatCard({
 }: {
   href: string;
   label: string;
-  value: string | number;
+  value: React.ReactNode;
   cta: string;
 }) {
   return (
@@ -61,7 +61,7 @@ export default async function AccountOverviewPage() {
         <StatCard
           href="/account/favorites"
           label={t("cards.favorites")}
-          value={STATS.favorites}
+          value={<FavoritesCountText fallback={0} />}
           cta={tNav("favorites") + " →"}
         />
         <StatCard
