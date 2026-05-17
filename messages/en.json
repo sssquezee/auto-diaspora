@@ -1,0 +1,56 @@
+{
+  "Site": {
+    "title": "Auto Diaspora — Trusted European cars marketplace",
+    "description": "Marketplace of verified European cars for the Ukrainian and Russian-speaking diaspora in the EU. BMW, Audi, Mercedes, VW, Skoda — Germany, Poland, Netherlands, Czechia, Belgium."
+  },
+  "TopStrip": {
+    "howItWorks": "How it works",
+    "telegramBot": "Telegram bot",
+    "forDealers": "For dealers",
+    "help": "Help"
+  },
+  "Header": {
+    "search": {
+      "anyBrand": "Any brand",
+      "anyModel": "Model",
+      "anyCountry": "All of Europe",
+      "submit": "Search"
+    },
+    "actions": {
+      "favorites": "Favorites",
+      "profile": "Profile",
+      "publish": "List a car"
+    }
+  },
+  "Hero": {
+    "tagline": "Marketplace of verified European cars for the Ukrainian and Russian-speaking diaspora.",
+    "dayLabel": "Day 1 / 7",
+    "daySubtitle": "Foundation · Setup",
+    "comingSoon": "Catalog coming soon"
+  },
+  "Footer": {
+    "tagline": "Marketplace of verified cars from 14 EU countries for the Ukrainian and Russian-speaking diaspora.",
+    "buyers": {
+      "title": "Buyers",
+      "allCars": "All cars",
+      "howToBuy": "How to buy",
+      "vinCheck": "VIN check",
+      "deliveryToUkraine": "Delivery to Ukraine"
+    },
+    "sellers": {
+      "title": "Sellers",
+      "publish": "Post a listing",
+      "premium": "Premium plans",
+      "forDealers": "For dealers"
+    },
+    "company": {
+      "title": "Company",
+      "about": "About",
+      "contacts": "Contact",
+      "terms": "Terms",
+      "privacy": "Privacy"
+    },
+    "copyright": "© 2026 Auto Diaspora",
+    "legal": "KVK · Netherlands · GDPR"
+  }
+}

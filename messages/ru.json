@@ -1,0 +1,56 @@
+{
+  "Site": {
+    "title": "Auto Diaspora — Маркетплейс проверенных авто из Европы",
+    "description": "Маркетплейс проверенных авто из Европы для украинской и русскоязычной диаспоры. BMW, Audi, Mercedes, VW, Skoda — Германия, Польша, Нидерланды, Чехия, Бельгия."
+  },
+  "TopStrip": {
+    "howItWorks": "Как это работает",
+    "telegramBot": "Telegram-бот",
+    "forDealers": "Для дилеров",
+    "help": "Помощь"
+  },
+  "Header": {
+    "search": {
+      "anyBrand": "Любая марка",
+      "anyModel": "Модель",
+      "anyCountry": "Вся Европа",
+      "submit": "Искать"
+    },
+    "actions": {
+      "favorites": "Избранное",
+      "profile": "Профиль",
+      "publish": "Подать"
+    }
+  },
+  "Hero": {
+    "tagline": "Маркетплейс проверенных авто из Европы для украинской и русскоязычной диаспоры.",
+    "dayLabel": "Day 1 / 7",
+    "daySubtitle": "Foundation · Setup",
+    "comingSoon": "Каталог скоро"
+  },
+  "Footer": {
+    "tagline": "Маркетплейс проверенных авто из 14 стран ЕС для украинской и русскоязычной диаспоры.",
+    "buyers": {
+      "title": "Покупателям",
+      "allCars": "Все авто",
+      "howToBuy": "Как купить",
+      "vinCheck": "Проверка VIN",
+      "deliveryToUkraine": "Доставка в Украину"
+    },
+    "sellers": {
+      "title": "Продавцам",
+      "publish": "Подать объявление",
+      "premium": "Тарифы Premium",
+      "forDealers": "Для дилеров"
+    },
+    "company": {
+      "title": "Компания",
+      "about": "О нас",
+      "contacts": "Контакты",
+      "terms": "Соглашение",
+      "privacy": "Privacy"
+    },
+    "copyright": "© 2026 Auto Diaspora",
+    "legal": "KVK · Netherlands · GDPR"
+  }
+}
