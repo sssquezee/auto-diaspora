@@ -56,6 +56,42 @@
       "mileage": "Пробег"
     }
   },
+  "Sidebar": {
+    "title": "Фильтры",
+    "labels": {
+      "brand": "Марка",
+      "model": "Модель",
+      "year": "Год выпуска",
+      "price": "Цена, €",
+      "mileage": "Пробег, км",
+      "country": "Страна",
+      "fuel": "Тип топлива",
+      "transmission": "Коробка"
+    },
+    "placeholders": {
+      "anyBrand": "Любая марка",
+      "anyModel": "Любая модель",
+      "yearFrom": "от 2015",
+      "yearTo": "до 2024",
+      "priceFrom": "от",
+      "priceTo": "до 30000",
+      "mileageFrom": "от",
+      "mileageTo": "до 150000"
+    },
+    "countries": {
+      "DE": "Германия",
+      "PL": "Польша",
+      "NL": "Нидерланды",
+      "CZ": "Чехия",
+      "BE": "Бельгия"
+    },
+    "transmission": {
+      "auto": "Автомат",
+      "manual": "Механика"
+    },
+    "apply": "Применить",
+    "saveToTelegram": "Сохранить поиск в Telegram"
+  },
   "ListingCard": {
     "favorite": "В избранное",
     "thousand": "тыс.",

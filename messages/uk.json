@@ -56,6 +56,42 @@
       "mileage": "Пробіг"
     }
   },
+  "Sidebar": {
+    "title": "Фільтри",
+    "labels": {
+      "brand": "Марка",
+      "model": "Модель",
+      "year": "Рік випуску",
+      "price": "Ціна, €",
+      "mileage": "Пробіг, км",
+      "country": "Країна",
+      "fuel": "Тип палива",
+      "transmission": "Коробка"
+    },
+    "placeholders": {
+      "anyBrand": "Будь-яка марка",
+      "anyModel": "Будь-яка модель",
+      "yearFrom": "від 2015",
+      "yearTo": "до 2024",
+      "priceFrom": "від",
+      "priceTo": "до 30000",
+      "mileageFrom": "від",
+      "mileageTo": "до 150000"
+    },
+    "countries": {
+      "DE": "Німеччина",
+      "PL": "Польща",
+      "NL": "Нідерланди",
+      "CZ": "Чехія",
+      "BE": "Бельгія"
+    },
+    "transmission": {
+      "auto": "Автомат",
+      "manual": "Механіка"
+    },
+    "apply": "Застосувати",
+    "saveToTelegram": "Зберегти пошук в Telegram"
+  },
   "ListingCard": {
     "favorite": "В обране",
     "thousand": "тис.",

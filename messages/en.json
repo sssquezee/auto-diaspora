@@ -56,6 +56,42 @@
       "mileage": "Mileage"
     }
   },
+  "Sidebar": {
+    "title": "Filters",
+    "labels": {
+      "brand": "Brand",
+      "model": "Model",
+      "year": "Year",
+      "price": "Price, €",
+      "mileage": "Mileage, km",
+      "country": "Country",
+      "fuel": "Fuel type",
+      "transmission": "Transmission"
+    },
+    "placeholders": {
+      "anyBrand": "Any brand",
+      "anyModel": "Any model",
+      "yearFrom": "from 2015",
+      "yearTo": "to 2024",
+      "priceFrom": "from",
+      "priceTo": "to 30000",
+      "mileageFrom": "from",
+      "mileageTo": "to 150000"
+    },
+    "countries": {
+      "DE": "Germany",
+      "PL": "Poland",
+      "NL": "Netherlands",
+      "CZ": "Czechia",
+      "BE": "Belgium"
+    },
+    "transmission": {
+      "auto": "Automatic",
+      "manual": "Manual"
+    },
+    "apply": "Apply filters",
+    "saveToTelegram": "Save search to Telegram"
+  },
   "ListingCard": {
     "favorite": "Add to favorites",
     "thousand": "k",
