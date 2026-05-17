@@ -113,6 +113,31 @@
       "manual": "Manual"
     }
   },
+  "Auth": {
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "or": "or",
+    "googleButton": "Continue with Google",
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Welcome back to Auto Diaspora",
+      "forgotPassword": "Forgot password?",
+      "submitButton": "Sign in",
+      "noAccount": "No account yet?",
+      "registerLink": "Create account"
+    },
+    "register": {
+      "title": "Sign up",
+      "subtitle": "Create your account in a minute",
+      "nameLabel": "Name",
+      "namePlaceholder": "Your name",
+      "passwordHint": "At least 8 characters",
+      "submitButton": "Create account",
+      "terms": "By signing up, you accept the Terms and Privacy Policy",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Sign in"
+    }
+  },
   "ListingDetail": {
     "breadcrumb": {
       "home": "Home",

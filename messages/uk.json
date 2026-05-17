@@ -113,6 +113,31 @@
       "manual": "МКПП"
     }
   },
+  "Auth": {
+    "emailLabel": "Email",
+    "passwordLabel": "Пароль",
+    "or": "або",
+    "googleButton": "Через Google",
+    "login": {
+      "title": "Увійти",
+      "subtitle": "Увійдіть до акаунту Auto Diaspora",
+      "forgotPassword": "Забули пароль?",
+      "submitButton": "Увійти",
+      "noAccount": "Немає акаунту?",
+      "registerLink": "Створити акаунт"
+    },
+    "register": {
+      "title": "Реєстрація",
+      "subtitle": "Створіть акаунт за хвилину",
+      "nameLabel": "Ім'я",
+      "namePlaceholder": "Ваше ім'я",
+      "passwordHint": "Мінімум 8 символів",
+      "submitButton": "Створити акаунт",
+      "terms": "Реєструючись, ви приймаєте Умови та Privacy Policy",
+      "haveAccount": "Вже маєте акаунт?",
+      "loginLink": "Увійти"
+    }
+  },
   "ListingDetail": {
     "breadcrumb": {
       "home": "Головна",

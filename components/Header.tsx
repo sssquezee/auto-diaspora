@@ -62,18 +62,18 @@ export async function Header() {
             <HeartIcon />
           </button>
 
-          <button
-            type="button"
+          <Link
+            href="/auth/login"
             title={t("profile")}
             aria-label={t("profile")}
-            className="w-10 h-10 border-[1.5px] border-ink bg-white grid place-items-center text-ink hover:bg-ink hover:text-white transition-colors cursor-pointer relative"
+            className="w-10 h-10 border-[1.5px] border-ink bg-white grid place-items-center text-ink hover:bg-ink hover:text-white transition-colors cursor-pointer relative no-underline"
           >
             <UserIcon />
             <span
               aria-hidden
               className="absolute top-1.5 right-1.5 w-2 h-2 bg-accent rounded-full"
             />
-          </button>
+          </Link>
 
           <Link
             href="/new"
