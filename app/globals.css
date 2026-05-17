@@ -1,26 +1,74 @@
 @import "tailwindcss";
 
+/* ===== Auto Diaspora — Monochrome + Cobalt palette =====
+   Source of truth: auto-diaspora-mono.html (theme: cobalt)
+   Spec section 2 (design system) + section 15 (Tailwind config v3, translated to v4 @theme)
+*/
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Monochrome base */
+  --bg: #f5f5f5;
+  --bg-card: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-subtle: #ededed;
+  --bg-dark: #0a0a0a;
+
+  --ink: #0a0a0a;
+  --ink-2: #1a1a1a;
+  --ink-muted: #555555;
+  --ink-faded: #888888;
+  --ink-subtle: #bbbbbb;
+
+  --line: #e2e2e2;
+  --line-strong: #c8c8c8;
+
+  /* Signature accent — cobalt */
+  --accent: #0052ff;
+  --accent-2: #0042cc;
+  --accent-soft: #e6efff;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Colors — generates bg-*, text-*, border-* utilities */
+  --color-bg: var(--bg);
+  --color-bg-card: var(--bg-card);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-bg-dark: var(--bg-dark);
+
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faded: var(--ink-faded);
+  --color-ink-subtle: var(--ink-subtle);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-soft: var(--accent-soft);
+
+  /* Fonts — next/font sets --font-unbounded and --font-plex-mono on <html> */
+  --font-sans: var(--font-unbounded), "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-plex-mono), "Courier New", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Brutalist editorial defaults */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
 }
