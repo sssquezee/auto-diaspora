@@ -1,8 +1,9 @@
-"use client";
-
-import { useTranslations } from "next-intl";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { redirect } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/Logo";
+import { signUpAction } from "../actions";
+import { createClient } from "@/lib/supabase/server";
 
 function GoogleIcon() {
   return (
@@ -18,9 +19,25 @@ function GoogleIcon() {
 const fieldClass =
   "w-full border-[1.5px] border-line-strong bg-white px-3 py-2.5 font-sans text-[14px] text-ink outline-none focus:border-ink focus:border-2 focus:px-[11px] focus:py-[9px]";
 
-export default function RegisterPage() {
-  const t = useTranslations("Auth");
-  const tR = useTranslations("Auth.register");
+export default async function RegisterPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
+  // Already logged in → redirect to account
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) redirect(`/${locale}/account`);
+
+  const sp = await searchParams;
+  const t = await getTranslations("Auth");
+  const tR = await getTranslations("Auth.register");
+  const tErr = await getTranslations("Auth.errors");
 
   return (
     <div className="flex-1 flex items-center justify-center bg-bg px-6 py-12">
@@ -35,19 +52,28 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="flex flex-col gap-4"
-        >
+        {sp?.error && (
+          <div
+            role="alert"
+            className="bg-white border-l-[3px] border-[#cf222e] p-3 mb-4 font-sans text-[13px] text-ink leading-relaxed"
+          >
+            {tErr(sp.error as "email_taken" | "weak_password" | "missing_fields" | "invalid_email" | "rate_limit" | "unknown")}
+          </div>
+        )}
+
+        <form action={signUpAction} className="flex flex-col gap-4">
+          <input type="hidden" name="locale" value={locale} />
+
           <div>
             <label
-              htmlFor="name"
+              htmlFor="fullName"
               className="block font-sans font-bold text-[10.5px] uppercase tracking-[0.1em] text-ink-muted mb-1.5"
             >
               {tR("nameLabel")}
             </label>
             <input
-              id="name"
+              id="fullName"
+              name="fullName"
               type="text"
               autoComplete="name"
               placeholder={tR("namePlaceholder")}
@@ -64,6 +90,7 @@ export default function RegisterPage() {
             </label>
             <input
               id="email"
+              name="email"
               type="email"
               autoComplete="email"
               placeholder="you@example.com"
@@ -81,6 +108,7 @@ export default function RegisterPage() {
             </label>
             <input
               id="password"
+              name="password"
               type="password"
               autoComplete="new-password"
               placeholder="••••••••"
@@ -115,7 +143,9 @@ export default function RegisterPage() {
 
         <button
           type="button"
-          className="w-full bg-white border-[1.5px] border-ink hover:bg-ink hover:text-white text-ink font-sans font-semibold text-[13px] py-3 cursor-pointer transition-colors flex items-center justify-center gap-3"
+          disabled
+          title={tR("googleSoon")}
+          className="w-full bg-white border-[1.5px] border-line-strong text-ink-faded font-sans font-semibold text-[13px] py-3 cursor-not-allowed flex items-center justify-center gap-3"
         >
           <GoogleIcon />
           {tR("googleButton")}

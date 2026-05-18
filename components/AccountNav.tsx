@@ -1,8 +1,8 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import { useFavorites } from "@/hooks/useFavorites";
+import { signOutAction } from "@/app/[locale]/auth/actions";
 
 type NavItem = {
   key: "overview" | "listings" | "favorites" | "messages" | "searches" | "settings";
@@ -19,11 +19,10 @@ const NAV_ITEMS: NavItem[] = [
   { key: "settings", href: "/account/settings" },
 ];
 
-export function AccountNav() {
+export function AccountNav({ favoritesCount = 0 }: { favoritesCount?: number }) {
   const t = useTranslations("Account.nav");
+  const locale = useLocale();
   const pathname = usePathname();
-  const { favorites, hydrated } = useFavorites();
-  const favoritesCount = hydrated ? favorites.length : 0;
 
   return (
     <aside
@@ -71,27 +70,30 @@ export function AccountNav() {
           );
         })}
 
-        <button
-          type="button"
-          className="flex items-center gap-3 px-4 py-3 bg-transparent border-0 border-t border-line cursor-pointer font-sans text-[13px] font-semibold uppercase tracking-[0.06em] text-ink-muted hover:text-accent hover:bg-bg-subtle transition-colors text-left"
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
+        <form action={signOutAction}>
+          <input type="hidden" name="locale" value={locale} />
+          <button
+            type="submit"
+            className="w-full flex items-center gap-3 px-4 py-3 bg-transparent border-0 border-t border-line cursor-pointer font-sans text-[13px] font-semibold uppercase tracking-[0.06em] text-ink-muted hover:text-accent hover:bg-bg-subtle transition-colors text-left"
           >
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
-          {t("logout")}
-        </button>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            {t("logout")}
+          </button>
+        </form>
       </nav>
     </aside>
   );

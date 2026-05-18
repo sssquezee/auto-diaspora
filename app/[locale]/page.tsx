@@ -3,9 +3,13 @@ import { NavCats } from "@/components/NavCats";
 import { Hero } from "@/components/Hero";
 import { Sidebar } from "@/components/Sidebar";
 import { ResultsHeader } from "@/components/ResultsHeader";
+import { ActiveFilterChips } from "@/components/ActiveFilterChips";
 import { ListingGrid } from "@/components/ListingGrid";
 import { Pagination } from "@/components/Pagination";
-import { MOCK_LISTINGS, PAGE_SIZE } from "@/lib/mock-listings";
+import { PAGE_SIZE } from "@/lib/mock-listings";
+import { getActiveListings } from "@/lib/listings";
+import { getFavoritesState } from "@/lib/favorites-server";
+import { getSavedSearchesState } from "@/lib/saved-searches-server";
 import { applyFilters, applySort, buildSearchString, parseFilters } from "@/lib/filters";
 
 export default async function HomePage({
@@ -22,7 +26,12 @@ export default async function HomePage({
   const filters = parseFilters(sp);
 
   // Apply filters + sort
-  const filtered = applyFilters(MOCK_LISTINGS, filters);
+  const [all, favState, savedState] = await Promise.all([
+    getActiveListings(),
+    getFavoritesState(),
+    getSavedSearchesState(),
+  ]);
+  const filtered = applyFilters(all, filters);
   const sorted = applySort(filtered, filters.sortBy);
 
   // Pagination on filtered set
@@ -43,8 +52,17 @@ export default async function HomePage({
 
         <div className="flex flex-col gap-3.5">
           <Hero />
-          <ResultsHeader count={sorted.length} />
-          <ListingGrid listings={slice} />
+          <ResultsHeader
+            count={sorted.length}
+            isAuthed={savedState.isAuthed}
+            savedQueries={Array.from(savedState.savedQueries)}
+          />
+          <ActiveFilterChips />
+          <ListingGrid
+            listings={slice}
+            isAuthed={favState.isAuthed}
+            favoriteIds={favState.favoriteIds}
+          />
           <Pagination
             currentPage={page}
             totalPages={totalPages}

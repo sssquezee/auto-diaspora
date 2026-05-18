@@ -1,8 +1,9 @@
-"use client";
-
-import { useTranslations } from "next-intl";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { redirect } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/Logo";
+import { signInAction } from "../actions";
+import { createClient } from "@/lib/supabase/server";
 
 function GoogleIcon() {
   return (
@@ -18,9 +19,25 @@ function GoogleIcon() {
 const fieldClass =
   "w-full border-[1.5px] border-line-strong bg-white px-3 py-2.5 font-sans text-[14px] text-ink outline-none focus:border-ink focus:border-2 focus:px-[11px] focus:py-[9px]";
 
-export default function LoginPage() {
-  const t = useTranslations("Auth");
-  const tL = useTranslations("Auth.login");
+export default async function LoginPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ error?: string; notice?: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
+  // Already logged in → redirect to account
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) redirect(`/${locale}/account`);
+
+  const sp = await searchParams;
+  const t = await getTranslations("Auth");
+  const tL = await getTranslations("Auth.login");
+  const tErr = await getTranslations("Auth.errors");
 
   return (
     <div className="flex-1 flex items-center justify-center bg-bg px-6 py-12">
@@ -35,10 +52,27 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="flex flex-col gap-4"
-        >
+        {sp?.notice === "check_email" && (
+          <div
+            role="status"
+            className="bg-accent-soft border-l-[3px] border-accent p-3 mb-4 font-sans text-[13px] text-ink leading-relaxed"
+          >
+            {tL("noticeCheckEmail")}
+          </div>
+        )}
+
+        {sp?.error && (
+          <div
+            role="alert"
+            className="bg-white border-l-[3px] border-[#cf222e] p-3 mb-4 font-sans text-[13px] text-ink leading-relaxed"
+          >
+            {tErr(sp.error as "invalid_credentials" | "missing_fields" | "rate_limit" | "unknown")}
+          </div>
+        )}
+
+        <form action={signInAction} className="flex flex-col gap-4">
+          <input type="hidden" name="locale" value={locale} />
+
           <div>
             <label
               htmlFor="email"
@@ -48,6 +82,7 @@ export default function LoginPage() {
             </label>
             <input
               id="email"
+              name="email"
               type="email"
               autoComplete="email"
               placeholder="you@example.com"
@@ -64,15 +99,16 @@ export default function LoginPage() {
               >
                 {t("passwordLabel")}
               </label>
-              <button
-                type="button"
-                className="bg-transparent border-0 cursor-pointer font-sans text-[11px] text-ink hover:text-accent underline decoration-accent decoration-1 underline-offset-2"
+              <Link
+                href="/auth/forgot"
+                className="font-sans text-[11px] text-ink hover:text-accent underline decoration-accent decoration-1 underline-offset-2 no-underline"
               >
                 {tL("forgotPassword")}
-              </button>
+              </Link>
             </div>
             <input
               id="password"
+              name="password"
               type="password"
               autoComplete="current-password"
               placeholder="••••••••"
@@ -99,7 +135,9 @@ export default function LoginPage() {
 
         <button
           type="button"
-          className="w-full bg-white border-[1.5px] border-ink hover:bg-ink hover:text-white text-ink font-sans font-semibold text-[13px] py-3 cursor-pointer transition-colors flex items-center justify-center gap-3"
+          disabled
+          title={tL("googleSoon")}
+          className="w-full bg-white border-[1.5px] border-line-strong text-ink-faded font-sans font-semibold text-[13px] py-3 cursor-not-allowed flex items-center justify-center gap-3"
         >
           <GoogleIcon />
           {t("googleButton")}

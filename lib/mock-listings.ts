@@ -48,10 +48,14 @@ export type Listing = {
   city: LocalizedString;
   photoCount: number;
   imageVariant: 1 | 2 | 3 | 4 | 5 | 6;
+  /** Real photo URLs from Supabase Storage, ordered. Empty for legacy/mock data. */
+  photoUrls?: string[];
   postedAt: LocalizedString;
   daysSincePosted: number;
   badges: ListingBadge[];
   premium: boolean;
+  /** Only populated for DB-backed listings; mock listings leave this undefined. */
+  status?: "active" | "paused" | "sold" | "expired" | "pending_review";
   details: ListingDetail;
 };
 
