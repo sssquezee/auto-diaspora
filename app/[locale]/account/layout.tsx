@@ -3,6 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { AccountNav } from "@/components/AccountNav";
 import { createClient } from "@/lib/supabase/server";
 import { getFavoritesCount } from "@/lib/favorites-server";
+import { getAdminUserId } from "@/lib/admin";
 
 function initialsFrom(name: string | null | undefined, email: string): string {
   const source = (name && name.trim()) || email.split("@")[0];
@@ -76,7 +77,10 @@ export default async function AccountLayout({
           </div>
         </div>
 
-        <AccountNav favoritesCount={await getFavoritesCount()} />
+        <AccountNav
+          favoritesCount={await getFavoritesCount()}
+          isAdmin={(await getAdminUserId()) !== null}
+        />
       </div>
 
       <div className="min-w-0">{children}</div>

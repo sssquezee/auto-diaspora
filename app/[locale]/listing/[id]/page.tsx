@@ -59,7 +59,12 @@ export default async function ListingDetailPage({
   searchParams,
 }: {
   params: Promise<{ locale: string; id: string }>;
-  searchParams: Promise<{ report?: string; published?: string; updated?: string }>;
+  searchParams: Promise<{
+    report?: string;
+    published?: string;
+    pending?: string;
+    updated?: string;
+  }>;
 }) {
   const { locale: localeParam, id } = await params;
   setRequestLocale(localeParam);
@@ -129,6 +134,24 @@ export default async function ListingDetailPage({
           className="bg-accent-soft border-l-[3px] border-accent p-3 mb-4 font-sans text-[13px] text-ink leading-relaxed"
         >
           {t("actions.reportSent")}
+        </div>
+      )}
+
+      {sp?.pending === "1" && (
+        <div
+          role="status"
+          className="bg-accent-soft border-l-[3px] border-accent p-3 mb-4 font-sans text-[13px] text-ink leading-relaxed"
+        >
+          {t("pendingReview")}
+        </div>
+      )}
+
+      {sp?.updated === "1" && (
+        <div
+          role="status"
+          className="bg-accent-soft border-l-[3px] border-accent p-3 mb-4 font-sans text-[13px] text-ink leading-relaxed"
+        >
+          {t("updated")}
         </div>
       )}
 

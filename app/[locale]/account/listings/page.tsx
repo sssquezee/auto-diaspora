@@ -7,9 +7,15 @@ import { createClient } from "@/lib/supabase/server";
 import { getMyListings } from "@/lib/listings";
 import { getFavoritesState } from "@/lib/favorites-server";
 
-type StatusKey = "active" | "paused" | "sold" | "expired";
+type StatusKey = "pending_review" | "active" | "paused" | "sold" | "expired";
 
-const STATUS_KEYS: StatusKey[] = ["active", "paused", "sold", "expired"];
+const STATUS_KEYS: StatusKey[] = [
+  "pending_review",
+  "active",
+  "paused",
+  "sold",
+  "expired",
+];
 
 export default async function MyListingsPage({
   searchParams,

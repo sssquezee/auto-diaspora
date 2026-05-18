@@ -19,7 +19,13 @@ const NAV_ITEMS: NavItem[] = [
   { key: "settings", href: "/account/settings" },
 ];
 
-export function AccountNav({ favoritesCount = 0 }: { favoritesCount?: number }) {
+export function AccountNav({
+  favoritesCount = 0,
+  isAdmin = false,
+}: {
+  favoritesCount?: number;
+  isAdmin?: boolean;
+}) {
   const t = useTranslations("Account.nav");
   const locale = useLocale();
   const pathname = usePathname();
@@ -69,6 +75,28 @@ export function AccountNav({ favoritesCount = 0 }: { favoritesCount?: number }) 
             </Link>
           );
         })}
+
+        {isAdmin && (
+          <Link
+            href="/admin/queue"
+            className="flex items-center gap-3 px-4 py-3 no-underline font-sans text-[13px] font-extrabold uppercase tracking-[0.06em] border-t border-accent bg-accent-soft text-ink hover:bg-accent hover:text-white transition-colors"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            {t("admin")}
+          </Link>
+        )}
 
         <form action={signOutAction}>
           <input type="hidden" name="locale" value={locale} />

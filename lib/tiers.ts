@@ -5,6 +5,21 @@
 
 export type TierKey = "free" | "bump" | "premium14" | "premium30";
 
+/**
+ * How many active free listings a single user may keep at once. Paid
+ * tiers (bump, premium14, premium30) bypass this cap entirely — the
+ * idea: the marketplace is free up to N posts, beyond that you pay
+ * for either promotion or just for the extra slot.
+ */
+export const FREE_LISTING_LIMIT = 3;
+
+/**
+ * Rate-limit window for create-listing. Max N listings per user in the
+ * trailing minute. Blocks scripted spam without bothering humans.
+ */
+export const RATE_LIMIT_WINDOW_MS = 60_000;
+export const RATE_LIMIT_MAX_INSERTS = 5;
+
 export const TIER_PRICES_EUR: Record<TierKey, number> = {
   free: 0,
   bump: 4.99,

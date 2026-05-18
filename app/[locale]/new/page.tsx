@@ -149,6 +149,8 @@ export default function NewListingPage() {
               | "server"
               | "moderation_stop_word"
               | "moderation_external_url"
+              | "free_limit"
+              | "rate_limit"
           )}
           {errorMsg && submitError === "server" && (
             <span className="block font-mono text-[11px] text-ink-muted mt-1 break-words">
