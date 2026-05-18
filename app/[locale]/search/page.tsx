@@ -6,15 +6,10 @@ import { ListingGrid } from "@/components/ListingGrid";
 import { Pagination } from "@/components/Pagination";
 import { SearchInput } from "@/components/SearchInput";
 import { PAGE_SIZE } from "@/lib/mock-listings";
-import { getActiveListings } from "@/lib/listings";
+import { getFilteredListings } from "@/lib/listings";
 import { getFavoritesState } from "@/lib/favorites-server";
 import { getSavedSearchesState } from "@/lib/saved-searches-server";
-import {
-  applyFilters,
-  applySort,
-  buildSearchString,
-  parseFilters,
-} from "@/lib/filters";
+import { buildSearchString, parseFilters } from "@/lib/filters";
 
 export default async function SearchPage({
   params,
@@ -29,18 +24,15 @@ export default async function SearchPage({
   const sp = await searchParams;
   const filters = parseFilters(sp);
 
-  const [all, favState, savedState] = await Promise.all([
-    getActiveListings(),
-    getFavoritesState(),
-    getSavedSearchesState(),
-  ]);
-  const filtered = applyFilters(all, filters);
-  const sorted = applySort(filtered, filters.sortBy);
-
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  const [{ listings: slice, total }, favState, savedState] = await Promise.all(
+    [
+      getFilteredListings(filters, PAGE_SIZE),
+      getFavoritesState(),
+      getSavedSearchesState(),
+    ]
+  );
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const page = Math.min(filters.page, totalPages);
-  const start = (page - 1) * PAGE_SIZE;
-  const slice = sorted.slice(start, start + PAGE_SIZE);
 
   const baseQuery = buildSearchString({ ...filters, page: 1 });
 
@@ -70,7 +62,7 @@ export default async function SearchPage({
           {filters.q && (
             <p className="mt-4 font-sans text-[13px] text-ink-muted">
               {t.rich("echo", {
-                count: sorted.length,
+                count: total,
                 query: filters.q,
                 strong: (chunks) => (
                   <strong className="font-bold text-ink">{chunks}</strong>
@@ -86,7 +78,7 @@ export default async function SearchPage({
         </section>
 
         <ResultsHeader
-          count={sorted.length}
+          count={total}
           isAuthed={savedState.isAuthed}
           savedQueries={Array.from(savedState.savedQueries)}
         />

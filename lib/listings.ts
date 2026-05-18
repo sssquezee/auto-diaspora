@@ -17,6 +17,7 @@ import type {
   Locale,
   TransmissionKey,
 } from "@/lib/mock-listings";
+import type { FilterState } from "@/lib/filters";
 
 type DbListing = {
   id: string;
@@ -275,4 +276,93 @@ export async function getSimilarListings(
     })
     .slice(0, count)
     .map((x) => dbToListing(x.d));
+}
+
+/**
+ * Catalog + /search read path with all filtering, sorting, and
+ * pagination pushed to SQL. Returns the page slice + total count
+ * (for the paginator).
+ *
+ * Replaces the old "fetch all + applyFilters in JS" approach that
+ * scaled fine at 30 rows and not at 1000+.
+ */
+export async function getFilteredListings(
+  filters: FilterState,
+  pageSize: number
+): Promise<{ listings: Listing[]; total: number }> {
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("listings")
+    .select(LISTING_COLUMNS, { count: "exact" })
+    .eq("status", "active");
+
+  // Free-text — per token, ILIKE OR across title+brand+model.
+  // AND across tokens (each token must match somewhere).
+  if (filters.q) {
+    const tokens = filters.q
+      .toLowerCase()
+      .split(/\s+/)
+      .map((t) => t.trim().replace(/[%_]/g, "\\$&"))
+      .filter(Boolean);
+    for (const tok of tokens) {
+      const pat = `%${tok}%`;
+      query = query.or(
+        `title.ilike.${pat},brand.ilike.${pat},model.ilike.${pat}`
+      );
+    }
+  }
+
+  if (filters.brand) query = query.eq("brand", filters.brand);
+  if (filters.model) query = query.ilike("model", `${filters.model}%`);
+  if (filters.countries && filters.countries.length > 0)
+    query = query.in("country", filters.countries);
+  if (filters.fuels && filters.fuels.length > 0)
+    query = query.in("fuel_type", filters.fuels);
+  if (filters.transmissions && filters.transmissions.length > 0)
+    query = query.in("transmission", filters.transmissions);
+  if (filters.bodyTypes && filters.bodyTypes.length > 0)
+    query = query.in("body_type", filters.bodyTypes);
+
+  if (filters.yearFrom !== undefined) query = query.gte("year", filters.yearFrom);
+  if (filters.yearTo !== undefined) query = query.lte("year", filters.yearTo);
+  if (filters.priceFrom !== undefined)
+    query = query.gte("price", filters.priceFrom);
+  if (filters.priceTo !== undefined) query = query.lte("price", filters.priceTo);
+  if (filters.mileageFrom !== undefined)
+    query = query.gte("mileage", filters.mileageFrom);
+  if (filters.mileageTo !== undefined)
+    query = query.lte("mileage", filters.mileageTo);
+
+  // Sort
+  switch (filters.sortBy) {
+    case "premium":
+      query = query
+        .order("is_premium", { ascending: false })
+        .order("bumped_at", { ascending: false });
+      break;
+    case "newest":
+      query = query.order("bumped_at", { ascending: false });
+      break;
+    case "priceAsc":
+      query = query.order("price", { ascending: true });
+      break;
+    case "priceDesc":
+      query = query.order("price", { ascending: false });
+      break;
+    case "mileage":
+      query = query.order("mileage", { ascending: true });
+      break;
+  }
+
+  // Pagination (page is 1-based)
+  const offset = Math.max(0, (filters.page - 1) * pageSize);
+  query = query.range(offset, offset + pageSize - 1);
+
+  const { data, count, error } = await query.returns<DbListing[]>();
+  if (error || !data) {
+    console.error("[listings] getFilteredListings failed:", error?.message);
+    return { listings: [], total: 0 };
+  }
+  return { listings: data.map(dbToListing), total: count ?? 0 };
 }

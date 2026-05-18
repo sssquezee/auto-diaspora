@@ -61,6 +61,23 @@ export default async function EditListingPage({
     redirect(`/${locale}/account/listings`);
   }
 
+  // Fetch existing photos for the PhotosEditor
+  const { data: photoRows } = await supabase
+    .from("listing_photos")
+    .select("id, storage_path, position")
+    .eq("listing_id", id)
+    .order("position", { ascending: true });
+
+  const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://localhost";
+  const existingPhotos = (photoRows ?? []).map((p) => {
+    const row = p as { id: string; storage_path: string };
+    return {
+      id: row.id,
+      url: `${supabaseUrl}/storage/v1/object/public/listings/${row.storage_path}`,
+    };
+  });
+
   const t = await getTranslations("EditListing");
 
   return (
@@ -84,6 +101,8 @@ export default async function EditListingPage({
       <EditListingForm
         listingId={data.id}
         locale={locale}
+        userId={user.id}
+        existingPhotos={existingPhotos}
         defaults={{
           brand: data.brand,
           model: data.model,

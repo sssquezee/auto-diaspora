@@ -221,6 +221,93 @@ export async function updateListingAction(formData: FormData) {
     );
   }
 
+  // 4. Photo changes: removed_photo_ids + new_photo_paths
+  let removedIds: string[] = [];
+  let newPaths: string[] = [];
+  const removedRaw = str(formData, "removed_photo_ids");
+  const newPathsRaw = str(formData, "new_photo_paths");
+  if (removedRaw) {
+    try {
+      const parsed = JSON.parse(removedRaw);
+      if (Array.isArray(parsed)) {
+        removedIds = parsed.filter(
+          (x): x is string =>
+            typeof x === "string" &&
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(x)
+        );
+      }
+    } catch {
+      // ignore
+    }
+  }
+  if (newPathsRaw) {
+    try {
+      const parsed = JSON.parse(newPathsRaw);
+      if (Array.isArray(parsed)) {
+        newPaths = parsed.filter(
+          (x): x is string => typeof x === "string" && x.length > 0
+        );
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  if (removedIds.length > 0) {
+    // Fetch storage_paths first for cleanup
+    const { data: removingRows } = await supabase
+      .from("listing_photos")
+      .select("storage_path")
+      .eq("listing_id", id)
+      .in("id", removedIds);
+
+    // Delete the rows (RLS gated via listing.user_id = auth.uid())
+    await supabase
+      .from("listing_photos")
+      .delete()
+      .eq("listing_id", id)
+      .in("id", removedIds);
+
+    // Best-effort Storage cleanup
+    const paths = (removingRows ?? [])
+      .map((r) => (r as { storage_path: string }).storage_path)
+      .filter((p): p is string => typeof p === "string" && p.length > 0);
+    if (paths.length > 0) {
+      try {
+        await supabase.storage.from("listings").remove(paths);
+      } catch {
+        // best-effort
+      }
+    }
+  }
+
+  if (newPaths.length > 0) {
+    // Compute next position based on what's left after deletions
+    const { data: maxRow } = await supabase
+      .from("listing_photos")
+      .select("position")
+      .eq("listing_id", id)
+      .order("position", { ascending: false })
+      .limit(1)
+      .maybeSingle<{ position: number }>();
+    const startPos = (maxRow?.position ?? -1) + 1;
+
+    // If the listing has no photos left, the first new one becomes primary
+    const { count: remainingCount } = await supabase
+      .from("listing_photos")
+      .select("id", { count: "exact", head: true })
+      .eq("listing_id", id);
+    const noneLeft = (remainingCount ?? 0) === 0;
+
+    const rows = newPaths.slice(0, 15).map((path, i) => ({
+      listing_id: id,
+      storage_path: path,
+      position: startPos + i,
+      is_primary: noneLeft && i === 0,
+    }));
+    await supabase.from("listing_photos").insert(rows);
+  }
+
   revalidatePath(`/${locale}/account/listings`);
   revalidatePath(`/${locale}/listing/${id}`);
   redirect(`/${locale}/listing/${id}?updated=1`);

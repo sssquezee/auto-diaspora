@@ -7,10 +7,10 @@ import { ActiveFilterChips } from "@/components/ActiveFilterChips";
 import { ListingGrid } from "@/components/ListingGrid";
 import { Pagination } from "@/components/Pagination";
 import { PAGE_SIZE } from "@/lib/mock-listings";
-import { getActiveListings } from "@/lib/listings";
+import { getFilteredListings } from "@/lib/listings";
 import { getFavoritesState } from "@/lib/favorites-server";
 import { getSavedSearchesState } from "@/lib/saved-searches-server";
-import { applyFilters, applySort, buildSearchString, parseFilters } from "@/lib/filters";
+import { buildSearchString, parseFilters } from "@/lib/filters";
 
 export default async function HomePage({
   params,
@@ -25,20 +25,16 @@ export default async function HomePage({
   const sp = await searchParams;
   const filters = parseFilters(sp);
 
-  // Apply filters + sort
-  const [all, favState, savedState] = await Promise.all([
-    getActiveListings(),
-    getFavoritesState(),
-    getSavedSearchesState(),
-  ]);
-  const filtered = applyFilters(all, filters);
-  const sorted = applySort(filtered, filters.sortBy);
-
-  // Pagination on filtered set
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  // Filtering / sorting / paginating happens in SQL (single round-trip)
+  const [{ listings: slice, total }, favState, savedState] = await Promise.all(
+    [
+      getFilteredListings(filters, PAGE_SIZE),
+      getFavoritesState(),
+      getSavedSearchesState(),
+    ]
+  );
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const page = Math.min(filters.page, totalPages);
-  const start = (page - 1) * PAGE_SIZE;
-  const slice = sorted.slice(start, start + PAGE_SIZE);
 
   // Build query string of active filters to preserve across pagination links
   const baseQuery = buildSearchString({ ...filters, page: 1 });
@@ -53,7 +49,7 @@ export default async function HomePage({
         <div className="flex flex-col gap-3.5">
           <Hero />
           <ResultsHeader
-            count={sorted.length}
+            count={total}
             isAuthed={savedState.isAuthed}
             savedQueries={Array.from(savedState.savedQueries)}
           />
