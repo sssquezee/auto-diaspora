@@ -589,6 +589,7 @@
     "seller": {
       "memberSince": "Member since {year}",
       "listingsCount": "{count} listings",
+      "rating": "{avg}★ · {count} reviews",
       "verified": "✓ Verified seller",
       "viewProfile": "View all listings →"
     },
@@ -792,6 +793,66 @@
     "liability": {
       "title": "Liability for content",
       "body": "Listings are user-generated content. We act as a hosting provider under Article 14 of Directive 2000/31/EC: once we become aware of unlawful content (via report or otherwise) we remove or disable access expeditiously. Reports may be filed via the in-app “Report listing” button or by email."
+    }
+  },
+  "SellerProfile": {
+    "metaTitle": "{name} — listings on Auto Diaspora",
+    "metaDescription": "View {name}'s active listings and buyer reviews on Auto Diaspora.",
+    "nameFallback": "Seller",
+    "buyerFallback": "Buyer",
+    "memberSince": "On Auto Diaspora since {date}",
+    "listingsCount": "{count} active listings",
+    "badges": {
+      "verified": "✓ Verified",
+      "dealer": "Dealer"
+    },
+    "stats": {
+      "active": "Active",
+      "sold": "Sold",
+      "reviews": "Reviews",
+      "rating": "Rating"
+    },
+    "sections": {
+      "listings": "Active listings",
+      "reviews": "Reviews"
+    },
+    "emptyListings": "This seller has no active listings right now.",
+    "emptyReviews": "No reviews yet — be the first to leave one after a deal.",
+    "reviewsSummary": "{count} reviews · {avg}★ average",
+    "reviewsEmpty": "No reviews yet"
+  },
+  "Review": {
+    "form": {
+      "title": "Rate your experience with {name}",
+      "hint": "Reviews help other buyers. Be honest and specific.",
+      "required": "Required",
+      "starLabel": "{n} star",
+      "scalePrompt": "Pick a rating",
+      "scale": {
+        "1": "Bad",
+        "2": "Poor",
+        "3": "OK",
+        "4": "Good",
+        "5": "Excellent"
+      },
+      "placeholder": "What stood out — communication, accuracy of the listing, condition of the car... (optional)",
+      "submit": "Submit review",
+      "submitting": "Submitting…"
+    },
+    "banners": {
+      "thanks": "Thanks — your review is live on the seller's profile."
+    },
+    "errors": {
+      "invalid": "Pick a rating from 1 to 5.",
+      "not_authed": "Sign in to leave a review.",
+      "not_sold": "You can review only after the seller marks the listing as sold.",
+      "no_chat": "You can only review sellers you've messaged.",
+      "self": "You can't review yourself.",
+      "already_reviewed": "You've already reviewed this listing.",
+      "server": "Couldn't save the review. Try again in a moment."
+    },
+    "existing": {
+      "title": "Your review for this seller"
     }
   },
   "Footer": {

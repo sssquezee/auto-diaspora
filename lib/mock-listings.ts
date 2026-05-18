@@ -35,6 +35,8 @@ export type ListingDetail = {
 
 export type Listing = {
   id: string;
+  /** Owning profile id. Only populated for DB-backed listings. */
+  userId?: string;
   brand: string;
   model: string;
   year: number;

@@ -2,18 +2,23 @@ import { notFound, redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { ChatRoom } from "@/components/ChatRoom";
+import { ReviewForm } from "@/components/ReviewForm";
 import { createClient } from "@/lib/supabase/server";
 import { getChatById, getChatMessages } from "@/lib/chats-server";
+import { getBuyerReviewForListing } from "@/lib/reviews";
 import type { Locale } from "@/lib/mock-listings";
 
 export default async function ChatDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; chatId: string }>;
+  searchParams: Promise<{ review?: string }>;
 }) {
   const { locale: localeParam, chatId } = await params;
   setRequestLocale(localeParam);
   const locale = localeParam as Locale;
+  const sp = await searchParams;
 
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(chatId)) {
     notFound();
@@ -30,7 +35,15 @@ export default async function ChatDetailPage({
 
   const messages = await getChatMessages(chatId);
 
+  // Review eligibility: buyer side only, listing sold, no prior review.
+  const canBuyerReview = !chat.iAmSeller && chat.listing.status === "sold";
+  const existingReview = canBuyerReview
+    ? await getBuyerReviewForListing(chat.listing.id)
+    : null;
+  const showReviewForm = canBuyerReview && !existingReview;
+
   const t = await getTranslations("Account.messages.chat");
+  const tReview = await getTranslations("Review");
 
   return (
     <div className="flex flex-col gap-4">
@@ -67,6 +80,59 @@ export default async function ChatDetailPage({
           </span>
         </Link>
       </header>
+
+      {sp?.review === "ok" && (
+        <div
+          role="status"
+          className="bg-accent-soft border-l-[3px] border-accent p-3 font-sans text-[13px] text-ink leading-relaxed"
+        >
+          {tReview("banners.thanks")}
+        </div>
+      )}
+      {sp?.review && sp.review !== "ok" && (
+        <div
+          role="alert"
+          className="bg-[#cf222e]/5 border-l-[3px] border-[#cf222e] p-3 font-sans text-[13px] text-[#cf222e] leading-relaxed"
+        >
+          {tReview(`errors.${sp.review}` as
+            | "errors.invalid"
+            | "errors.not_authed"
+            | "errors.not_sold"
+            | "errors.no_chat"
+            | "errors.self"
+            | "errors.already_reviewed"
+            | "errors.server")}
+        </div>
+      )}
+
+      {existingReview && (
+        <div className="bg-white border-[1.5px] border-line-strong p-4 flex flex-col gap-2">
+          <h3 className="font-sans font-extrabold text-[12px] uppercase tracking-[0.12em] text-ink m-0">
+            {tReview("existing.title")}
+          </h3>
+          <div className="font-mono text-[14px] text-accent">
+            {"★".repeat(existingReview.rating)}
+            <span className="text-ink-faded">
+              {"★".repeat(5 - existingReview.rating)}
+            </span>
+          </div>
+          {existingReview.comment && (
+            <p className="font-sans text-[13px] text-ink leading-relaxed m-0 whitespace-pre-wrap">
+              {existingReview.comment}
+            </p>
+          )}
+        </div>
+      )}
+
+      {showReviewForm && (
+        <ReviewForm
+          locale={locale}
+          chatId={chat.id}
+          sellerId={chat.sellerId}
+          listingId={chat.listing.id}
+          sellerName={chat.counterpart.name}
+        />
+      )}
 
       <ChatRoom
         chatId={chat.id}

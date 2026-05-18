@@ -136,6 +136,7 @@ function dbToListing(db: DbListing): Listing {
 
   return {
     id: db.id,
+    userId: db.user_id,
     brand: db.brand,
     model: db.model,
     year: db.year,
@@ -236,6 +237,29 @@ export async function getMyListings(
   if (status) query = query.eq("status", status);
   const { data, error } = await query
     .order("created_at", { ascending: false })
+    .returns<DbListing[]>();
+  if (error || !data) return [];
+  return data.map(dbToListing);
+}
+
+/**
+ * Public seller-profile feed: all active listings owned by one seller,
+ * newest first. Excludes pending_review/paused/sold/expired — anonymous
+ * viewers (and the seller themself) see the same shop window.
+ */
+export async function getSellerActiveListings(
+  sellerId: string,
+  limit = 24
+): Promise<Listing[]> {
+  if (!/^[0-9a-f]{8}-/i.test(sellerId)) return [];
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("listings")
+    .select(LISTING_COLUMNS)
+    .eq("user_id", sellerId)
+    .eq("status", "active")
+    .order("bumped_at", { ascending: false })
+    .limit(limit)
     .returns<DbListing[]>();
   if (error || !data) return [];
   return data.map(dbToListing);

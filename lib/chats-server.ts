@@ -36,7 +36,10 @@ export type ChatDetail = {
   listing: {
     id: string;
     title: string;
+    status: string;
   };
+  /** Seller id, useful for review eligibility on the buyer side. */
+  sellerId: string;
   counterpart: {
     id: string;
     name: string;
@@ -207,7 +210,7 @@ export async function getChatById(id: string): Promise<ChatDetail | null> {
   const { data: chat } = await supabase
     .from("chats")
     .select(
-      "id, listing_id, buyer_id, seller_id, listings(id, title, user_id)"
+      "id, listing_id, buyer_id, seller_id, listings(id, title, user_id, status)"
     )
     .eq("id", id)
     .maybeSingle();
@@ -219,8 +222,8 @@ export async function getChatById(id: string): Promise<ChatDetail | null> {
     buyer_id: string;
     seller_id: string;
     listings:
-      | { id: string; title: string; user_id: string }
-      | { id: string; title: string; user_id: string }[]
+      | { id: string; title: string; user_id: string; status: string }
+      | { id: string; title: string; user_id: string; status: string }[]
       | null;
   };
 
@@ -241,7 +244,9 @@ export async function getChatById(id: string): Promise<ChatDetail | null> {
     listing: {
       id: listing?.id ?? row.listing_id,
       title: listing?.title ?? "—",
+      status: listing?.status ?? "active",
     },
+    sellerId: row.seller_id,
     counterpart: {
       id: counterpartId,
       name: labels.name,

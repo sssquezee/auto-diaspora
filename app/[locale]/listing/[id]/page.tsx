@@ -17,6 +17,7 @@ import {
 } from "@/lib/mock-listings";
 import { getListingById, getSimilarListings } from "@/lib/listings";
 import { getFavoritesState } from "@/lib/favorites-server";
+import { getSellerProfile, getSellerStats } from "@/lib/reviews";
 
 export async function generateMetadata({
   params,
@@ -74,21 +75,37 @@ export default async function ListingDetailPage({
   const listing = await getListingById(id);
   if (!listing) notFound();
 
-  const favState = await getFavoritesState();
+  const sellerId = listing.userId;
+  const [favState, sellerProfile, sellerStats] = await Promise.all([
+    getFavoritesState(),
+    sellerId ? getSellerProfile(sellerId) : Promise.resolve(null),
+    sellerId ? getSellerStats(sellerId) : Promise.resolve(null),
+  ]);
 
   const t = await getTranslations("ListingDetail");
   const tCard = await getTranslations("ListingCard");
+  const tSeller = await getTranslations("SellerProfile");
 
   const price = formatPriceEur(listing.priceEur, locale);
   const mileage = formatMileage(listing.mileageKm, locale);
   const views = formatMileage(listing.details.views, locale);
   const favorites = formatMileage(listing.details.favorites, locale);
-  const sellerInitials = listing.details.seller.name
-    .split(" ")
+  const sellerName =
+    sellerProfile?.full_name?.trim() || tSeller("nameFallback");
+  const sellerInitials = sellerName
+    .split(/\s+/)
+    .filter(Boolean)
     .map((n) => n[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
+  const sellerMemberSince = sellerProfile
+    ? new Date(sellerProfile.created_at).getFullYear()
+    : listing.details.seller.memberSinceYear;
+  const sellerListingsCount =
+    sellerStats?.active_listings ?? listing.details.seller.listingsCount;
+  const sellerVerified =
+    sellerProfile?.is_verified ?? listing.details.seller.verified;
 
   // Build specs rows
   const specs: Array<{ label: string; value: React.ReactNode }> = [
@@ -303,7 +320,7 @@ export default async function ListingDetailPage({
               </div>
               <div className="min-w-0">
                 <div className="font-sans font-bold text-[14px] text-ink leading-tight">
-                  {listing.details.seller.name}
+                  {sellerName}
                 </div>
                 <div className="font-mono text-[11px] text-ink-muted mt-0.5 flex items-center gap-1.5">
                   <span className="bg-ink text-white text-[9px] font-bold px-1 py-px tracking-[0.04em]">
@@ -316,26 +333,38 @@ export default async function ListingDetailPage({
 
             <dl className="flex flex-col gap-1.5 border-t border-line pt-3 text-[12px]">
               <div className="flex justify-between font-mono text-ink-muted">
-                <dt>{t("seller.memberSince", { year: listing.details.seller.memberSinceYear })}</dt>
+                <dt>{t("seller.memberSince", { year: sellerMemberSince })}</dt>
               </div>
               <div className="flex justify-between font-mono">
                 <dt className="text-ink-muted">
-                  {t("seller.listingsCount", { count: listing.details.seller.listingsCount })}
+                  {t("seller.listingsCount", { count: sellerListingsCount })}
                 </dt>
               </div>
-              {listing.details.seller.verified && (
+              {sellerStats && sellerStats.review_count > 0 && (
+                <div className="flex justify-between font-mono">
+                  <dt className="text-ink-muted">
+                    {t("seller.rating", {
+                      avg: sellerStats.avg_rating!.toFixed(1),
+                      count: sellerStats.review_count,
+                    })}
+                  </dt>
+                </div>
+              )}
+              {sellerVerified && (
                 <div className="font-mono text-accent font-bold">
                   {t("seller.verified")}
                 </div>
               )}
             </dl>
 
-            <button
-              type="button"
-              className="mt-3 w-full text-left bg-transparent text-ink hover:text-accent font-sans font-semibold text-[12px] uppercase tracking-[0.12em] cursor-pointer border-0 pt-3 border-t border-line"
-            >
-              {t("seller.viewProfile")}
-            </button>
+            {sellerId ? (
+              <Link
+                href={`/u/${sellerId}`}
+                className="mt-3 w-full block text-left text-ink hover:text-accent font-sans font-semibold text-[12px] uppercase tracking-[0.12em] cursor-pointer pt-3 border-t border-line no-underline"
+              >
+                {t("seller.viewProfile")}
+              </Link>
+            ) : null}
           </div>
         </aside>
       </div>
