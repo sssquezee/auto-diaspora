@@ -1,71 +1,54 @@
 "use client";
 
+import { useTransition } from "react";
 import { useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { useSavedSearches } from "@/hooks/useSavedSearches";
-import type { Locale } from "@/lib/mock-listings";
+import { removeSavedSearchAction } from "@/app/[locale]/account/searches/actions";
+
+type Item = {
+  id: string;
+  name: string;
+  query: string;
+  summary: string;
+  createdAt: string;
+};
 
 type Labels = {
-  empty: string;
-  emptyCta: string;
   open: string;
   remove: string;
   confirmRemove: string;
   createdAt: string;
 };
 
-export function SavedSearchesList({ labels }: { labels: Labels }) {
-  const { items, hydrated, removeItem } = useSavedSearches();
-  const locale = useLocale() as Locale;
-
-  if (!hydrated) {
-    return (
-      <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-muted px-6 py-12 text-center">
-        …
-      </div>
-    );
-  }
-
-  if (items.length === 0) {
-    return (
-      <div className="bg-white border-[1.5px] border-ink px-6 py-16 text-center">
-        <svg
-          width="40"
-          height="40"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="mx-auto mb-4 text-ink-faded"
-          aria-hidden
-        >
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-        <p className="font-sans text-[14px] text-ink-muted max-w-md mx-auto mb-5 leading-relaxed">
-          {labels.empty}
-        </p>
-        <Link
-          href="/search"
-          className="inline-block bg-accent hover:bg-accent-2 text-white font-sans font-extrabold text-[12px] uppercase tracking-[0.13em] px-5 py-3 no-underline transition-colors"
-        >
-          {labels.emptyCta}
-        </Link>
-      </div>
-    );
-  }
+export function SavedSearchesList({
+  items,
+  locale,
+  labels,
+}: {
+  items: Item[];
+  locale: string;
+  labels: Labels;
+}) {
+  const currentLocale = useLocale();
+  const [, startTransition] = useTransition();
 
   const dateFmt = new Intl.DateTimeFormat(
-    locale === "uk" ? "uk-UA" : locale === "ru" ? "ru-RU" : "en-US",
+    currentLocale === "uk"
+      ? "uk-UA"
+      : currentLocale === "ru"
+      ? "ru-RU"
+      : "en-US",
     { day: "2-digit", month: "short", year: "numeric" }
   );
 
   const handleRemove = (id: string, name: string) => {
-    if (window.confirm(labels.confirmRemove.replace("{name}", name))) {
-      removeItem(id);
-    }
+    if (!window.confirm(labels.confirmRemove.replace("{name}", name))) return;
+    const fd = new FormData();
+    fd.append("id", id);
+    fd.append("locale", locale);
+    startTransition(async () => {
+      await removeSavedSearchAction(fd);
+    });
   };
 
   return (

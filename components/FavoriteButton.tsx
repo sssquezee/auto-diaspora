@@ -1,29 +1,69 @@
 "use client";
 
-import { useFavorites } from "@/hooks/useFavorites";
+import { useState, useTransition } from "react";
+import { useLocale } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
+import {
+  addFavoriteAction,
+  removeFavoriteAction,
+} from "@/app/[locale]/account/favorites/actions";
 
 type Props = {
   listingId: string;
+  /** True when current user is logged in (from server). */
+  isAuthed: boolean;
+  /** Server-rendered initial state. Updates optimistically on click. */
+  initiallyFavorited: boolean;
   className?: string;
   label?: string;
 };
 
-export function FavoriteButton({ listingId, className = "", label }: Props) {
-  const { isFav, toggle, hydrated } = useFavorites();
-  const active = hydrated && isFav(listingId);
+export function FavoriteButton({
+  listingId,
+  isAuthed,
+  initiallyFavorited,
+  className = "",
+  label,
+}: Props) {
+  const [favorited, setFavorited] = useState(initiallyFavorited);
+  const [, startTransition] = useTransition();
+  const locale = useLocale();
+  const router = useRouter();
+
+  const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthed) {
+      router.push("/auth/login");
+      return;
+    }
+
+    // Optimistic flip
+    const next = !favorited;
+    setFavorited(next);
+
+    const fd = new FormData();
+    fd.append("listing_id", listingId);
+    fd.append("locale", locale);
+
+    startTransition(async () => {
+      if (next) {
+        await addFavoriteAction(fd);
+      } else {
+        await removeFavoriteAction(fd);
+      }
+    });
+  };
 
   return (
     <button
       type="button"
-      aria-label={label ?? "Add to favorites"}
-      aria-pressed={active}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggle(listingId);
-      }}
+      aria-label={label ?? "Toggle favorite"}
+      aria-pressed={favorited}
+      onClick={onClick}
       className={`grid place-items-center transition-colors cursor-pointer ${
-        active
+        favorited
           ? "bg-accent text-white"
           : "bg-white/95 text-ink hover:bg-accent hover:text-white"
       } ${className}`}
@@ -32,7 +72,7 @@ export function FavoriteButton({ listingId, className = "", label }: Props) {
         width="15"
         height="15"
         viewBox="0 0 24 24"
-        fill={active ? "currentColor" : "none"}
+        fill={favorited ? "currentColor" : "none"}
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"

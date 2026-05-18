@@ -36,9 +36,13 @@ function ListViewIcon() {
   );
 }
 
-type Props = { count: number };
+type Props = {
+  count: number;
+  isAuthed: boolean;
+  savedQueries: string[];
+};
 
-export function ResultsHeader({ count }: Props) {
+export function ResultsHeader({ count, isAuthed, savedQueries }: Props) {
   const t = useTranslations("Results");
   const locale = useLocale() as Locale;
   const router = useRouter();
@@ -70,7 +74,7 @@ export function ResultsHeader({ count }: Props) {
         <div className="font-sans text-[13px] text-ink-muted">
           {t("count", { count: countFormatted })}
         </div>
-        <SaveSearchButton />
+        <SaveSearchButton isAuthed={isAuthed} savedQueries={savedQueries} />
       </div>
 
       <div className="flex items-center gap-3">

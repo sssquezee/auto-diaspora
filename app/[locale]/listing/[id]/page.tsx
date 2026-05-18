@@ -1,36 +1,75 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 import { ListingGallery } from "@/components/ListingGallery";
 import { ListingActions } from "@/components/ListingActions";
 import { ListingCard } from "@/components/ListingCard";
+import { ReportModal } from "@/components/ReportModal";
 import {
-  MOCK_LISTINGS,
   formatMileage,
   formatPriceEur,
-  getListingById,
   getMockPhone,
   getPhotoGradients,
-  getSimilarListings,
   type Listing,
   type Locale,
 } from "@/lib/mock-listings";
+import { getListingById, getSimilarListings } from "@/lib/listings";
+import { getFavoritesState } from "@/lib/favorites-server";
 
-export function generateStaticParams() {
-  return MOCK_LISTINGS.map((l) => ({ id: l.id }));
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+}): Promise<Metadata> {
+  const { locale, id } = await params;
+  const listing = await getListingById(id);
+  if (!listing) return {};
+
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const title = `${listing.brand} ${listing.model} · ${listing.year}`;
+  const description = `${listing.brand} ${listing.model}, ${listing.year}, ${listing.mileageKm.toLocaleString()} km — €${listing.priceEur.toLocaleString()}`;
+
+  const languages: Record<string, string> = {};
+  for (const l of routing.locales) languages[l] = `${siteUrl}/${l}/listing/${id}`;
+  languages["x-default"] = `${siteUrl}/${routing.defaultLocale}/listing/${id}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/${locale}/listing/${id}`,
+      languages,
+    },
+    openGraph: {
+      title,
+      description,
+      url: `${siteUrl}/${locale}/listing/${id}`,
+      images: listing.photoUrls?.[0] ? [{ url: listing.photoUrls[0] }] : undefined,
+      locale,
+      type: "website",
+    },
+  };
 }
 
 export default async function ListingDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; id: string }>;
+  searchParams: Promise<{ report?: string; published?: string; updated?: string }>;
 }) {
   const { locale: localeParam, id } = await params;
   setRequestLocale(localeParam);
   const locale = localeParam as Locale;
+  const sp = await searchParams;
 
-  const listing = getListingById(id);
+  const listing = await getListingById(id);
   if (!listing) notFound();
+
+  const favState = await getFavoritesState();
 
   const t = await getTranslations("ListingDetail");
   const tCard = await getTranslations("ListingCard");
@@ -84,6 +123,15 @@ export default async function ListingDetailPage({
 
   return (
     <div className="max-w-[1400px] w-full mx-auto px-6 py-6">
+      {sp?.report === "sent" && (
+        <div
+          role="status"
+          className="bg-accent-soft border-l-[3px] border-accent p-3 mb-4 font-sans text-[13px] text-ink leading-relaxed"
+        >
+          {t("actions.reportSent")}
+        </div>
+      )}
+
       {/* Breadcrumb */}
       <nav className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-muted mb-4 flex items-center gap-1">
         <Link href="/" className="hover:text-accent no-underline">
@@ -103,6 +151,8 @@ export default async function ListingDetailPage({
           {/* Gallery */}
           <ListingGallery
             gradients={getPhotoGradients(listing.imageVariant, listing.photoCount)}
+            photos={listing.photoUrls}
+            alt={`${listing.brand} ${listing.model}`}
             prevLabel={t("gallery.prev")}
             nextLabel={t("gallery.next")}
             thumbLabel={t("gallery.thumb")}
@@ -196,12 +246,11 @@ export default async function ListingDetailPage({
               {t("stats.favorites")}
             </span>
             <span className="ml-auto">
-              <button
-                type="button"
-                className="bg-transparent text-ink-muted hover:text-accent cursor-pointer border-0 underline decoration-line decoration-1 underline-offset-2"
-              >
-                {t("actions.report")}
-              </button>
+              <ReportModal
+                listingId={listing.id}
+                isAuthed={favState.isAuthed}
+                triggerLabel={t("actions.report")}
+              />
             </span>
           </div>
         </div>
@@ -211,6 +260,8 @@ export default async function ListingDetailPage({
           {/* Action card */}
           <ListingActions
             listingId={listing.id}
+            isAuthed={favState.isAuthed}
+            initiallyFavorited={favState.favoriteIds.has(listing.id)}
             phone={getMockPhone(listing)}
             writeLabel={t("actions.writeToSeller")}
             showPhoneLabel={t("actions.showPhone")}
@@ -267,14 +318,26 @@ export default async function ListingDetailPage({
       </div>
 
       {/* Similar listings */}
-      <SimilarListings listing={listing} />
+      <SimilarListings
+        listing={listing}
+        isAuthed={favState.isAuthed}
+        favoriteIds={favState.favoriteIds}
+      />
     </div>
   );
 }
 
-async function SimilarListings({ listing }: { listing: Listing }) {
+async function SimilarListings({
+  listing,
+  isAuthed,
+  favoriteIds,
+}: {
+  listing: Listing;
+  isAuthed: boolean;
+  favoriteIds: Set<string>;
+}) {
   const t = await getTranslations("ListingDetail.similar");
-  const similar = getSimilarListings(listing, 4);
+  const similar = await getSimilarListings(listing, 4);
   if (similar.length === 0) return null;
 
   return (
@@ -292,7 +355,14 @@ async function SimilarListings({ listing }: { listing: Listing }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
         {await Promise.all(
-          similar.map((l) => <ListingCard key={l.id} listing={l} />)
+          similar.map((l) => (
+            <ListingCard
+              key={l.id}
+              listing={l}
+              isAuthed={isAuthed}
+              isFavorite={favoriteIds.has(l.id)}
+            />
+          ))
         )}
       </div>
     </section>

@@ -1,10 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { useFavorites } from "@/hooks/useFavorites";
+import { useState, useTransition } from "react";
+import { useLocale } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
+import {
+  addFavoriteAction,
+  removeFavoriteAction,
+} from "@/app/[locale]/account/favorites/actions";
+import { openChatAction } from "@/app/[locale]/account/messages/actions";
 
 type Props = {
   listingId: string;
+  isAuthed: boolean;
+  initiallyFavorited: boolean;
   phone: { full: string; masked: string };
   writeLabel: string;
   showPhoneLabel: string;
@@ -23,21 +31,48 @@ const subtleBtn =
 
 export function ListingActions({
   listingId,
+  isAuthed,
+  initiallyFavorited,
   phone,
   writeLabel,
   showPhoneLabel,
   addFavLabel,
   removeFavLabel,
 }: Props) {
-  const { isFav, toggle, hydrated } = useFavorites();
-  const fav = hydrated && isFav(listingId);
+  const locale = useLocale();
+  const router = useRouter();
+  const [fav, setFav] = useState(initiallyFavorited);
+  const [, startTransition] = useTransition();
   const [phoneShown, setPhoneShown] = useState(false);
+
+  const toggleFav = () => {
+    if (!isAuthed) {
+      router.push("/auth/login");
+      return;
+    }
+    const next = !fav;
+    setFav(next);
+    const fd = new FormData();
+    fd.append("listing_id", listingId);
+    fd.append("locale", locale);
+    startTransition(async () => {
+      if (next) {
+        await addFavoriteAction(fd);
+      } else {
+        await removeFavoriteAction(fd);
+      }
+    });
+  };
 
   return (
     <div className="bg-white border-[1.5px] border-ink p-4 flex flex-col gap-2">
-      <button type="button" className={primaryBtn}>
-        {writeLabel}
-      </button>
+      <form action={openChatAction}>
+        <input type="hidden" name="listing_id" value={listingId} />
+        <input type="hidden" name="locale" value={locale} />
+        <button type="submit" className={primaryBtn}>
+          {writeLabel}
+        </button>
+      </form>
 
       {phoneShown ? (
         <a
@@ -74,7 +109,7 @@ export function ListingActions({
 
       <button
         type="button"
-        onClick={() => toggle(listingId)}
+        onClick={toggleFav}
         aria-pressed={fav}
         className={`${subtleBtn} ${
           fav ? "bg-ink text-white" : ""

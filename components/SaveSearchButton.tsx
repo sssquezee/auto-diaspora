@@ -1,15 +1,21 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   buildSearchString,
   countActiveFilters,
   parseFilters,
 } from "@/lib/filters";
-import { hasSavedSearchWithQuery } from "@/lib/saved-searches";
-import { useSavedSearches } from "@/hooks/useSavedSearches";
+import { addSavedSearchAction } from "@/app/[locale]/account/searches/actions";
+
+type Props = {
+  isAuthed: boolean;
+  /** Query strings already saved by this user (e.g. "?brand=BMW"). */
+  savedQueries: string[];
+};
 
 function summarize(
   filters: ReturnType<typeof parseFilters>,
@@ -21,7 +27,9 @@ function summarize(
   if (filters.model) parts.push(filters.model);
   if (filters.countries?.length) parts.push(filters.countries.join(" · "));
   if (filters.fuels?.length) parts.push(filters.fuels.join(" · "));
-  if (filters.transmissions?.length) parts.push(filters.transmissions.join(" · "));
+  if (filters.transmissions?.length)
+    parts.push(filters.transmissions.join(" · "));
+  if (filters.bodyTypes?.length) parts.push(filters.bodyTypes.join(" · "));
   if (filters.yearFrom || filters.yearTo) {
     parts.push(`${filters.yearFrom ?? "—"}–${filters.yearTo ?? "—"}`);
   }
@@ -47,14 +55,16 @@ function defaultName(filters: ReturnType<typeof parseFilters>): string {
   return "";
 }
 
-export function SaveSearchButton() {
+export function SaveSearchButton({ isAuthed, savedQueries }: Props) {
   const t = useTranslations("SavedSearches");
+  const locale = useLocale();
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const { hydrated, addItem } = useSavedSearches();
 
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
-  const [savedHere, setSavedHere] = useState(false);
+  const [optimisticSaved, setOptimisticSaved] = useState(false);
+  const [, startTransition] = useTransition();
 
   const { query, summary, activeCount, isNoOp } = useMemo(() => {
     const raw: Record<string, string | string[] | undefined> = {};
@@ -69,14 +79,13 @@ export function SaveSearchButton() {
       summary: summaryStr,
       activeCount: countActiveFilters(filters),
       isNoOp: !filters.q && countActiveFilters(filters) === 0,
-      filters,
     };
   }, [searchParams, t]);
 
+  // Reset optimistic flag whenever the URL changes
   useEffect(() => {
-    if (!hydrated) return;
-    setSavedHere(hasSavedSearchWithQuery(query));
-  }, [hydrated, query]);
+    setOptimisticSaved(false);
+  }, [query]);
 
   useEffect(() => {
     if (!open) return;
@@ -87,12 +96,24 @@ export function SaveSearchButton() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  if (!hydrated || isNoOp) return null;
+  if (isNoOp) return null;
 
-  if (savedHere) {
+  const alreadySaved = optimisticSaved || savedQueries.includes(query);
+
+  if (alreadySaved) {
     return (
       <span className="inline-flex items-center gap-1.5 px-3 py-2 bg-bg-subtle border-[1.5px] border-line-strong text-ink-muted font-sans font-bold text-[11px] uppercase tracking-[0.12em]">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <svg
+          width="11"
+          height="11"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
           <polyline points="20 6 9 17 4 12" />
         </svg>
         {t("saved")}
@@ -101,6 +122,10 @@ export function SaveSearchButton() {
   }
 
   const openModal = () => {
+    if (!isAuthed) {
+      router.push("/auth/login");
+      return;
+    }
     const raw: Record<string, string | string[] | undefined> = {};
     searchParams.forEach((v, k) => {
       raw[k] = v;
@@ -110,9 +135,16 @@ export function SaveSearchButton() {
   };
 
   const handleSave = () => {
-    addItem({ name, query, summary });
+    const fd = new FormData();
+    fd.append("locale", locale);
+    fd.append("name", name);
+    fd.append("query", query);
+    fd.append("summary", summary);
+    setOptimisticSaved(true);
     setOpen(false);
-    setSavedHere(true);
+    startTransition(async () => {
+      await addSavedSearchAction(fd);
+    });
   };
 
   return (
@@ -123,7 +155,17 @@ export function SaveSearchButton() {
         className="inline-flex items-center gap-1.5 px-3 py-2 bg-white border-[1.5px] border-ink hover:bg-ink hover:text-white text-ink font-sans font-bold text-[11px] uppercase tracking-[0.12em] cursor-pointer transition-colors"
         title={t("saveHint", { count: activeCount })}
       >
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <svg
+          width="11"
+          height="11"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
           <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
         </svg>
         {t("save")}

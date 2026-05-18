@@ -1,17 +1,32 @@
-"use client";
-
-import { useTranslations } from "next-intl";
+import { redirect } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { useFavorites } from "@/hooks/useFavorites";
-import { ListingCardClient } from "@/components/ListingCardClient";
-import { getListingsByIds } from "@/lib/mock-listings";
+import { ListingCard } from "@/components/ListingCard";
+import { createClient } from "@/lib/supabase/server";
+import { getListingsByIds } from "@/lib/listings";
 
-export default function FavoritesPage() {
-  const t = useTranslations("Account.favorites");
-  const { favorites, hydrated } = useFavorites();
+export default async function FavoritesPage() {
+  const t = await getTranslations("Account.favorites");
+  const locale = await getLocale();
 
-  // During SSR + initial hydration, render an empty list (no flicker).
-  const listings = hydrated ? getListingsByIds(favorites) : [];
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect(`/${locale}/auth/login`);
+
+  // Fetch favorites in order they were added (most recent first)
+  const { data: favRows } = await supabase
+    .from("favorites")
+    .select("listing_id, created_at")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  const favIds = (favRows ?? []).map(
+    (r) => (r as { listing_id: string }).listing_id
+  );
+  const favoriteIds = new Set(favIds);
+  const listings = await getListingsByIds(favIds);
 
   return (
     <div className="flex flex-col gap-4">
@@ -24,11 +39,7 @@ export default function FavoritesPage() {
         </p>
       </header>
 
-      {!hydrated ? (
-        <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-muted px-6 py-12 text-center">
-          …
-        </div>
-      ) : listings.length === 0 ? (
+      {listings.length === 0 ? (
         <div className="bg-white border-[1.5px] border-ink px-6 py-16 text-center">
           <svg
             width="40"
@@ -56,9 +67,16 @@ export default function FavoritesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {listings.map((listing) => (
-            <ListingCardClient key={listing.id} listing={listing} />
-          ))}
+          {await Promise.all(
+            listings.map(async (listing) => (
+              <ListingCard
+                key={listing.id}
+                listing={listing}
+                isAuthed
+                isFavorite={favoriteIds.has(listing.id)}
+              />
+            ))
+          )}
         </div>
       )}
     </div>
