@@ -78,6 +78,28 @@
     "body": "Auto Diaspora uses essential cookies to keep you signed in and remember your filters. Read more in the <link>Privacy Policy</link>.",
     "accept": "OK, got it"
   },
+  "Admin": {
+    "title": "Admin",
+    "nav": {
+      "queue": "Pending queue",
+      "reports": "Reports"
+    },
+    "queue": {
+      "title": "Pending listings",
+      "subtitle": "{count} waiting for review",
+      "empty": "Queue is empty. New submissions appear here.",
+      "approve": "Approve",
+      "reject": "Reject",
+      "seller": "Seller",
+      "approvedNotice": "Listing approved and published.",
+      "rejectedNotice": "Listing rejected and removed."
+    },
+    "reports": {
+      "title": "Reports",
+      "subtitle": "User-submitted complaints about active listings",
+      "placeholder": "Reports UI is coming next. For now check the `reports` table in Supabase Dashboard for rows with status='open'."
+    }
+  },
   "NotFound": {
     "kicker": "404",
     "title": "Page not found",
@@ -194,6 +216,7 @@
       "messages": "Messages",
       "searches": "Saved searches",
       "settings": "Settings",
+      "admin": "Admin",
       "logout": "Sign out",
       "memberSince": "Member since {year}"
     },
@@ -224,6 +247,7 @@
       "title": "My listings",
       "newButton": "+ List a car",
       "tabs": {
+        "pending_review": "Pending",
         "active": "Active",
         "paused": "Paused",
         "sold": "Sold",
@@ -245,6 +269,7 @@
         "error": "Something went wrong. Try again."
       },
       "empty": {
+        "pending_review": "No listings under review.",
         "active": "You have no active listings yet. Hit “List a car” to post your first.",
         "paused": "No paused listings.",
         "sold": "No sold listings yet.",
@@ -296,6 +321,7 @@
         "profile": "Profile",
         "telegram": "Telegram alerts",
         "language": "Interface language",
+        "dataExport": "Your data",
         "danger": "Danger zone"
       },
       "fields": {
@@ -316,6 +342,10 @@
       "savingButton": "Saving…",
       "noticeSaved": "Profile saved.",
       "genericError": "Something went wrong. Try again.",
+      "dataExport": {
+        "desc": "Download a JSON file with everything we store about you — profile, listings, photos, favorites, saved searches, chats, payments. GDPR Article 15 right.",
+        "cta": "Download my data"
+      },
       "danger": {
         "desc": "Account deletion is permanent. All your listings, chats, favorites, and settings will be erased. There is no undo.",
         "cta": "Delete account",
@@ -329,7 +359,9 @@
     "kicker": "Edit listing",
     "back": "Back to my listings",
     "save": "Save changes",
-    "photosNote": "Photo editing isn't available yet — to change images, delete this listing and create a new one."
+    "photosExisting": "Current photos",
+    "photosNew": "Adding",
+    "photosUndoRemove": "Undo remove"
   },
   "NewListing": {
     "title": "List a car",
@@ -410,7 +442,9 @@
       "notAuthed": "You need to be signed in.",
       "uploadFailed": "Photo upload failed",
       "moderation_stop_word": "Your listing contains content that looks like spam. Please edit the title or description and resubmit.",
-      "moderation_external_url": "External links and contact handles aren't allowed in the description — buyers reach you via the in-app chat."
+      "moderation_external_url": "External links and contact handles aren't allowed in the description — buyers reach you via the in-app chat.",
+      "free_limit": "You already have 3 active free listings. Pause or delete one — or pick a paid tier below — to publish another.",
+      "rate_limit": "Too many submissions in a short time. Wait a minute and try again."
     }
   },
   "Payment": {
@@ -564,6 +598,8 @@
     },
     "powerUnit": "HP",
     "kmUnit": "km",
+    "pendingReview": "Submitted! Your listing is awaiting moderator review and will appear in the catalog once approved.",
+    "updated": "Listing updated.",
     "similar": {
       "title": "Similar listings",
       "subtitle": "Same segment, close price"
@@ -630,32 +666,44 @@
     "kicker": "Legal",
     "title": "Terms of Service",
     "lastUpdated": "Last updated: May 2026",
-    "draftLabel": "Draft",
-    "draftNote": "Final Terms of Service are being prepared via iubenda and will be published before public launch. The text below is the working outline.",
+    "intro": "These Terms govern your use of Auto Diaspora (the “Platform”), operated by [OWNER NAME], an eenmanszaak registered in the Netherlands (KVK [KVK NUMBER]). By creating an account or browsing the Platform you accept these Terms in full.",
+    "operatorNote": "Auto Diaspora is operated under Dutch law. The English version is authoritative; localized translations are provided for convenience.",
     "sections": {
       "account": {
         "title": "Account",
-        "body": "Users create an account via email or Google OAuth, provide truthful information, and are responsible for any activity from that account. One person, one account."
+        "body": "One person — one account. You must be at least 18 years old to register, since car-purchase contracts require legal capacity. You agree to provide truthful contact information (email, optionally phone) and to keep your credentials secure. You are responsible for all activity that originates from your account. Sharing an account with third parties is grounds for suspension."
       },
       "listings": {
         "title": "Listings",
-        "body": "The poster is responsible for accuracy of description, photos, and price. Posting stolen cars, vehicles without papers, or with tampered VINs is forbidden and grounds for ban."
+        "body": "By posting a listing you confirm that (a) you are the legal owner of the vehicle or have a written mandate to sell it, (b) the VIN matches the actual vehicle and its papers, (c) the photos are of the vehicle being sold (no stock images), (d) the description honestly reflects mileage, condition, accident history, and customs status. The first three (3) active listings per account are free; further listings require a paid upgrade. We pre-moderate all submissions and may reject any listing without a specific reason."
       },
-      "payments": {
-        "title": "Payments",
-        "body": "Paid services (bump, premium placement, extra listings) are processed through Mollie. Refunds are issued only in cases of technical failure on our side."
+      "premium": {
+        "title": "Premium services & payments",
+        "body": "Paid services — Bump (€4.99), Premium 14 days (€9.99), Premium 30 days (€19.99), Extra listing (€2.99), Verified seller (€15) — are processed through Mollie B.V., a payment service provider licensed by De Nederlandsche Bank. Prices include applicable VAT. You explicitly consent to immediate digital delivery of paid services upon payment, which means you waive your 14-day withdrawal right under Dutch consumer law (Burgerlijk Wetboek 6:230o lid 1 sub a) once the service is activated. Refunds are issued only when a service was not delivered due to a technical failure on our side."
       },
-      "disputes": {
-        "title": "Disputes",
-        "body": "Auto Diaspora is a platform. Deals between users are between them. We don't bear liability for transactions but help mediate in case of complaints."
+      "transactions": {
+        "title": "Sales between users",
+        "body": "The Platform is a venue: we are not a party to any sale. Buyer and seller arrange payment, vehicle inspection, paperwork transfer, and shipping directly between themselves. We do not hold escrow, do not verify VIN against national registries, and do not guarantee the accuracy of any listing. You are encouraged to meet in person, inspect the vehicle, and only transfer funds after the kentekenbewijs (or equivalent) is signed over."
+      },
+      "prohibited": {
+        "title": "Prohibited content",
+        "body": "The following will be removed and the responsible account banned: stolen vehicles or vehicles without a clear title; vehicles with falsified VIN or tampered odometer; vehicles missing legal documents; adult, drug, weapon or hate-related content; multi-account spam; listings whose primary purpose is to redirect users off-platform (links to Telegram channels, external marketplaces, crypto pitches)."
       },
       "termination": {
-        "title": "Termination",
-        "body": "Admins may suspend an account or remove a listing without warning in cases of fraud, spam, user complaints, or violation of these Terms."
+        "title": "Account termination",
+        "body": "We may suspend an account without prior warning in case of fraud, spam, harassment, repeated user complaints, or violation of these Terms. You may delete your account at any time via Settings → Delete account. After deletion, personal data is erased within 30 days, except records we are legally required to retain (payment receipts under Dutch tax law — 7 years)."
       },
       "liability": {
         "title": "Liability",
-        "body": "Auto Diaspora provides the service \"as is\". We do not warrant uninterrupted operation and accept no liability for damages arising from use of the platform."
+        "body": "The Platform is provided “as is”. We make no warranty of uninterrupted operation, fitness for a particular purpose, or freedom from errors. Our total liability for any claim arising out of these Terms is capped at the amount the user paid us in the 12 months preceding the claim (which, for free users, is €0). We are not liable for indirect, consequential, or punitive damages, nor for failures of third-party services (Supabase, Vercel, Mollie, Resend, Telegram)."
+      },
+      "disputes": {
+        "title": "Governing law & disputes",
+        "body": "These Terms are governed by Dutch law. Disputes will be heard by the District Court of Amsterdam. Consumers residing in the EU may also use the European Commission's Online Dispute Resolution platform at https://ec.europa.eu/consumers/odr."
+      },
+      "changes": {
+        "title": "Changes to these Terms",
+        "body": "We may update these Terms. Material changes will be announced by email to all registered users at least 30 days before they take effect. Continued use of the Platform after the effective date constitutes acceptance of the updated Terms."
       }
     }
   },
@@ -663,33 +711,87 @@
     "kicker": "Legal",
     "title": "Privacy Policy",
     "lastUpdated": "Last updated: May 2026",
-    "draftLabel": "Draft",
-    "draftNote": "Final Privacy Policy is being prepared via iubenda and will be GDPR-compliant before public launch. The text below is the working outline.",
+    "intro": "This Policy explains what personal data Auto Diaspora collects, why, and what you can do about it. It complies with the EU General Data Protection Regulation (GDPR, Regulation 2016/679) and the Dutch UAVG.",
     "sections": {
+      "controller": {
+        "title": "Data controller",
+        "body": "[OWNER NAME], operating as Auto Diaspora — eenmanszaak registered with the Dutch Chamber of Commerce, KVK [KVK NUMBER], [REGISTERED ADDRESS]. Privacy contact: privacy@autodiaspora.com."
+      },
       "collected": {
         "title": "Data we collect",
-        "body": "Email, name, phone (optional), country and city, profile photo. When you post a listing: VIN, photos, vehicle location. IP address and cookies for analytics and security."
+        "body": "Account data: email, hashed password (Supabase Auth), display name, optionally phone, country, city, language. Listing data: brand, model, VIN, photos, price, location, contact details you chose to include. Communication: messages exchanged through in-app chat. Technical: IP address, browser user-agent, referrer, server logs. Payment data: Mollie payment id, amount, currency, status — we never see your card number."
       },
-      "usage": {
-        "title": "How we use it",
-        "body": "To run the platform (auth, chat, notifications), to send alerts about new cars matching your saved searches, for safety and fraud prevention, and for anonymized analytics."
+      "legalBasis": {
+        "title": "Legal basis & purposes",
+        "body": "Performance of contract (Art. 6(1)(b) GDPR) — to run authentication, listings, chat, payments. Legitimate interest (Art. 6(1)(f)) — fraud prevention, abuse detection, anonymous service analytics. Consent (Art. 6(1)(a)) — optional cookies beyond the essentials, optional Telegram or email notifications. Legal obligation (Art. 6(1)(c)) — retaining payment records for 7 years per Dutch tax law (Algemene wet inzake rijksbelastingen art. 52)."
       },
-      "sharing": {
-        "title": "Who we share with",
-        "body": "Data is never sold to third parties. Technical providers (Supabase, Vercel, Mollie, Resend, Telegram) process data solely to deliver the service. Mollie sees payment data."
+      "retention": {
+        "title": "Retention",
+        "body": "Account data is retained while the account is active and 30 days after deletion, then erased. Active listings: until removed by the seller, sold, or 60 days past expiry. Chat messages: 2 years from the last message in a thread. Payment receipts: 7 years (Dutch tax law). Server logs with IP: 90 days. Analytics is anonymized at ingestion."
+      },
+      "processors": {
+        "title": "Processors (who else sees your data)",
+        "body": "We do not sell your data. We share strictly what each processor needs to deliver their part of the service: Supabase Inc. (database + storage + auth, EU-Frankfurt region, GDPR DPA signed). Vercel Inc. (hosting; USA, Standard Contractual Clauses). Mollie B.V. (payments, the Netherlands). Resend Inc. (transactional email; USA, Standard Contractual Clauses). Telegram Messenger Inc. (only the chat id you provide for admin notifications; USA + UK)."
+      },
+      "transfers": {
+        "title": "International transfers",
+        "body": "Vercel and Resend are US-based. We rely on Standard Contractual Clauses (SCCs, 2021/914/EU) for those transfers. Database, storage, and auth all live in the EU (Supabase Frankfurt). You can request a copy of the SCCs via privacy@autodiaspora.com."
       },
       "cookies": {
         "title": "Cookies",
-        "body": "A session cookie for authentication. Analytics is privacy-friendly (Plausible or Umami) with no third-party tracking. We use no marketing cookies."
+        "body": "Essential cookies only: a session token from Supabase Auth, a CSRF token for Server Actions, the cookie that remembers you accepted this banner, and your preferred locale. No marketing or third-party tracking cookies. If we enable analytics later it will be a cookie-less, IP-anonymised provider (Plausible)."
       },
       "rights": {
-        "title": "Your GDPR rights",
-        "body": "Right to access your data, correct it, delete it, port it (JSON export), and restrict processing. Send requests to the email below; we respond within 30 days."
+        "title": "Your rights",
+        "body": "Right to access (Art. 15) — “Download my data” in Settings exports a JSON dump. Rectification (Art. 16) — edit your profile in Settings. Erasure (Art. 17) — “Delete account” in Settings. Restriction (Art. 18), portability (Art. 20), objection (Art. 21) — write to privacy@autodiaspora.com; we respond within 30 days. We do not perform automated decision-making (Art. 22): listing moderation is reviewed by a human."
       },
-      "contact": {
-        "title": "Contact",
-        "body": "Auto Diaspora · eenmanszaak (Netherlands, KVK) · privacy@autodiaspora.com. You may also file complaints with the national data protection authority (Autoriteit Persoonsgegevens)."
+      "complaints": {
+        "title": "Complaints",
+        "body": "If you believe we mishandled your data, you may lodge a complaint with the Dutch Data Protection Authority (Autoriteit Persoonsgegevens), Postbus 93374, 2509 AJ Den Haag, https://autoriteitpersoonsgegevens.nl, or with the supervisory authority in your country of residence."
+      },
+      "children": {
+        "title": "Children",
+        "body": "Auto Diaspora is not directed at children under 18. We do not knowingly collect data from minors. If you discover that a minor has registered, write to privacy@autodiaspora.com and we will delete the account."
       }
+    }
+  },
+  "Impressum": {
+    "kicker": "Legal",
+    "title": "Impressum",
+    "lastUpdated": "Last updated: May 2026",
+    "intro": "Information about the operator of this website, in compliance with Dutch civil-code disclosure requirements and Article 5(1) of the EU E-Commerce Directive (Directive 2000/31/EC).",
+    "operator": {
+      "title": "Operator",
+      "name": "Operator",
+      "nameValue": "[OWNER NAME], operating as Auto Diaspora",
+      "form": "Legal form",
+      "formValue": "eenmanszaak (Dutch sole proprietorship)",
+      "address": "Registered office",
+      "addressValue": "[STREET], [POSTCODE] [CITY], The Netherlands"
+    },
+    "registry": {
+      "title": "Registry & VAT",
+      "kvk": "Chamber of Commerce (KVK)",
+      "kvkValue": "[KVK NUMBER]",
+      "btw": "VAT (BTW)",
+      "btwValue": "NL[XXXXXXXXX]B01"
+    },
+    "contact": {
+      "title": "Contact",
+      "email": "Email",
+      "emailValue": "contact@autodiaspora.com",
+      "privacy": "Privacy contact",
+      "privacyValue": "privacy@autodiaspora.com",
+      "phone": "Phone",
+      "phoneValue": "[+31 ...]"
+    },
+    "dispute": {
+      "title": "Online dispute resolution",
+      "body": "Under EU Regulation 524/2013 the European Commission provides a platform for online dispute resolution at https://ec.europa.eu/consumers/odr. We are willing but not legally obliged to participate in an out-of-court dispute resolution procedure before a consumer arbitration body."
+    },
+    "liability": {
+      "title": "Liability for content",
+      "body": "Listings are user-generated content. We act as a hosting provider under Article 14 of Directive 2000/31/EC: once we become aware of unlawful content (via report or otherwise) we remove or disable access expeditiously. Reports may be filed via the in-app “Report listing” button or by email."
     }
   },
   "Footer": {
@@ -712,7 +814,8 @@
       "about": "About",
       "contacts": "Contact",
       "terms": "Terms",
-      "privacy": "Privacy"
+      "privacy": "Privacy",
+      "impressum": "Impressum"
     },
     "copyright": "© 2026 Auto Diaspora",
     "legal": "KVK · Netherlands · GDPR"
