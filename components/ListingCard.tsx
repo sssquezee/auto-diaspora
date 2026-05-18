@@ -45,9 +45,13 @@ function ElectricIcon() {
   );
 }
 
-type Props = { listing: Listing };
+type Props = {
+  listing: Listing;
+  isAuthed: boolean;
+  isFavorite: boolean;
+};
 
-export async function ListingCard({ listing }: Props) {
+export async function ListingCard({ listing, isAuthed, isFavorite }: Props) {
   const locale = (await getLocale()) as Locale;
   const t = await getTranslations("ListingCard");
 
@@ -73,6 +77,8 @@ export async function ListingCard({ listing }: Props) {
       {/* Favorite button (outside Link so it doesn't trigger navigation) */}
       <FavoriteButton
         listingId={listing.id}
+        isAuthed={isAuthed}
+        initiallyFavorited={isFavorite}
         label={t("favorite")}
         className={`absolute right-2 z-[3] w-[30px] h-[30px] ${
           listing.premium ? "top-9" : "top-2"
@@ -84,11 +90,20 @@ export async function ListingCard({ listing }: Props) {
         href={`/listing/${listing.id}`}
         className="block no-underline text-ink"
       >
-        {/* Photo placeholder */}
+        {/* Photo */}
         <div
-          className="aspect-[4/3] w-full relative border-b-[1.5px] border-ink"
+          className="aspect-[4/3] w-full relative border-b-[1.5px] border-ink overflow-hidden"
           style={{ background: IMAGE_GRADIENTS[listing.imageVariant] }}
         >
+          {listing.photoUrls?.[0] && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={listing.photoUrls[0]}
+              alt={`${listing.brand} ${listing.model}`}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
           {listing.badges.length > 0 && (
             <div className="absolute top-2 left-2 flex flex-wrap gap-1">
               {listing.badges.map((b) => {

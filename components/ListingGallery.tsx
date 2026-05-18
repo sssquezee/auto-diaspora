@@ -3,22 +3,30 @@
 import { useCallback, useEffect, useState } from "react";
 
 type Props = {
+  /** Synthetic gradient backgrounds — one per slot. Length defines fallback total. */
   gradients: string[];
+  /** Real photo URLs from Storage. When non-empty, these replace gradients 1:1. */
+  photos?: string[];
   badges?: React.ReactNode;
   prevLabel: string;
   nextLabel: string;
   thumbLabel: string;
+  alt?: string;
 };
 
 export function ListingGallery({
   gradients,
+  photos,
   badges,
   prevLabel,
   nextLabel,
   thumbLabel,
+  alt = "",
 }: Props) {
+  const hasPhotos = !!photos && photos.length > 0;
+  const slots = hasPhotos ? photos! : gradients;
   const [index, setIndex] = useState(0);
-  const total = gradients.length;
+  const total = slots.length;
 
   const go = useCallback(
     (delta: number) => {
@@ -45,12 +53,20 @@ export function ListingGallery({
   return (
     <div className="bg-white border-[1.5px] border-ink">
       <div
-        className="w-full relative"
+        className="w-full relative overflow-hidden"
         style={{
-          background: gradients[index],
+          background: gradients[index % gradients.length],
           height: "clamp(260px, 48vh, 520px)",
         }}
       >
+        {hasPhotos && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={slots[index]}
+            alt={alt}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
         {badges}
 
         {total > 1 && (
@@ -104,20 +120,35 @@ export function ListingGallery({
       </div>
 
       <div className="flex gap-1 p-2 border-t-[1.5px] border-ink overflow-x-auto">
-        {gradients.map((g, i) => (
+        {slots.map((slot, i) => (
           <button
             key={i}
             type="button"
             onClick={() => setIndex(i)}
             aria-label={`${thumbLabel} ${i + 1}`}
             aria-current={i === index ? "true" : undefined}
-            className={`w-[88px] h-[64px] flex-shrink-0 cursor-pointer p-0 transition-opacity ${
+            className={`w-[88px] h-[64px] flex-shrink-0 cursor-pointer p-0 transition-opacity relative overflow-hidden ${
               i === index
                 ? "outline outline-2 outline-accent outline-offset-[-2px]"
                 : "opacity-70 hover:opacity-100"
             }`}
-            style={{ background: g, border: 0 }}
-          />
+            style={{
+              background: hasPhotos
+                ? gradients[i % gradients.length]
+                : slot,
+              border: 0,
+            }}
+          >
+            {hasPhotos && (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={slot}
+                alt=""
+                loading="lazy"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            )}
+          </button>
         ))}
       </div>
     </div>

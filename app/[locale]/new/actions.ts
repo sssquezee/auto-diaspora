@@ -1,0 +1,175 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { routing } from "@/i18n/routing";
+import { isValidTier } from "@/lib/tiers";
+import { moderateListing } from "@/lib/moderation";
+
+type Locale = (typeof routing.locales)[number];
+
+function pickLocale(value: FormDataEntryValue | null): Locale {
+  const v = typeof value === "string" ? value : "";
+  return (routing.locales as readonly string[]).includes(v)
+    ? (v as Locale)
+    : (routing.defaultLocale as Locale);
+}
+
+function str(formData: FormData, key: string): string {
+  const v = formData.get(key);
+  return typeof v === "string" ? v.trim() : "";
+}
+
+function num(formData: FormData, key: string): number | null {
+  const v = formData.get(key);
+  if (typeof v !== "string" || !v.trim()) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+const FUEL_KEYS = ["diesel", "petrol", "hybrid", "electric"] as const;
+const TRANSMISSION_KEYS = ["auto", "manual"] as const;
+const BODY_KEYS = ["sedan", "suv", "wagon", "hatchback", "coupe"] as const;
+const DRIVE_KEYS = ["fwd", "rwd", "awd"] as const;
+const CONDITION_KEYS = ["new", "used", "damaged"] as const;
+
+function oneOf<T extends string>(value: string, allowed: readonly T[]): T | null {
+  return (allowed as readonly string[]).includes(value) ? (value as T) : null;
+}
+
+export async function createListingAction(formData: FormData) {
+  const locale = pickLocale(formData.get("locale"));
+
+  // 1. Auth
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect(`/${locale}/auth/login`);
+
+  // 2. Parse + validate
+  const brand = str(formData, "brand");
+  const model = str(formData, "model");
+  const year = num(formData, "year");
+  const mileage = num(formData, "mileage");
+  const fuel = oneOf(str(formData, "fuel_type"), FUEL_KEYS);
+  const transmission = oneOf(str(formData, "transmission"), TRANSMISSION_KEYS);
+  const country = str(formData, "country");
+  const city = str(formData, "city");
+  const price = num(formData, "price");
+
+  const missing =
+    !brand ||
+    !model ||
+    year === null ||
+    mileage === null ||
+    !fuel ||
+    !transmission ||
+    !country ||
+    !city ||
+    price === null;
+
+  if (missing) {
+    redirect(`/${locale}/new?error=missing_fields`);
+  }
+
+  const body_type = oneOf(str(formData, "body_type"), BODY_KEYS);
+  const drive_type = oneOf(str(formData, "drive_type"), DRIVE_KEYS);
+  const engine_volume = num(formData, "engine_volume");
+  const power_hp = num(formData, "power_hp");
+  const color = str(formData, "color") || null;
+  const vin = str(formData, "vin") || null;
+  const description = str(formData, "description") || null;
+  const condition =
+    oneOf(str(formData, "condition"), CONDITION_KEYS) ?? "used";
+  const customs_cleared = str(formData, "customs") === "yes";
+  const price_negotiable = formData.get("price_negotiable") === "on";
+
+  const rawTier = str(formData, "tier") || "free";
+  const tier = isValidTier(rawTier) ? rawTier : "free";
+
+  // 2.5. Content moderation — block obvious spam before insert
+  const mod = moderateListing({ title: `${brand} ${model}`, description });
+  if (!mod.ok) {
+    redirect(`/${locale}/new?error=moderation_${mod.reason}`);
+  }
+
+  // 3. Optional client-supplied UUID (when photos were pre-uploaded under
+  //    /listings/<userId>/<listingId>/ paths) — must match a UUID format.
+  const clientId = str(formData, "listing_id");
+  const useClientId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    clientId
+  );
+
+  // 4. Insert listing
+  const insertPayload: Record<string, unknown> = {
+    user_id: user.id,
+    title: `${brand} ${model}`,
+    description,
+    brand,
+    model,
+    year,
+    mileage,
+    fuel_type: fuel,
+    transmission,
+    body_type,
+    drive_type,
+    engine_volume,
+    power_hp,
+    color,
+    vin,
+    country,
+    city,
+    price,
+    currency: "EUR",
+    price_negotiable,
+    condition,
+    customs_cleared,
+    status: "active",
+  };
+  if (useClientId) insertPayload.id = clientId;
+
+  const { data, error } = await supabase
+    .from("listings")
+    .insert(insertPayload)
+    .select("id")
+    .single<{ id: string }>();
+
+  if (error || !data) {
+    const msg = encodeURIComponent(error?.message ?? "insert failed");
+    redirect(`/${locale}/new?error=server&msg=${msg}`);
+  }
+
+  // 5. Persist uploaded photo paths (already in Storage at this point)
+  const photoPathsRaw = str(formData, "photo_paths");
+  if (photoPathsRaw) {
+    try {
+      const parsed = JSON.parse(photoPathsRaw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const rows = parsed
+          .filter((p): p is string => typeof p === "string" && p.length > 0)
+          .slice(0, 15)
+          .map((path, i) => ({
+            listing_id: data.id,
+            storage_path: path,
+            position: i,
+            is_primary: i === 0,
+          }));
+        if (rows.length > 0) {
+          await supabase.from("listing_photos").insert(rows);
+        }
+      }
+    } catch {
+      // bad JSON — ignore, listing is still created
+    }
+  }
+
+  // 6. Branch on tier
+  if (tier !== "free") {
+    redirect(
+      `/${locale}/new/payment?tier=${tier}&listingId=${data.id}`
+    );
+  }
+
+  redirect(`/${locale}/listing/${data.id}?published=1`);
+}

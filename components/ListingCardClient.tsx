@@ -47,10 +47,14 @@ function ElectricIcon() {
   );
 }
 
-type Props = { listing: Listing };
+type Props = {
+  listing: Listing;
+  isAuthed: boolean;
+  isFavorite: boolean;
+};
 
 /** Client mirror of ListingCard for use inside other client components. */
-export function ListingCardClient({ listing }: Props) {
+export function ListingCardClient({ listing, isAuthed, isFavorite }: Props) {
   const locale = useLocale() as Locale;
   const t = useTranslations("ListingCard");
 
@@ -74,6 +78,8 @@ export function ListingCardClient({ listing }: Props) {
 
       <FavoriteButton
         listingId={listing.id}
+        isAuthed={isAuthed}
+        initiallyFavorited={isFavorite}
         label={t("favorite")}
         className={`absolute right-2 z-[3] w-[30px] h-[30px] ${
           listing.premium ? "top-9" : "top-2"
@@ -85,9 +91,18 @@ export function ListingCardClient({ listing }: Props) {
         className="block no-underline text-ink"
       >
         <div
-          className="aspect-[4/3] w-full relative border-b-[1.5px] border-ink"
+          className="aspect-[4/3] w-full relative border-b-[1.5px] border-ink overflow-hidden"
           style={{ background: IMAGE_GRADIENTS[listing.imageVariant] }}
         >
+          {listing.photoUrls?.[0] && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={listing.photoUrls[0]}
+              alt={`${listing.brand} ${listing.model}`}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
           {listing.badges.length > 0 && (
             <div className="absolute top-2 left-2 flex flex-wrap gap-1">
               {listing.badges.map((b) => {

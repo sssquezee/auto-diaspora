@@ -1,26 +1,51 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
-import { isValidTier } from "@/lib/tiers";
-import { BRANDS, getModelsForBrand } from "@/lib/brands";
+import { useTranslations, useLocale } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import { PhotosUploader } from "@/components/PhotosUploader";
+import { ListingFormBody } from "@/components/ListingFormBody";
+import { createClient } from "@/lib/supabase/client";
+import { createListingAction } from "./actions";
 
-const COUNTRIES = ["DE", "PL", "NL", "CZ", "BE", "FR"] as const;
-
-const fieldClass =
-  "w-full border-[1.5px] border-line-strong bg-white px-3 py-2.5 font-sans text-[14px] text-ink outline-none focus:border-ink focus:border-2 focus:px-[11px] focus:py-[9px]";
-
-function FieldLabel({ children, hint }: { children: React.ReactNode; hint?: string }) {
+function TierCard({
+  active,
+  title,
+  price,
+  desc,
+  value,
+}: {
+  active?: boolean;
+  title: string;
+  price: string;
+  desc: string;
+  value: string;
+}) {
   return (
-    <div className="mb-1.5 flex items-baseline justify-between gap-3">
-      <label className="font-sans font-bold text-[10.5px] uppercase tracking-[0.1em] text-ink-muted">
-        {children}
-      </label>
-      {hint && (
-        <span className="font-mono text-[10px] text-ink-faded">{hint}</span>
-      )}
-    </div>
+    <label
+      className={`relative flex flex-col gap-2 border-[1.5px] p-4 cursor-pointer transition-all ${
+        active
+          ? "border-ink shadow-[3px_3px_0_var(--accent)]"
+          : "border-line-strong hover:border-ink"
+      }`}
+    >
+      <input
+        type="radio"
+        name="tier"
+        value={value}
+        defaultChecked={active}
+        className="absolute top-3 right-3 w-3.5 h-3.5 accent-[#0052ff]"
+      />
+      <div className="font-sans font-extrabold text-[13px] uppercase tracking-[0.08em] text-ink pr-7">
+        {title}
+      </div>
+      <div className="font-mono font-bold text-[22px] text-ink tracking-[-0.02em]">
+        {price}
+      </div>
+      <div className="font-sans text-[12px] text-ink-muted leading-relaxed">
+        {desc}
+      </div>
+    </label>
   );
 }
 
@@ -48,95 +73,58 @@ function SectionCard({
   );
 }
 
-function PhotosDropZone() {
-  const t = useTranslations("NewListing");
-  return (
-    <div className="border-[2px] border-dashed border-line-strong bg-bg-subtle hover:border-accent hover:bg-accent-soft transition-colors cursor-pointer text-center px-6 py-10">
-      <svg
-        width="32"
-        height="32"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        className="mx-auto mb-3 text-ink-muted"
-        aria-hidden
-      >
-        <rect x="3" y="3" width="18" height="18" rx="0" />
-        <circle cx="8.5" cy="8.5" r="1.5" />
-        <path d="m21 15-5-5L5 21" />
-      </svg>
-      <p className="font-sans font-semibold text-[13px] text-ink mb-1">
-        {t("photosDropzone")}
-      </p>
-      <p className="font-mono text-[11px] text-ink-faded">
-        {t("photosHint")}
-      </p>
-    </div>
-  );
-}
-
-function TierCard({
-  active,
-  title,
-  price,
-  desc,
-}: {
-  active?: boolean;
-  title: string;
-  price: string;
-  desc: string;
-}) {
-  return (
-    <label
-      className={`relative flex flex-col gap-2 border-[1.5px] p-4 cursor-pointer transition-all ${
-        active
-          ? "border-ink shadow-[3px_3px_0_var(--accent)]"
-          : "border-line-strong hover:border-ink"
-      }`}
-    >
-      <input
-        type="radio"
-        name="tier"
-        defaultChecked={active}
-        className="absolute top-3 right-3 w-3.5 h-3.5 accent-[#0052ff]"
-      />
-      <div className="font-sans font-extrabold text-[13px] uppercase tracking-[0.08em] text-ink pr-7">
-        {title}
-      </div>
-      <div className="font-mono font-bold text-[22px] text-ink tracking-[-0.02em]">
-        {price}
-      </div>
-      <div className="font-sans text-[12px] text-ink-muted leading-relaxed">
-        {desc}
-      </div>
-    </label>
-  );
-}
-
 export default function NewListingPage() {
   const t = useTranslations("NewListing");
-  const tListing = useTranslations("ListingCard");
-  const tDetail = useTranslations("ListingDetail");
-  const tSidebar = useTranslations("Sidebar");
-  const router = useRouter();
+  const tErr = useTranslations("NewListing.errors");
+  const locale = useLocale();
+  const searchParams = useSearchParams();
+  const submitError = searchParams.get("error");
+  const errorMsg = searchParams.get("msg");
 
-  const [brand, setBrand] = useState("");
-  const [model, setModel] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+    setUploadError(null);
+
     const form = e.currentTarget;
-    const tierInput = form.querySelector<HTMLInputElement>(
-      'input[name="tier"]:checked'
-    );
-    const tier = tierInput?.value ?? "free";
-    if (isValidTier(tier) && tier !== "free") {
-      router.push(`/new/payment?tier=${tier}`);
-    } else {
-      // Free tier: mock as if listing was published — back to catalog
-      router.push("/?published=1");
+    const formData = new FormData(form);
+
+    if (files.length > 0) {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        setSubmitting(false);
+        setUploadError(t("errors.notAuthed"));
+        return;
+      }
+      const listingId = crypto.randomUUID();
+      const paths: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase();
+        const path = `${user.id}/${listingId}/${i}.${ext}`;
+        const { error } = await supabase.storage
+          .from("listings")
+          .upload(path, file, { upsert: false, contentType: file.type });
+        if (error) {
+          setSubmitting(false);
+          setUploadError(`${t("errors.uploadFailed")}: ${error.message}`);
+          return;
+        }
+        paths.push(path);
+      }
+      formData.append("listing_id", listingId);
+      formData.append("photo_paths", JSON.stringify(paths));
     }
+
+    await createListingAction(formData);
   };
 
   return (
@@ -150,266 +138,54 @@ export default function NewListingPage() {
         </p>
       </header>
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-4"
-      >
-        {/* 1. Vehicle */}
-        <SectionCard index={1} title={t("sections.vehicle")}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <FieldLabel>{t("fields.brand")}</FieldLabel>
-              <select
-                value={brand}
-                onChange={(e) => {
-                  setBrand(e.target.value);
-                  setModel("");
-                }}
-                className={fieldClass}
-                required
-              >
-                <option value="" disabled>
-                  {tSidebar("placeholders.anyBrand")}
-                </option>
-                {BRANDS.map((b) => (
-                  <option key={b} value={b}>
-                    {b}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <FieldLabel>{t("fields.model")}</FieldLabel>
-              <select
-                value={model}
-                onChange={(e) => setModel(e.target.value)}
-                className={`${fieldClass} disabled:cursor-not-allowed disabled:text-ink-faded`}
-                disabled={!brand}
-                required={!!brand}
-              >
-                <option value="" disabled>
-                  {tSidebar("placeholders.anyModel")}
-                </option>
-                {getModelsForBrand(brand).map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <FieldLabel>{t("fields.year")}</FieldLabel>
-              <input
-                type="number"
-                min={1990}
-                max={2026}
-                placeholder="2020"
-                className={fieldClass}
-                required
-              />
-            </div>
-            <div>
-              <FieldLabel>{t("fields.mileage")}</FieldLabel>
-              <input
-                type="number"
-                min={0}
-                placeholder="87 000"
-                className={fieldClass}
-                required
-              />
-            </div>
-          </div>
-        </SectionCard>
+      {submitError && (
+        <div
+          role="alert"
+          className="bg-white border-l-[3px] border-[#cf222e] p-3 mb-4 font-sans text-[13px] text-ink leading-relaxed"
+        >
+          {tErr(
+            submitError as
+              | "missing_fields"
+              | "server"
+              | "moderation_stop_word"
+              | "moderation_external_url"
+          )}
+          {errorMsg && submitError === "server" && (
+            <span className="block font-mono text-[11px] text-ink-muted mt-1 break-words">
+              {errorMsg}
+            </span>
+          )}
+        </div>
+      )}
 
-        {/* 2. Technical */}
-        <SectionCard index={2} title={t("sections.technical")}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <FieldLabel>{t("fields.fuel")}</FieldLabel>
-              <select defaultValue="" className={fieldClass} required>
-                <option value="" disabled>
-                  —
-                </option>
-                {(["diesel", "petrol", "hybrid", "electric"] as const).map((k) => (
-                  <option key={k} value={k}>
-                    {tListing(`fuel.${k}`)}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <FieldLabel>{t("fields.transmission")}</FieldLabel>
-              <select defaultValue="" className={fieldClass} required>
-                <option value="" disabled>
-                  —
-                </option>
-                {(["auto", "manual"] as const).map((k) => (
-                  <option key={k} value={k}>
-                    {tListing(`transmission.${k}`)}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <FieldLabel>{t("fields.bodyType")}</FieldLabel>
-              <select defaultValue="" className={fieldClass}>
-                <option value="" disabled>
-                  —
-                </option>
-                {(["sedan", "suv", "wagon", "hatchback", "coupe"] as const).map((k) => (
-                  <option key={k} value={k}>
-                    {tDetail(`bodyType.${k}`)}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <FieldLabel>{t("fields.driveType")}</FieldLabel>
-              <select defaultValue="" className={fieldClass}>
-                <option value="" disabled>
-                  —
-                </option>
-                {(["fwd", "rwd", "awd"] as const).map((k) => (
-                  <option key={k} value={k}>
-                    {tDetail(`driveType.${k}`)}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <FieldLabel>{t("fields.engineVolume")}</FieldLabel>
-              <input
-                type="number"
-                step="0.1"
-                min={0.5}
-                max={8}
-                placeholder="3.0"
-                className={fieldClass}
-              />
-            </div>
-            <div>
-              <FieldLabel>{t("fields.power")}</FieldLabel>
-              <input type="number" min={1} placeholder="265" className={fieldClass} />
-            </div>
-            <div>
-              <FieldLabel>{t("fields.color")}</FieldLabel>
-              <input type="text" placeholder="" className={fieldClass} />
-            </div>
-            <div>
-              <FieldLabel hint={t("vinHint")}>{t("fields.vin")}</FieldLabel>
-              <input
-                type="text"
-                maxLength={17}
-                placeholder="WBA53AT0X0CL12345"
-                className={`${fieldClass} font-mono uppercase tracking-[0.05em]`}
-              />
-            </div>
-          </div>
-        </SectionCard>
+      {uploadError && (
+        <div
+          role="alert"
+          className="bg-white border-l-[3px] border-[#cf222e] p-3 mb-4 font-sans text-[13px] text-ink leading-relaxed break-words"
+        >
+          {uploadError}
+        </div>
+      )}
 
-        {/* 3. Location & Condition */}
-        <SectionCard index={3} title={t("sections.location")}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <FieldLabel>{t("fields.country")}</FieldLabel>
-              <select defaultValue="" className={fieldClass} required>
-                <option value="" disabled>
-                  —
-                </option>
-                {COUNTRIES.map((c) => (
-                  <option key={c} value={c}>
-                    {tSidebar(`countries.${c}`)}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <FieldLabel>{t("fields.city")}</FieldLabel>
-              <input type="text" placeholder="" className={fieldClass} required />
-            </div>
-          </div>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <input type="hidden" name="locale" value={locale} />
 
-          <div>
-            <FieldLabel>{t("fields.condition")}</FieldLabel>
-            <div className="grid grid-cols-3 gap-2">
-              {(["new", "used", "damaged"] as const).map((c, i) => (
-                <label
-                  key={c}
-                  className="flex items-center gap-2 border-[1.5px] border-line-strong px-3 py-2.5 cursor-pointer text-[13px] hover:border-ink"
-                >
-                  <input
-                    type="radio"
-                    name="condition"
-                    value={c}
-                    defaultChecked={i === 1}
-                    className="w-3.5 h-3.5 accent-[#0052ff]"
-                  />
-                  {t(`condition.${c}`)}
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <FieldLabel>{t("fields.customs")}</FieldLabel>
-            <div className="grid grid-cols-2 gap-2">
-              {(["yes", "no"] as const).map((c, i) => (
-                <label
-                  key={c}
-                  className="flex items-center gap-2 border-[1.5px] border-line-strong px-3 py-2.5 cursor-pointer text-[13px] hover:border-ink"
-                >
-                  <input
-                    type="radio"
-                    name="customs"
-                    value={c}
-                    defaultChecked={i === 1}
-                    className="w-3.5 h-3.5 accent-[#0052ff]"
-                  />
-                  {t(`customs.${c}`)}
-                </label>
-              ))}
-            </div>
-          </div>
-        </SectionCard>
-
-        {/* 4. Price & Description */}
-        <SectionCard index={4} title={t("sections.price")}>
-          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 items-end">
-            <div>
-              <FieldLabel>{t("fields.price")}</FieldLabel>
-              <input
-                type="number"
-                min={0}
-                placeholder="14 500"
-                className={fieldClass}
-                required
-              />
-            </div>
-            <label className="flex items-center gap-2 text-[13px] cursor-pointer pb-3 self-end">
-              <input
-                type="checkbox"
-                className="w-3.5 h-3.5 accent-[#0052ff]"
-              />
-              {t("fields.negotiable")}
-            </label>
-          </div>
-
-          <div>
-            <FieldLabel hint={t("fields.descriptionHint")}>
-              {t("fields.description")}
-            </FieldLabel>
-            <textarea
-              rows={6}
-              maxLength={2000}
-              placeholder=""
-              className={`${fieldClass} resize-y`}
-            />
-          </div>
-        </SectionCard>
+        <ListingFormBody />
 
         {/* 5. Photos */}
         <SectionCard index={5} title={t("sections.photos")}>
-          <PhotosDropZone />
+          <PhotosUploader
+            files={files}
+            onChange={setFiles}
+            labels={{
+              dropzoneText: t("photosDropzone"),
+              hintText: t("photosHint"),
+              addMore: t("photosAddMore"),
+              removeAria: t("photosRemove"),
+              tooLarge: t("photosTooLarge"),
+              notImage: t("photosNotImage"),
+            }}
+          />
         </SectionCard>
 
         {/* 6. Premium */}
@@ -417,21 +193,25 @@ export default function NewListingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <TierCard
               active
+              value="free"
               title={t("tiers.free.title")}
               price={t("tiers.free.price")}
               desc={t("tiers.free.desc")}
             />
             <TierCard
+              value="bump"
               title={t("tiers.bump.title")}
               price={t("tiers.bump.price")}
               desc={t("tiers.bump.desc")}
             />
             <TierCard
+              value="premium14"
               title={t("tiers.premium14.title")}
               price={t("tiers.premium14.price")}
               desc={t("tiers.premium14.desc")}
             />
             <TierCard
+              value="premium30"
               title={t("tiers.premium30.title")}
               price={t("tiers.premium30.price")}
               desc={t("tiers.premium30.desc")}
@@ -443,9 +223,14 @@ export default function NewListingPage() {
         <div className="sticky bottom-3 z-10 mt-2">
           <button
             type="submit"
-            className="w-full bg-accent hover:bg-accent-2 text-white font-sans font-extrabold text-[14px] uppercase tracking-[0.14em] py-4 transition-colors cursor-pointer border-[1.5px] border-ink shadow-[3px_3px_0_var(--ink)] hover:shadow-[6px_6px_0_var(--ink)] hover:-translate-x-[3px] hover:-translate-y-[3px] transition-all"
+            disabled={submitting}
+            className={`w-full font-sans font-extrabold text-[14px] uppercase tracking-[0.14em] py-4 transition-all cursor-pointer border-[1.5px] border-ink ${
+              submitting
+                ? "bg-ink text-white cursor-wait"
+                : "bg-accent hover:bg-accent-2 text-white shadow-[3px_3px_0_var(--ink)] hover:shadow-[6px_6px_0_var(--ink)] hover:-translate-x-[3px] hover:-translate-y-[3px]"
+            }`}
           >
-            {t("publish")}
+            {submitting ? t("publishing") : t("publish")}
           </button>
         </div>
       </form>
