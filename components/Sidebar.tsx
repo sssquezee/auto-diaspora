@@ -10,7 +10,7 @@ import {
   parseFilters,
   type FilterState,
 } from "@/lib/filters";
-import type { FuelKey, TransmissionKey } from "@/lib/mock-listings";
+import type { BodyTypeKey, FuelKey, TransmissionKey } from "@/lib/mock-listings";
 import { BRANDS, getModelsForBrand } from "@/lib/brands";
 
 const COUNTRIES: string[] = ["DE", "PL", "NL", "CZ", "BE", "FR"];
@@ -18,6 +18,8 @@ const COUNTRIES: string[] = ["DE", "PL", "NL", "CZ", "BE", "FR"];
 const FUELS: FuelKey[] = ["diesel", "petrol", "hybrid", "electric"];
 
 const TRANSMISSIONS: TransmissionKey[] = ["auto", "manual"];
+
+const BODIES: BodyTypeKey[] = ["sedan", "suv", "wagon", "hatchback", "coupe"];
 
 function FilterLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -36,6 +38,7 @@ type DraftState = {
   countries: Set<string>;
   fuels: Set<FuelKey>;
   transmissions: Set<TransmissionKey>;
+  bodyTypes: Set<BodyTypeKey>;
   yearFrom: string;
   yearTo: string;
   priceFrom: string;
@@ -51,6 +54,7 @@ function emptyDraft(): DraftState {
     countries: new Set(),
     fuels: new Set(),
     transmissions: new Set(),
+    bodyTypes: new Set(),
     yearFrom: "",
     yearTo: "",
     priceFrom: "",
@@ -67,6 +71,7 @@ function filtersToDraft(f: FilterState): DraftState {
     countries: new Set(f.countries ?? []),
     fuels: new Set(f.fuels ?? []),
     transmissions: new Set(f.transmissions ?? []),
+    bodyTypes: new Set(f.bodyTypes ?? []),
     yearFrom: f.yearFrom !== undefined ? String(f.yearFrom) : "",
     yearTo: f.yearTo !== undefined ? String(f.yearTo) : "",
     priceFrom: f.priceFrom !== undefined ? String(f.priceFrom) : "",
@@ -87,6 +92,7 @@ function draftToPartial(d: DraftState): Partial<FilterState> {
     countries: d.countries.size > 0 ? Array.from(d.countries) : undefined,
     fuels: d.fuels.size > 0 ? Array.from(d.fuels) : undefined,
     transmissions: d.transmissions.size > 0 ? Array.from(d.transmissions) : undefined,
+    bodyTypes: d.bodyTypes.size > 0 ? Array.from(d.bodyTypes) : undefined,
     yearFrom: num(d.yearFrom),
     yearTo: num(d.yearTo),
     priceFrom: num(d.priceFrom),
@@ -99,6 +105,7 @@ function draftToPartial(d: DraftState): Partial<FilterState> {
 export function Sidebar() {
   const t = useTranslations("Sidebar");
   const fuelT = useTranslations("ListingCard.fuel");
+  const bodyT = useTranslations("ListingDetail.bodyType");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -122,6 +129,23 @@ export function Sidebar() {
     setDraft(filtersToDraft(currentFilters));
   }, [currentFilters]);
 
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Close on Esc + lock background scroll while drawer is open
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [mobileOpen]);
+
   const apply = () => {
     const next: Partial<FilterState> = {
       ...draftToPartial(draft),
@@ -129,11 +153,13 @@ export function Sidebar() {
       page: 1, // reset to page 1 on new filter apply
     };
     router.push(`${pathname}${buildSearchString(next)}`);
+    setMobileOpen(false);
   };
 
   const reset = () => {
     setDraft(emptyDraft());
     router.push(pathname);
+    setMobileOpen(false);
   };
 
   const toggleCountry = (code: string) => {
@@ -160,23 +186,50 @@ export function Sidebar() {
       return { ...d, transmissions: next };
     });
   };
+  const toggleBody = (key: BodyTypeKey) => {
+    setDraft((d) => {
+      const next = new Set(d.bodyTypes);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return { ...d, bodyTypes: next };
+    });
+  };
 
-  return (
-    <aside
-      aria-label="Filters"
-      className="hidden md:block bg-white border-[1.5px] border-ink h-fit sticky top-3.5"
-    >
-      {/* Header */}
-      <div className="bg-ink text-white px-4 py-3 flex justify-between items-center font-sans font-extrabold text-[12px] tracking-[0.16em] uppercase">
-        <span>{t("title")}</span>
+  const panelHeader = (
+    <div className="bg-ink text-white px-4 py-3 flex justify-between items-center font-sans font-extrabold text-[12px] tracking-[0.16em] uppercase">
+      <span>{t("title")}</span>
+      <div className="flex items-center gap-2">
         {activeCount > 0 && (
           <span className="bg-accent text-white font-mono font-bold text-[10px] px-[7px] py-[2px]">
             {activeCount}
           </span>
         )}
+        <button
+          type="button"
+          onClick={() => setMobileOpen(false)}
+          aria-label={t("closeAria")}
+          className="md:hidden -my-1 -mr-1 w-7 h-7 grid place-items-center text-white hover:text-accent bg-transparent border-0 cursor-pointer"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
       </div>
+    </div>
+  );
 
-      {/* Body */}
+  const panelForm = (
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -354,6 +407,27 @@ export function Sidebar() {
           </div>
         </div>
 
+        {/* Body type */}
+        <div>
+          <FilterLabel>{t("labels.bodyType")}</FilterLabel>
+          <div className="flex flex-col gap-1">
+            {BODIES.map((b) => (
+              <label
+                key={b}
+                className="flex items-center gap-2 text-[13px] text-ink-muted hover:text-ink py-[3px] cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={draft.bodyTypes.has(b)}
+                  onChange={() => toggleBody(b)}
+                  className="w-3.5 h-3.5 accent-[#0052ff]"
+                />
+                {bodyT(b)}
+              </label>
+            ))}
+          </div>
+        </div>
+
         {/* Apply CTA */}
         <button
           type="submit"
@@ -381,6 +455,67 @@ export function Sidebar() {
           {t("saveToTelegram")}
         </button>
       </form>
-    </aside>
+  );
+
+  return (
+    <>
+      {/* Mobile trigger — floating bottom-right */}
+      <button
+        type="button"
+        onClick={() => setMobileOpen(true)}
+        className="md:hidden fixed bottom-4 right-4 z-30 bg-accent hover:bg-accent-2 text-white border-[1.5px] border-ink shadow-[3px_3px_0_var(--ink)] hover:shadow-[6px_6px_0_var(--ink)] hover:-translate-x-[3px] hover:-translate-y-[3px] transition-all px-4 py-3 cursor-pointer flex items-center gap-2 font-sans font-extrabold text-[12px] uppercase tracking-[0.13em]"
+        aria-label={t("title")}
+        aria-expanded={mobileOpen}
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
+          <line x1="4" y1="6" x2="20" y2="6" />
+          <line x1="7" y1="12" x2="17" y2="12" />
+          <line x1="10" y1="18" x2="14" y2="18" />
+        </svg>
+        {t("title")}
+        {activeCount > 0 && (
+          <span className="bg-white text-accent font-mono font-bold text-[10px] px-[6px] py-px">
+            {activeCount}
+          </span>
+        )}
+      </button>
+
+      {/* Desktop aside */}
+      <aside
+        aria-label="Filters"
+        className="hidden md:block bg-white border-[1.5px] border-ink h-fit sticky top-3.5"
+      >
+        {panelHeader}
+        {panelForm}
+      </aside>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/40"
+          onClick={() => setMobileOpen(false)}
+          role="presentation"
+        >
+          <aside
+            aria-label="Filters"
+            className="fixed inset-y-0 left-0 w-[min(320px,86vw)] bg-white border-r-[1.5px] border-ink overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {panelHeader}
+            {panelForm}
+          </aside>
+        </div>
+      )}
+    </>
   );
 }

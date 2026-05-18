@@ -7,6 +7,7 @@ import type {
   Listing,
   FuelKey,
   TransmissionKey,
+  BodyTypeKey,
 } from "./mock-listings";
 import { listingMatchesModel } from "./brands";
 
@@ -21,6 +22,7 @@ export const DEFAULT_SORT: SortKey = "premium";
 const SORT_KEYS: SortKey[] = ["premium", "newest", "priceAsc", "priceDesc", "mileage"];
 const FUEL_KEYS: FuelKey[] = ["diesel", "petrol", "hybrid", "electric"];
 const TRANSMISSION_KEYS: TransmissionKey[] = ["auto", "manual"];
+const BODY_KEYS: BodyTypeKey[] = ["sedan", "suv", "wagon", "hatchback", "coupe"];
 const COUNTRY_CODES = ["DE", "PL", "NL", "CZ", "BE", "FR"] as const;
 
 export type FilterState = {
@@ -31,6 +33,7 @@ export type FilterState = {
   countries?: string[];
   fuels?: FuelKey[];
   transmissions?: TransmissionKey[];
+  bodyTypes?: BodyTypeKey[];
   yearFrom?: number;
   yearTo?: number;
   priceFrom?: number;
@@ -86,6 +89,7 @@ export function parseFilters(
     countries: pickList(raw.country, COUNTRY_CODES),
     fuels: pickList<FuelKey>(raw.fuel, FUEL_KEYS),
     transmissions: pickList<TransmissionKey>(raw.transmission, TRANSMISSION_KEYS),
+    bodyTypes: pickList<BodyTypeKey>(raw.body, BODY_KEYS),
     yearFrom: pickNumber(raw.yearFrom),
     yearTo: pickNumber(raw.yearTo),
     priceFrom: pickNumber(raw.priceFrom),
@@ -122,6 +126,12 @@ export function applyFilters(listings: Listing[], f: FilterState): Listing[] {
       f.transmissions &&
       f.transmissions.length > 0 &&
       !f.transmissions.includes(l.transmission)
+    )
+      return false;
+    if (
+      f.bodyTypes &&
+      f.bodyTypes.length > 0 &&
+      !f.bodyTypes.includes(l.details.bodyType)
     )
       return false;
     if (f.yearFrom !== undefined && l.year < f.yearFrom) return false;
@@ -170,6 +180,8 @@ export function buildSearchString(f: Partial<FilterState>): string {
   if (f.fuels && f.fuels.length > 0) sp.set("fuel", f.fuels.join(","));
   if (f.transmissions && f.transmissions.length > 0)
     sp.set("transmission", f.transmissions.join(","));
+  if (f.bodyTypes && f.bodyTypes.length > 0)
+    sp.set("body", f.bodyTypes.join(","));
   if (f.yearFrom !== undefined) sp.set("yearFrom", String(f.yearFrom));
   if (f.yearTo !== undefined) sp.set("yearTo", String(f.yearTo));
   if (f.priceFrom !== undefined) sp.set("priceFrom", String(f.priceFrom));
@@ -192,6 +204,7 @@ export function countActiveFilters(f: FilterState): number {
   if (f.countries && f.countries.length > 0) n++;
   if (f.fuels && f.fuels.length > 0) n++;
   if (f.transmissions && f.transmissions.length > 0) n++;
+  if (f.bodyTypes && f.bodyTypes.length > 0) n++;
   if (f.yearFrom !== undefined || f.yearTo !== undefined) n++;
   if (f.priceFrom !== undefined || f.priceTo !== undefined) n++;
   if (f.mileageFrom !== undefined || f.mileageTo !== undefined) n++;
