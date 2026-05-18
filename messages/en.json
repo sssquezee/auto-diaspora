@@ -31,7 +31,8 @@
     "moto": "Motorcycles",
     "commercial": "Commercial",
     "trailers": "Trailers",
-    "parts": "Parts"
+    "parts": "Parts",
+    "disabledHint": "Coming soon"
   },
   "Hero": {
     "liveBadge": "{count} cars online",
@@ -44,6 +45,50 @@
       "countries": "EU countries",
       "fee": "Buyer fee"
     }
+  },
+  "ActiveFilters": {
+    "label": "Active filters:",
+    "clearAll": "clear all",
+    "removeAria": "Remove filter",
+    "year": "Year",
+    "price": "Price",
+    "mileage": "Mileage"
+  },
+  "Report": {
+    "kicker": "Report a listing",
+    "title": "What's wrong with this listing?",
+    "subtitle": "Your report stays private. Our team reviews each one.",
+    "reasonLabel": "Reason",
+    "reasons": {
+      "spam": "Spam or commercial repost",
+      "scam": "Looks like a scam",
+      "wrong_info": "Incorrect or misleading info",
+      "stolen": "Suspected stolen vehicle",
+      "duplicate": "Duplicate of another listing",
+      "other": "Other"
+    },
+    "detailsLabel": "Details (optional)",
+    "detailsPlaceholder": "Tell us more — what should our team look at first?",
+    "cancel": "Cancel",
+    "submit": "Send report"
+  },
+  "CookieBanner": {
+    "kicker": "Cookies",
+    "title": "We use cookies",
+    "body": "Auto Diaspora uses essential cookies to keep you signed in and remember your filters. Read more in the <link>Privacy Policy</link>.",
+    "accept": "OK, got it"
+  },
+  "NotFound": {
+    "kicker": "404",
+    "title": "Page not found",
+    "body": "The page you're looking for doesn't exist, was moved, or the listing has been removed. Try the catalog or search.",
+    "ctaHome": "Open catalog",
+    "ctaSearch": "Search cars"
+  },
+  "NoResults": {
+    "title": "No matches",
+    "body": "Try clearing some filters, widening the price range, or removing the country restriction.",
+    "clearAll": "Clear all filters"
   },
   "Results": {
     "count": "{count} listings found",
@@ -89,8 +134,10 @@
       "mileage": "Mileage, km",
       "country": "Country",
       "fuel": "Fuel type",
-      "transmission": "Transmission"
+      "transmission": "Transmission",
+      "bodyType": "Body type"
     },
+    "closeAria": "Close filters",
     "placeholders": {
       "anyBrand": "Any brand",
       "anyModel": "Any model",
@@ -106,7 +153,8 @@
       "PL": "Poland",
       "NL": "Netherlands",
       "CZ": "Czechia",
-      "BE": "Belgium"
+      "BE": "Belgium",
+      "FR": "France"
     },
     "transmission": {
       "auto": "Automatic",
@@ -164,6 +212,14 @@
         "cta": "Connect →"
       }
     },
+    "dev": {
+      "kicker": "Dev tools",
+      "seedDescription": "Populate the catalog with 30 demo listings owned by your account. Use once to play with the catalog and filters.",
+      "seedButton": "Seed 30 listings",
+      "seedOk": "Inserted {count} demo listings.",
+      "seedAlready": "Already seeded — your account already owns listings.",
+      "seedError": "Seed failed"
+    },
     "listings": {
       "title": "My listings",
       "newButton": "+ List a car",
@@ -172,6 +228,27 @@
         "paused": "Paused",
         "sold": "Sold",
         "expired": "Expired"
+      },
+      "actions": {
+        "edit": "Edit",
+        "pause": "Pause",
+        "resume": "Resume",
+        "markSold": "Mark sold",
+        "delete": "Delete",
+        "confirmDelete": "Delete listing “{title}”? Photos will also be removed."
+      },
+      "actionResult": {
+        "paused": "Listing paused — it's no longer visible in the catalog.",
+        "active": "Listing is live again.",
+        "sold": "Marked as sold. Congrats!",
+        "deleted": "Listing deleted.",
+        "error": "Something went wrong. Try again."
+      },
+      "empty": {
+        "active": "You have no active listings yet. Hit “List a car” to post your first.",
+        "paused": "No paused listings.",
+        "sold": "No sold listings yet.",
+        "expired": "No expired listings."
       }
     },
     "favorites": {
@@ -183,10 +260,13 @@
     "messages": {
       "title": "Messages",
       "subtitle": "{count} active conversations",
+      "empty": "No conversations yet. Open a listing and tap “Write to seller” to start chatting.",
       "chat": {
         "back": "Back to inbox",
         "online": "Online now",
         "offline": "Offline",
+        "asBuyer": "You are the buyer in this chat",
+        "asSeller": "You are the seller in this chat",
         "about": "Re:",
         "day": {
           "today": "Today",
@@ -215,31 +295,41 @@
       "sections": {
         "profile": "Profile",
         "telegram": "Telegram alerts",
-        "notifications": "Email notifications",
         "language": "Interface language",
         "danger": "Danger zone"
       },
       "fields": {
+        "email": "Email",
         "name": "Name",
-        "phone": "Phone"
+        "phone": "Phone",
+        "country": "Country",
+        "city": "City"
       },
-      "changeAvatar": "Change photo",
+      "emailLocked": "Email is locked to your sign-in identity and can't be changed here.",
+      "languageHint": "Changing language reloads the page in the new locale.",
       "telegram": {
         "desc": "Link your account to @AutoDiasporaBot — get notified about messages and new cars matching your saved filters.",
-        "cta": "Connect Telegram"
-      },
-      "notifications": {
-        "newMessages": "New messages from buyers",
-        "newOnSavedSearch": "New cars matching saved searches",
-        "priceDrops": "Price drops on favorited cars",
-        "weekly": "Weekly market digest"
+        "cta": "Connect Telegram",
+        "soon": "The Telegram bot is coming soon."
       },
       "saveButton": "Save changes",
+      "savingButton": "Saving…",
+      "noticeSaved": "Profile saved.",
+      "genericError": "Something went wrong. Try again.",
       "danger": {
-        "desc": "Account deletion is permanent. All your listings, chats, favorites, and settings will be erased. We'll send a confirmation email before removal.",
-        "cta": "Delete account"
+        "desc": "Account deletion is permanent. All your listings, chats, favorites, and settings will be erased. There is no undo.",
+        "cta": "Delete account",
+        "deleting": "Deleting…",
+        "confirmText": "Are you sure? This permanently deletes your account, all listings, and all chats. Type-confirm not required — clicking OK is the confirmation.",
+        "confirmMismatch": "Confirmation didn't match — account was not deleted."
       }
     }
+  },
+  "EditListing": {
+    "kicker": "Edit listing",
+    "back": "Back to my listings",
+    "save": "Save changes",
+    "photosNote": "Photo editing isn't available yet — to change images, delete this listing and create a new one."
   },
   "NewListing": {
     "title": "List a car",
@@ -285,7 +375,12 @@
       "no": "No, not cleared"
     },
     "photosDropzone": "Drop photos here or click to select",
-    "photosHint": "Up to 15 photos · first photo = main · JPG, PNG, WebP · max 5 MB each",
+    "photosHint": "Up to 15 photos · first photo = main · JPG, PNG, WebP · max 10 MB each",
+    "photosAddMore": "Add more",
+    "photosRemove": "Remove photo",
+    "photosTooLarge": "File too large (max 10 MB).",
+    "photosNotImage": "Only image files are accepted.",
+    "publishing": "Publishing…",
     "tiers": {
       "free": {
         "title": "Free",
@@ -308,7 +403,15 @@
         "desc": "PREMIUM badge + top placement for 30 days"
       }
     },
-    "publish": "Publish listing"
+    "publish": "Publish listing",
+    "errors": {
+      "missing_fields": "Please fill in all required fields.",
+      "server": "Could not save the listing. Please try again.",
+      "notAuthed": "You need to be signed in.",
+      "uploadFailed": "Photo upload failed",
+      "moderation_stop_word": "Your listing contains content that looks like spam. Please edit the title or description and resubmit.",
+      "moderation_external_url": "External links and contact handles aren't allowed in the description — buyers reach you via the in-app chat."
+    }
   },
   "Payment": {
     "kicker": "Checkout",
@@ -359,7 +462,9 @@
       "forgotPassword": "Forgot password?",
       "submitButton": "Sign in",
       "noAccount": "No account yet?",
-      "registerLink": "Create account"
+      "registerLink": "Create account",
+      "noticeCheckEmail": "Check your inbox — we sent a confirmation link.",
+      "googleSoon": "Google sign-in is coming soon"
     },
     "register": {
       "title": "Sign up",
@@ -370,7 +475,32 @@
       "submitButton": "Create account",
       "terms": "By signing up, you accept the Terms and Privacy Policy",
       "haveAccount": "Already have an account?",
-      "loginLink": "Sign in"
+      "loginLink": "Sign in",
+      "googleSoon": "Google sign-in is coming soon"
+    },
+    "forgot": {
+      "title": "Reset password",
+      "subtitle": "Enter your email and we'll send a reset link.",
+      "submitButton": "Send reset link",
+      "backToLogin": "Back to sign in",
+      "noticeSent": "If an account exists for that email, the reset link is on its way. Check your inbox."
+    },
+    "updatePassword": {
+      "title": "Set a new password",
+      "subtitle": "You're updating the password for {email}.",
+      "newPasswordLabel": "New password",
+      "confirmLabel": "Confirm password",
+      "submitButton": "Update password",
+      "mismatch": "Passwords don't match."
+    },
+    "errors": {
+      "invalid_credentials": "Email or password is incorrect.",
+      "email_taken": "An account with this email already exists.",
+      "weak_password": "Password must be at least 8 characters.",
+      "invalid_email": "Please enter a valid email.",
+      "missing_fields": "Fill in all required fields.",
+      "rate_limit": "Too many attempts. Please wait a few minutes.",
+      "unknown": "Something went wrong. Try again."
     }
   },
   "ListingDetail": {
@@ -384,7 +514,8 @@
       "addToFavorites": "Add to favorites",
       "removeFromFavorites": "Saved",
       "share": "Share",
-      "report": "Report listing"
+      "report": "Report listing",
+      "reportSent": "Thanks — your report was submitted. Our team will review it shortly."
     },
     "gallery": {
       "prev": "Previous photo",
