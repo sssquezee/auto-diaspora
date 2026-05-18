@@ -32,6 +32,7 @@ export async function Footer() {
         { label: t("company.contacts"), href: "#" },
         { label: t("company.terms"), href: "/terms" },
         { label: t("company.privacy"), href: "/privacy" },
+        { label: t("company.impressum"), href: "/impressum" },
       ],
     },
   ];
