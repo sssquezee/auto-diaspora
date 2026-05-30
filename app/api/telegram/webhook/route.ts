@@ -21,6 +21,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import {
   answerCallbackQuery,
   editMessageText,
+  isAdminChat,
 } from "@/lib/telegram";
 
 const UUID_RE =
@@ -65,10 +66,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  // 2. Verify chat is the configured admin chat — keeps any random
+  // 2. Verify chat is one of the configured admin chats — keeps any random
   //    user from triggering our actions just by knowing the bot.
-  const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
-  if (!adminChatId || String(cb.message.chat.id) !== String(adminChatId)) {
+  if (!isAdminChat(cb.message.chat.id)) {
     await answerCallbackQuery(cb.id, "Not authorized");
     return NextResponse.json({ ok: true });
   }

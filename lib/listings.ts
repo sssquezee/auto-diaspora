@@ -49,11 +49,12 @@ type DbListing = {
   favorites_count: number;
   created_at: string;
   bumped_at: string;
+  topped_at: string | null;
   listing_photos: Array<{ storage_path: string; position: number }> | null;
 };
 
 const LISTING_COLUMNS =
-  "id,user_id,title,description,brand,model,year,mileage,fuel_type,transmission,body_type,drive_type,engine_volume,power_hp,color,country,city,price,currency,customs_cleared,status,is_premium,is_top,is_urgent,is_verified,views_count,favorites_count,created_at,bumped_at,listing_photos(storage_path,position)";
+  "id,user_id,title,description,brand,model,year,mileage,fuel_type,transmission,body_type,drive_type,engine_volume,power_hp,color,country,city,price,currency,customs_cleared,status,is_premium,is_top,is_urgent,is_verified,views_count,favorites_count,created_at,bumped_at,topped_at,listing_photos(storage_path,position)";
 
 const STORAGE_BUCKET = "listings";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
@@ -182,7 +183,8 @@ export async function getActiveListings(): Promise<Listing[]> {
     .from("listings")
     .select(LISTING_COLUMNS)
     .eq("status", "active")
-    .order("bumped_at", { ascending: false })
+    .order("topped_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false })
     .returns<DbListing[]>();
   if (error) {
     console.error("[listings] getActive failed:", error.message);
@@ -258,7 +260,8 @@ export async function getSellerActiveListings(
     .select(LISTING_COLUMNS)
     .eq("user_id", sellerId)
     .eq("status", "active")
-    .order("bumped_at", { ascending: false })
+    .order("topped_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false })
     .limit(limit)
     .returns<DbListing[]>();
   if (error || !data) return [];
@@ -295,8 +298,11 @@ export async function getSimilarListings(
     })
     .sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
-      if (a.d.is_premium !== b.d.is_premium) return a.d.is_premium ? -1 : 1;
-      return new Date(b.d.bumped_at).getTime() - new Date(a.d.bumped_at).getTime();
+      // Topped listings rank ahead; among them, most recently paid first.
+      const at = a.d.topped_at ? new Date(a.d.topped_at).getTime() : 0;
+      const bt = b.d.topped_at ? new Date(b.d.topped_at).getTime() : 0;
+      if (at !== bt) return bt - at;
+      return new Date(b.d.created_at).getTime() - new Date(a.d.created_at).getTime();
     })
     .slice(0, count)
     .map((x) => dbToListing(x.d));
@@ -358,15 +364,14 @@ export async function getFilteredListings(
   if (filters.mileageTo !== undefined)
     query = query.lte("mileage", filters.mileageTo);
 
-  // Sort
+  // Sort. Paid "top" listings are pinned ahead of everything regardless of
+  // the chosen sort (most recently paid first) — that's the hard rule. The
+  // user's selected order only decides how the rest (and ties) fall.
+  query = query.order("topped_at", { ascending: false, nullsFirst: false });
   switch (filters.sortBy) {
     case "premium":
-      query = query
-        .order("is_premium", { ascending: false })
-        .order("bumped_at", { ascending: false });
-      break;
     case "newest":
-      query = query.order("bumped_at", { ascending: false });
+      query = query.order("created_at", { ascending: false });
       break;
     case "priceAsc":
       query = query.order("price", { ascending: true });
@@ -389,4 +394,31 @@ export async function getFilteredListings(
     return { listings: [], total: 0 };
   }
   return { listings: data.map(dbToListing), total: count ?? 0 };
+}
+
+export type HeroStats = { cars: number; sellers: number; countries: number };
+
+/**
+ * Live homepage counters: active listings, distinct sellers, distinct
+ * countries. Backed by the `hero_stats()` SQL function (one round-trip,
+ * DB-side COUNT DISTINCT). Returns zeros on error so the Hero still renders.
+ *
+ * Note: `bigint` comes back as a string over PostgREST, hence Number().
+ */
+export async function getHeroStats(): Promise<HeroStats> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("hero_stats").single<{
+    cars: number | string;
+    sellers: number | string;
+    countries: number | string;
+  }>();
+  if (error || !data) {
+    console.error("[listings] getHeroStats failed:", error?.message);
+    return { cars: 0, sellers: 0, countries: 0 };
+  }
+  return {
+    cars: Number(data.cars) || 0,
+    sellers: Number(data.sellers) || 0,
+    countries: Number(data.countries) || 0,
+  };
 }

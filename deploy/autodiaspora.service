@@ -1,0 +1,20 @@
+[Unit]
+Description=Auto Diaspora Next.js Frontend
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/auto-diaspora
+# next start reads PORT from the environment. 3000 is taken by another app,
+# so this one lives on 3001. nginx proxies autodiaspora.com → 127.0.0.1:3001.
+Environment=NODE_ENV=production
+Environment=PORT=3001
+# Secrets + NEXT_PUBLIC_* live in .env.production.local (gitignored, created
+# on the server). Next.js loads it automatically; it must exist before build.
+ExecStart=/usr/bin/npm run start
+Restart=on-failure
+RestartSec=5
+User=root
+
+[Install]
+WantedBy=multi-user.target

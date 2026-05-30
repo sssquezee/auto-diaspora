@@ -419,20 +419,10 @@
         "price": "€0",
         "desc": "Standard listing for 60 days"
       },
-      "bump": {
-        "title": "Bump to top",
-        "price": "€4.99",
-        "desc": "One-time push higher in the list"
-      },
-      "premium14": {
-        "title": "Premium 14 days",
-        "price": "€9.99",
-        "desc": "PREMIUM badge + top placement for 14 days"
-      },
-      "premium30": {
-        "title": "Premium 30 days",
-        "price": "€19.99",
-        "desc": "PREMIUM badge + top placement for 30 days"
+      "top": {
+        "title": "Boost to top",
+        "price": "€5",
+        "desc": "Pin your listing above all others. Paid listings rank by who paid last."
       }
     },
     "publish": "Publish listing",
@@ -443,7 +433,6 @@
       "uploadFailed": "Photo upload failed",
       "moderation_stop_word": "Your listing contains content that looks like spam. Please edit the title or description and resubmit.",
       "moderation_external_url": "External links and contact handles aren't allowed in the description — buyers reach you via the in-app chat.",
-      "free_limit": "You already have 3 active free listings. Pause or delete one — or pick a paid tier below — to publish another.",
       "rate_limit": "Too many submissions in a short time. Wait a minute and try again."
     }
   },
@@ -534,7 +523,8 @@
       "invalid_email": "Please enter a valid email.",
       "missing_fields": "Fill in all required fields.",
       "rate_limit": "Too many attempts. Please wait a few minutes.",
-      "unknown": "Something went wrong. Try again."
+      "unknown": "Something went wrong. Try again.",
+      "telegram": "Telegram sign-in failed. Please try again."
     }
   },
   "ListingDetail": {
@@ -604,7 +594,8 @@
     "similar": {
       "title": "Similar listings",
       "subtitle": "Same segment, close price"
-    }
+    },
+    "boostTitle": "Promotion"
   },
   "About": {
     "kicker": "Who we are",
@@ -880,5 +871,9 @@
     },
     "copyright": "© 2026 Auto Diaspora",
     "legal": "KVK · Netherlands · GDPR"
+  },
+  "Boost": {
+    "cta": "Boost to top · €5",
+    "alreadyTop": "Already in top"
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { PhotosUploader } from "@/components/PhotosUploader";
@@ -73,7 +73,7 @@ function SectionCard({
   );
 }
 
-export default function NewListingPage() {
+function NewListingForm() {
   const t = useTranslations("NewListing");
   const tErr = useTranslations("NewListing.errors");
   const locale = useLocale();
@@ -149,7 +149,6 @@ export default function NewListingPage() {
               | "server"
               | "moderation_stop_word"
               | "moderation_external_url"
-              | "free_limit"
               | "rate_limit"
           )}
           {errorMsg && submitError === "server" && (
@@ -190,7 +189,7 @@ export default function NewListingPage() {
           />
         </SectionCard>
 
-        {/* 6. Premium */}
+        {/* 6. Placement */}
         <SectionCard index={6} title={t("sections.premium")}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <TierCard
@@ -201,22 +200,10 @@ export default function NewListingPage() {
               desc={t("tiers.free.desc")}
             />
             <TierCard
-              value="bump"
-              title={t("tiers.bump.title")}
-              price={t("tiers.bump.price")}
-              desc={t("tiers.bump.desc")}
-            />
-            <TierCard
-              value="premium14"
-              title={t("tiers.premium14.title")}
-              price={t("tiers.premium14.price")}
-              desc={t("tiers.premium14.desc")}
-            />
-            <TierCard
-              value="premium30"
-              title={t("tiers.premium30.title")}
-              price={t("tiers.premium30.price")}
-              desc={t("tiers.premium30.desc")}
+              value="top"
+              title={t("tiers.top.title")}
+              price={t("tiers.top.price")}
+              desc={t("tiers.top.desc")}
             />
           </div>
         </SectionCard>
@@ -237,5 +224,13 @@ export default function NewListingPage() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function NewListingPage() {
+  return (
+    <Suspense>
+      <NewListingForm />
+    </Suspense>
   );
 }

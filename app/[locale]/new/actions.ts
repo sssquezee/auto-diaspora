@@ -5,7 +5,6 @@ import { createClient } from "@/lib/supabase/server";
 import { routing } from "@/i18n/routing";
 import {
   isValidTier,
-  FREE_LISTING_LIMIT,
   RATE_LIMIT_WINDOW_MS,
   RATE_LIMIT_MAX_INSERTS,
 } from "@/lib/tiers";
@@ -137,20 +136,6 @@ export async function createListingAction(formData: FormData) {
     redirect(`/${locale}/new?error=rate_limit`);
   }
 
-  // 2.6. Free-tier cap: max FREE_LISTING_LIMIT active listings unless
-  //      this submission pays for a paid tier (bump/premium14/premium30).
-  if (tier === "free") {
-    const { count: activeCount } = await supabase
-      .from("listings")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .eq("status", "active");
-    if ((activeCount ?? 0) >= FREE_LISTING_LIMIT) {
-      await cleanupOrphans();
-      redirect(`/${locale}/new?error=free_limit`);
-    }
-  }
-
   // 2.7. Content moderation — block obvious spam before insert
   const mod = moderateListing({ title: `${brand} ${model}`, description });
   if (!mod.ok) {
@@ -236,11 +221,11 @@ export async function createListingAction(formData: FormData) {
     })
   );
 
-  // 6. Branch on tier
-  if (tier !== "free") {
-    redirect(
-      `/${locale}/new/payment?tier=${tier}&listingId=${data.id}`
-    );
+  // 6. If the user chose to boost to top (€5), send them to payment with the
+  //    freshly-created listing. Otherwise the free listing is done — it goes
+  //    to moderation and the user sees the pending state.
+  if (tier === "top") {
+    redirect(`/${locale}/new/payment?tier=top&listingId=${data.id}`);
   }
 
   redirect(`/${locale}/listing/${data.id}?pending=1`);

@@ -17,6 +17,23 @@
 
 const API_BASE = "https://api.telegram.org";
 
+/**
+ * Admin chat ids allowed to receive pings and approve/reject — read from
+ * TELEGRAM_ADMIN_CHAT_ID (comma-separated, so multiple owners can moderate).
+ */
+export function adminChatIds(): string[] {
+  return (process.env.TELEGRAM_ADMIN_CHAT_ID ?? "")
+    .split(",")
+    .map((id) => id.trim())
+    .filter(Boolean);
+}
+
+/** True when the given chat id is one of the configured admins. */
+export function isAdminChat(chatId: number | string | undefined): boolean {
+  if (chatId === undefined) return false;
+  return adminChatIds().includes(String(chatId));
+}
+
 export type InlineButton =
   | { text: string; url: string }
   | { text: string; callback_data: string };
@@ -47,19 +64,24 @@ async function callApi(method: string, body: unknown): Promise<void> {
 
 export async function sendAdminNotification(input: SendMessageInput): Promise<void> {
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
-  if (!token || !chatId) return;
+  const chatIds = adminChatIds();
+  if (!token || chatIds.length === 0) return;
 
-  const body: Record<string, unknown> = {
-    chat_id: chatId,
-    text: input.text,
-    parse_mode: "HTML",
-    disable_web_page_preview: true,
-  };
-  if (input.buttons && input.buttons.length > 0) {
-    body.reply_markup = { inline_keyboard: input.buttons };
-  }
-  await callApi("sendMessage", body);
+  // Send to every admin so any of them can approve/reject.
+  await Promise.all(
+    chatIds.map((chatId) => {
+      const body: Record<string, unknown> = {
+        chat_id: chatId,
+        text: input.text,
+        parse_mode: "HTML",
+        disable_web_page_preview: true,
+      };
+      if (input.buttons && input.buttons.length > 0) {
+        body.reply_markup = { inline_keyboard: input.buttons };
+      }
+      return callApi("sendMessage", body);
+    })
+  );
 }
 
 /**

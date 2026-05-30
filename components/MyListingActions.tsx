@@ -2,6 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { BoostTopButton } from "@/components/BoostTopButton";
 import {
   pauseListingAction,
   resumeListingAction,
@@ -15,9 +16,10 @@ type Props = {
   listingId: string;
   status: Status | undefined;
   title: string;
+  isTop: boolean;
 };
 
-export function MyListingActions({ listingId, status, title }: Props) {
+export function MyListingActions({ listingId, status, title, isTop }: Props) {
   const t = useTranslations("Account.listings.actions");
   const locale = useLocale();
 
@@ -119,6 +121,11 @@ export function MyListingActions({ listingId, status, title }: Props) {
             {t("markSold")}
           </button>
         </form>
+      )}
+
+      {/* Boost to top — only meaningful while the listing is live */}
+      {(status === "active" || status === "paused") && (
+        <BoostTopButton listingId={listingId} isTop={isTop} variant="compact" />
       )}
 
       {/* Delete — always available */}

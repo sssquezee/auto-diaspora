@@ -22,20 +22,23 @@ export async function GET(
   const code = url.searchParams.get("code");
   const next = url.searchParams.get("next") ?? `/${locale}/account`;
 
+  // Behind nginx, request.url is the internal http://localhost:3001 — build
+  // redirects from the public origin so users don't land on a dead localhost.
+  const origin =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || url.origin;
+  const toPath = (p: string) =>
+    NextResponse.redirect(`${origin}${p.startsWith("/") ? p : `/${p}`}`);
+
   if (!code) {
-    return NextResponse.redirect(
-      new URL(`/${locale}/auth/login?error=unknown`, request.url)
-    );
+    return toPath(`/${locale}/auth/login?error=unknown`);
   }
 
   const supabase = await createClient();
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
-    return NextResponse.redirect(
-      new URL(`/${locale}/auth/login?error=unknown`, request.url)
-    );
+    return toPath(`/${locale}/auth/login?error=unknown`);
   }
 
-  return NextResponse.redirect(new URL(next, request.url));
+  return toPath(next);
 }

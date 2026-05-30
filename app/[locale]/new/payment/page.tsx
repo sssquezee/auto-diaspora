@@ -97,6 +97,7 @@ export default async function PaymentSummaryPage({
       <div className="mt-6">
         <PayButton
           tier={typedTier}
+          listingId={sp?.listingId}
           label={t("payCta")}
           pendingLabel={t("payPending")}
           errorLabel={t("payError")}

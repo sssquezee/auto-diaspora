@@ -7,6 +7,8 @@ import { ListingGallery } from "@/components/ListingGallery";
 import { ListingActions } from "@/components/ListingActions";
 import { ListingCard } from "@/components/ListingCard";
 import { ReportModal } from "@/components/ReportModal";
+import { BoostTopButton } from "@/components/BoostTopButton";
+import { createClient } from "@/lib/supabase/server";
 import {
   formatMileage,
   formatPriceEur,
@@ -76,11 +78,16 @@ export default async function ListingDetailPage({
   if (!listing) notFound();
 
   const sellerId = listing.userId;
-  const [favState, sellerProfile, sellerStats] = await Promise.all([
-    getFavoritesState(),
-    sellerId ? getSellerProfile(sellerId) : Promise.resolve(null),
-    sellerId ? getSellerStats(sellerId) : Promise.resolve(null),
-  ]);
+  const supabase = await createClient();
+  const [favState, sellerProfile, sellerStats, { data: { user } }] =
+    await Promise.all([
+      getFavoritesState(),
+      sellerId ? getSellerProfile(sellerId) : Promise.resolve(null),
+      sellerId ? getSellerStats(sellerId) : Promise.resolve(null),
+      supabase.auth.getUser(),
+    ]);
+  const isOwner = !!user && user.id === sellerId;
+  const isTop = listing.badges.includes("top");
 
   const t = await getTranslations("ListingDetail");
   const tCard = await getTranslations("ListingCard");
@@ -297,6 +304,16 @@ export default async function ListingDetailPage({
 
         {/* RIGHT — actions + seller (sticky on desktop) */}
         <aside className="flex flex-col gap-3 md:sticky md:top-3.5 md:h-fit">
+          {/* Owner-only: boost this listing to the top of the catalog */}
+          {isOwner && (
+            <div className="bg-white border-[1.5px] border-ink p-4 flex flex-col gap-2">
+              <h3 className="font-sans font-extrabold text-[11px] uppercase tracking-[0.16em] text-ink-muted">
+                {t("boostTitle")}
+              </h3>
+              <BoostTopButton listingId={listing.id} isTop={isTop} variant="full" />
+            </div>
+          )}
+
           {/* Action card */}
           <ListingActions
             listingId={listing.id}
