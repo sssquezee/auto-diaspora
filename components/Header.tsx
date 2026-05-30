@@ -45,19 +45,21 @@ export async function Header() {
 
   return (
     <header className="bg-white border-b-2 border-ink">
-      <div className="max-w-[1400px] mx-auto px-6 py-[18px] grid grid-cols-[auto_1fr_auto] items-center gap-8">
-        <Logo className="text-[26px]" />
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 sm:py-[18px] flex items-center gap-3 md:grid md:grid-cols-[auto_1fr_auto] md:gap-8">
+        <Logo className="text-[20px] sm:text-[26px] shrink-0" />
 
-        <div className="flex justify-center">
+        {/* Full search bar — desktop only. On mobile it lives on the catalog
+            page (Hero/NavCats), so the header stays compact. */}
+        <div className="hidden md:flex justify-center">
           <MegaSearch />
         </div>
 
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center ml-auto md:ml-0">
           <button
             type="button"
             title={t("favorites")}
             aria-label={t("favorites")}
-            className="w-10 h-10 border-[1.5px] border-ink bg-white grid place-items-center text-ink hover:bg-ink hover:text-white transition-colors cursor-pointer"
+            className="w-9 h-9 sm:w-10 sm:h-10 border-[1.5px] border-ink bg-white grid place-items-center text-ink hover:bg-ink hover:text-white transition-colors cursor-pointer shrink-0"
           >
             <HeartIcon />
           </button>
@@ -66,7 +68,7 @@ export async function Header() {
             href="/account"
             title={t("profile")}
             aria-label={t("profile")}
-            className="w-10 h-10 border-[1.5px] border-ink bg-white grid place-items-center text-ink hover:bg-ink hover:text-white transition-colors cursor-pointer relative no-underline"
+            className="w-9 h-9 sm:w-10 sm:h-10 border-[1.5px] border-ink bg-white grid place-items-center text-ink hover:bg-ink hover:text-white transition-colors cursor-pointer relative no-underline shrink-0"
           >
             <UserIcon />
             <span
@@ -77,9 +79,12 @@ export async function Header() {
 
           <Link
             href="/new"
-            className="bg-ink text-white px-4 py-2.5 font-sans font-extrabold text-[12px] tracking-[1px] uppercase no-underline hover:bg-accent transition-colors"
+            aria-label={t("publish")}
+            className="bg-ink text-white h-9 w-9 sm:h-auto sm:w-auto sm:px-4 sm:py-2.5 grid place-items-center font-sans font-extrabold text-[12px] tracking-[1px] uppercase no-underline hover:bg-accent transition-colors shrink-0"
           >
-            {t("publish")}
+            {/* Plus icon on mobile, full label from sm up */}
+            <span className="sm:hidden text-[20px] leading-none">+</span>
+            <span className="hidden sm:inline">{t("publish")}</span>
           </Link>
         </div>
       </div>

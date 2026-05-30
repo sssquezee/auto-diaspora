@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import { NavCats } from "@/components/NavCats";
 import { Hero } from "@/components/Hero";
+import { MegaSearch } from "@/components/MegaSearch";
 import { Sidebar } from "@/components/Sidebar";
 import { ResultsHeader } from "@/components/ResultsHeader";
 import { ActiveFilterChips } from "@/components/ActiveFilterChips";
@@ -47,6 +48,10 @@ export default async function HomePage({
         <Sidebar />
 
         <div className="flex flex-col gap-3.5">
+          {/* Search — only on mobile (the header hides it there) */}
+          <div className="md:hidden">
+            <MegaSearch />
+          </div>
           <Hero />
           <ResultsHeader
             count={total}

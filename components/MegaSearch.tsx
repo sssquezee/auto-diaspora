@@ -39,7 +39,7 @@ export function MegaSearch() {
       role="search"
       aria-label="Auto search"
       onSubmit={handleSubmit}
-      className="grid grid-cols-[1.5fr_1fr_1fr_auto] border-2 border-ink w-full max-w-[720px] overflow-hidden"
+      className="grid grid-cols-2 sm:grid-cols-[1.5fr_1fr_1fr_auto] border-2 border-ink w-full max-w-[720px] overflow-hidden"
     >
       <select
         value={brand}

@@ -77,12 +77,12 @@ export function ResultsHeader({ count, isAuthed, savedQueries }: Props) {
         <SaveSearchButton isAuthed={isAuthed} savedQueries={savedQueries} />
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-1 sm:flex-none justify-end">
         <select
           aria-label="Sort"
           value={filters.sortBy}
           onChange={handleSort}
-          className="font-sans text-[13px] font-medium border-[1.5px] border-ink bg-white px-3 py-2 text-ink outline-none cursor-pointer appearance-none pr-8"
+          className="font-sans text-[13px] font-medium border-[1.5px] border-ink bg-white px-3 py-2 text-ink outline-none cursor-pointer appearance-none pr-8 min-w-0"
           style={{
             backgroundImage:
               "url(\"data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%230a0a0a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\")",
@@ -97,7 +97,7 @@ export function ResultsHeader({ count, isAuthed, savedQueries }: Props) {
           <option value="mileage">{t("sort.mileage")}</option>
         </select>
 
-        <div className="flex border-[1.5px] border-ink">
+        <div className="hidden sm:flex border-[1.5px] border-ink">
           <button
             type="button"
             aria-label="Grid view"

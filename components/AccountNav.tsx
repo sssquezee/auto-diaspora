@@ -31,7 +31,52 @@ export function AccountNav({
   const pathname = usePathname();
 
   return (
-    <aside
+    <>
+      {/* Mobile: horizontal scrollable tab bar */}
+      <nav
+        aria-label="Account navigation"
+        className="md:hidden flex gap-1.5 overflow-x-auto -mx-4 px-4 pb-1"
+      >
+        {NAV_ITEMS.map((item) => {
+          const isActive =
+            item.href === "/account"
+              ? pathname === "/account"
+              : pathname.startsWith(item.href);
+          return (
+            <Link
+              key={item.key}
+              href={item.href}
+              className={`shrink-0 px-3 py-2 no-underline font-sans text-[12px] font-bold uppercase tracking-[0.06em] border-[1.5px] whitespace-nowrap transition-colors ${
+                isActive
+                  ? "bg-ink text-white border-ink"
+                  : "bg-white text-ink-muted border-line-strong hover:border-ink hover:text-ink"
+              }`}
+            >
+              {t(item.key)}
+            </Link>
+          );
+        })}
+        {isAdmin && (
+          <Link
+            href="/admin/queue"
+            className="shrink-0 px-3 py-2 no-underline font-sans text-[12px] font-extrabold uppercase tracking-[0.06em] border-[1.5px] border-accent bg-accent-soft text-ink whitespace-nowrap"
+          >
+            {t("admin")}
+          </Link>
+        )}
+        <form action={signOutAction} className="shrink-0">
+          <input type="hidden" name="locale" value={locale} />
+          <button
+            type="submit"
+            className="px-3 py-2 bg-white border-[1.5px] border-line-strong cursor-pointer font-sans text-[12px] font-bold uppercase tracking-[0.06em] text-ink-muted hover:text-accent hover:border-accent transition-colors whitespace-nowrap"
+          >
+            {t("logout")}
+          </button>
+        </form>
+      </nav>
+
+      {/* Desktop: vertical sidebar */}
+      <aside
       aria-label="Account navigation"
       className="hidden md:flex md:flex-col bg-white border-[1.5px] border-ink h-fit sticky top-3.5"
     >
@@ -124,5 +169,6 @@ export function AccountNav({
         </form>
       </nav>
     </aside>
+    </>
   );
 }
