@@ -13,7 +13,7 @@ deploy:
     npm ci
     npm run build
     systemctl restart autodiaspora
-    @sleep 3
+    @sleep 6
     @just status
 
 # Build without restarting (e.g. to check it compiles)
@@ -24,7 +24,7 @@ build:
 # Restart the app service
 restart:
     systemctl restart autodiaspora
-    @sleep 3
+    @sleep 6
     @just status
 
 # Show service status + a local health check
