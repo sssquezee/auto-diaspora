@@ -1,0 +1,49 @@
+name: Deploy to production
+
+on:
+  push:
+    branches: [master]
+    # Skip when only docs / config-only changes touched. Adjust as needed.
+    paths-ignore:
+      - "**.md"
+      - ".gitignore"
+      - ".vscode/**"
+  workflow_dispatch: {} # manual "Run workflow" button in the Actions tab
+
+concurrency:
+  # Never run two deploys at once; later commits queue.
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: SSH and deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # Abort on the first failing command in the script block.
+          script_stop: true
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.DEPLOY_PATH }}"
+
+            echo "==> Fetching latest master"
+            git fetch --quiet origin master
+            git reset --hard origin/master
+
+            echo "==> Installing dependencies"
+            npm ci --no-audit --no-fund --prefer-offline
+
+            echo "==> Building"
+            npm run build
+
+            echo "==> Restarting"
+            ${{ secrets.RESTART_CMD }}
+
+            echo "==> Done"
