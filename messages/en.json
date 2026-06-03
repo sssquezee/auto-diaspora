@@ -524,7 +524,8 @@
       "missing_fields": "Fill in all required fields.",
       "rate_limit": "Too many attempts. Please wait a few minutes.",
       "unknown": "Something went wrong. Try again.",
-      "telegram": "Telegram sign-in failed. Please try again."
+      "telegram": "Telegram sign-in failed. Please try again.",
+      "google": "Google sign-in failed. Please try again."
     }
   },
   "ListingDetail": {

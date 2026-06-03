@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 
 function GoogleIcon() {
   return (
@@ -15,11 +14,12 @@ function GoogleIcon() {
 }
 
 /**
- * "Continue with Google" button. Kicks off the Supabase OAuth flow:
- * Google → Supabase `/auth/v1/callback` → our `/[locale]/auth/callback`
- * (which exchanges the code for a session via exchangeCodeForSession).
+ * "Continue with Google" button. Kicks off our self-hosted OAuth flow:
+ * /api/auth/google → Google consent → /api/auth/google/callback
+ * (which exchanges the code and mints a Supabase session server-side).
  *
- * Requires the Google provider to be enabled in the Supabase dashboard.
+ * Credentials live in env (GOOGLE_CLIENT_ID/SECRET) — no Supabase
+ * dashboard provider config required.
  */
 export function GoogleSignInButton({
   label,
@@ -29,24 +29,13 @@ export function GoogleSignInButton({
   locale: string;
 }) {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const onClick = async () => {
-    setError(null);
+  const onClick = () => {
     setLoading(true);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/${locale}/auth/callback`,
-      },
-    });
-    // On success the browser is redirected to Google, so we only reach
-    // here on failure (e.g. provider not enabled).
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-    }
+    // Full-page navigation to the initiate route, which redirects to Google.
+    window.location.href = `/api/auth/google?locale=${encodeURIComponent(
+      locale
+    )}`;
   };
 
   return (
@@ -60,14 +49,6 @@ export function GoogleSignInButton({
         <GoogleIcon />
         {label}
       </button>
-      {error && (
-        <p
-          role="alert"
-          className="font-mono text-[11px] text-[#cf222e] mt-2 break-words text-center"
-        >
-          {error}
-        </p>
-      )}
     </>
   );
 }
