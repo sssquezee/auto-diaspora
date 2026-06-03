@@ -440,7 +440,7 @@
     "title": "Підтвердити та оплатити",
     "summary": {
       "heading": "Обраний тариф",
-      "provider": "Mollie · Test mode",
+      "provider": "Mollie",
       "subtotal": "Сума",
       "vat": "ПДВ",
       "vatIncluded": "Включено",

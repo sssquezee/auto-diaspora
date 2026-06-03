@@ -440,7 +440,7 @@
     "title": "Подтвердить и оплатить",
     "summary": {
       "heading": "Выбранный тариф",
-      "provider": "Mollie · Test mode",
+      "provider": "Mollie",
       "subtotal": "Сумма",
       "vat": "НДС",
       "vatIncluded": "Включён",
