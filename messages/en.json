@@ -695,7 +695,7 @@
     "sections": {
       "controller": {
         "title": "Data controller",
-        "body": "[OWNER NAME], operating as Auto Diaspora — eenmanszaak registered with the Dutch Chamber of Commerce, KVK [KVK NUMBER], [REGISTERED ADDRESS]. Privacy contact: privacy@autodiaspora.com."
+        "body": "[OWNER NAME], operating as Auto Diaspora — eenmanszaak registered with the Dutch Chamber of Commerce, KVK [KVK NUMBER], [REGISTERED ADDRESS]. Privacy contact: autodiasporahelp@gmail.com."
       },
       "collected": {
         "title": "Data we collect",
@@ -715,7 +715,7 @@
       },
       "transfers": {
         "title": "International transfers",
-        "body": "Vercel and Resend are US-based. We rely on Standard Contractual Clauses (SCCs, 2021/914/EU) for those transfers. Database, storage, and auth all live in the EU (Supabase Frankfurt). You can request a copy of the SCCs via privacy@autodiaspora.com."
+        "body": "Vercel and Resend are US-based. We rely on Standard Contractual Clauses (SCCs, 2021/914/EU) for those transfers. Database, storage, and auth all live in the EU (Supabase Frankfurt). You can request a copy of the SCCs via autodiasporahelp@gmail.com."
       },
       "cookies": {
         "title": "Cookies",
@@ -723,7 +723,7 @@
       },
       "rights": {
         "title": "Your rights",
-        "body": "Right to access (Art. 15) — “Download my data” in Settings exports a JSON dump. Rectification (Art. 16) — edit your profile in Settings. Erasure (Art. 17) — “Delete account” in Settings. Restriction (Art. 18), portability (Art. 20), objection (Art. 21) — write to privacy@autodiaspora.com; we respond within 30 days. We do not perform automated decision-making (Art. 22): listing moderation is reviewed by a human."
+        "body": "Right to access (Art. 15) — “Download my data” in Settings exports a JSON dump. Rectification (Art. 16) — edit your profile in Settings. Erasure (Art. 17) — “Delete account” in Settings. Restriction (Art. 18), portability (Art. 20), objection (Art. 21) — write to autodiasporahelp@gmail.com; we respond within 30 days. We do not perform automated decision-making (Art. 22): listing moderation is reviewed by a human."
       },
       "complaints": {
         "title": "Complaints",
@@ -731,7 +731,7 @@
       },
       "children": {
         "title": "Children",
-        "body": "Auto Diaspora is not directed at children under 18. We do not knowingly collect data from minors. If you discover that a minor has registered, write to privacy@autodiaspora.com and we will delete the account."
+        "body": "Auto Diaspora is not directed at children under 18. We do not knowingly collect data from minors. If you discover that a minor has registered, write to autodiasporahelp@gmail.com and we will delete the account."
       }
     }
   },
@@ -759,9 +759,9 @@
     "contact": {
       "title": "Contact",
       "email": "Email",
-      "emailValue": "contact@autodiaspora.com",
+      "emailValue": "autodiasporahelp@gmail.com",
       "privacy": "Privacy contact",
-      "privacyValue": "privacy@autodiaspora.com",
+      "privacyValue": "autodiasporahelp@gmail.com",
       "phone": "Phone",
       "phoneValue": "[+31 ...]"
     },
@@ -997,7 +997,7 @@
   "Help": {
     "kicker": "Help",
     "title": "Support center",
-    "subtitle": "Quick answers to common questions. If you can't find what you need, email help@autodiaspora.com — we reply within one business day.",
+    "subtitle": "Quick answers to common questions. If you can't find what you need, email autodiasporahelp@gmail.com — we reply within one business day.",
     "sections": {
       "account": {
         "title": "Account",
@@ -1067,7 +1067,7 @@
           },
           "scam": {
             "q": "I suspect a scam — what should I do?",
-            "a": "On the listing card click \"Report\" → pick a reason. We review within 24 hours. For urgent cases write to help@autodiaspora.com."
+            "a": "On the listing card click \"Report\" → pick a reason. We review within 24 hours. For urgent cases write to autodiasporahelp@gmail.com."
           }
         }
       }

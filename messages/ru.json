@@ -695,7 +695,7 @@
     "sections": {
       "controller": {
         "title": "Контроллер данных",
-        "body": "[OWNER NAME], действующий как Auto Diaspora — eenmanszaak, KVK [KVK NUMBER], [REGISTERED ADDRESS]. Privacy-контакт: privacy@autodiaspora.com."
+        "body": "[OWNER NAME], действующий как Auto Diaspora — eenmanszaak, KVK [KVK NUMBER], [REGISTERED ADDRESS]. Privacy-контакт: autodiasporahelp@gmail.com."
       },
       "collected": {
         "title": "Какие данные мы собираем",
@@ -715,7 +715,7 @@
       },
       "transfers": {
         "title": "Международные передачи",
-        "body": "Vercel и Resend находятся в США. Для этих передач мы опираемся на Standard Contractual Clauses (SCCs, 2021/914/EU). База, storage и auth находятся в ЕС (Supabase Frankfurt). Копию SCCs можно запросить на privacy@autodiaspora.com."
+        "body": "Vercel и Resend находятся в США. Для этих передач мы опираемся на Standard Contractual Clauses (SCCs, 2021/914/EU). База, storage и auth находятся в ЕС (Supabase Frankfurt). Копию SCCs можно запросить на autodiasporahelp@gmail.com."
       },
       "cookies": {
         "title": "Cookies",
@@ -723,7 +723,7 @@
       },
       "rights": {
         "title": "Твои права",
-        "body": "Доступ (ст. 15) — «Download my data» в Settings экспортирует JSON. Исправление (ст. 16) — редактируй профиль в Settings. Удаление (ст. 17) — «Delete account» в Settings. Ограничение (ст. 18), переносимость (ст. 20), возражение (ст. 21) — пиши на privacy@autodiaspora.com, отвечаем в течение 30 дней. Автоматизированного принятия решений (ст. 22) мы не выполняем: модерацию объявлений делает человек."
+        "body": "Доступ (ст. 15) — «Download my data» в Settings экспортирует JSON. Исправление (ст. 16) — редактируй профиль в Settings. Удаление (ст. 17) — «Delete account» в Settings. Ограничение (ст. 18), переносимость (ст. 20), возражение (ст. 21) — пиши на autodiasporahelp@gmail.com, отвечаем в течение 30 дней. Автоматизированного принятия решений (ст. 22) мы не выполняем: модерацию объявлений делает человек."
       },
       "complaints": {
         "title": "Жалобы",
@@ -731,7 +731,7 @@
       },
       "children": {
         "title": "Дети",
-        "body": "Auto Diaspora не предназначена для детей до 18 лет. Мы сознательно не собираем данные несовершеннолетних. Если вы обнаружили что несовершеннолетний зарегистрировался, пишите на privacy@autodiaspora.com — мы удалим аккаунт."
+        "body": "Auto Diaspora не предназначена для детей до 18 лет. Мы сознательно не собираем данные несовершеннолетних. Если вы обнаружили что несовершеннолетний зарегистрировался, пишите на autodiasporahelp@gmail.com — мы удалим аккаунт."
       }
     }
   },
@@ -759,9 +759,9 @@
     "contact": {
       "title": "Контакты",
       "email": "Email",
-      "emailValue": "contact@autodiaspora.com",
+      "emailValue": "autodiasporahelp@gmail.com",
       "privacy": "Privacy-контакт",
-      "privacyValue": "privacy@autodiaspora.com",
+      "privacyValue": "autodiasporahelp@gmail.com",
       "phone": "Телефон",
       "phoneValue": "[+31 ...]"
     },
@@ -997,7 +997,7 @@
   "Help": {
     "kicker": "Помощь",
     "title": "Центр поддержки",
-    "subtitle": "Быстрые ответы на частые вопросы. Если не нашёл — напиши на help@autodiaspora.com, отвечаем в течение рабочего дня.",
+    "subtitle": "Быстрые ответы на частые вопросы. Если не нашёл — напиши на autodiasporahelp@gmail.com, отвечаем в течение рабочего дня.",
     "sections": {
       "account": {
         "title": "Аккаунт",
@@ -1067,7 +1067,7 @@
           },
           "scam": {
             "q": "Подозреваю мошенничество — что делать?",
-            "a": "На карточке объявления нажми «Пожаловаться» → выбери причину. Мы рассмотрим в течение суток. При срочности — пиши на help@autodiaspora.com."
+            "a": "На карточке объявления нажми «Пожаловаться» → выбери причину. Мы рассмотрим в течение суток. При срочности — пиши на autodiasporahelp@gmail.com."
           }
         }
       }

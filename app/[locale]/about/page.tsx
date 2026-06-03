@@ -55,10 +55,10 @@ export default async function AboutPage({
         <span>
           <span className="text-ink-faded">{t("contact.email")}: </span>
           <a
-            href="mailto:hello@autodiaspora.com"
+            href="mailto:autodiasporahelp@gmail.com"
             className="text-ink hover:text-accent no-underline"
           >
-            hello@autodiaspora.com
+            autodiasporahelp@gmail.com
           </a>
         </span>
         <span>

@@ -77,10 +77,10 @@ export default async function HelpPage({
           {t("contact.body")}
         </p>
         <a
-          href="mailto:help@autodiaspora.com"
+          href="mailto:autodiasporahelp@gmail.com"
           className="font-mono text-[13px] text-accent hover:text-accent-2 no-underline underline decoration-accent decoration-2 underline-offset-[3px]"
         >
-          help@autodiaspora.com
+          autodiasporahelp@gmail.com
         </a>
       </section>
 
