@@ -37,7 +37,7 @@ export default async function AboutPage({
           {t("why.title")}
         </h2>
         <ul className="flex flex-col gap-2.5 list-none p-0 m-0">
-          {(["verified", "noFees", "languages", "telegram"] as const).map((k) => (
+          {(["verified", "noFees", "languages"] as const).map((k) => (
             <li
               key={k}
               className="flex gap-3 font-sans text-[14.5px] text-ink leading-[1.55]"

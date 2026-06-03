@@ -14,15 +14,12 @@ export async function TopStrip() {
           <Link href="/how-it-works" className={linkClass}>
             {t("howItWorks")}
           </Link>
-          <a href="#" className={linkClass}>
-            {t("telegramBot")}
-          </a>
-          <a href="#" className={linkClass}>
+          <Link href="/for-dealers" className={linkClass}>
             {t("forDealers")}
-          </a>
-          <a href="#" className="hover:text-accent no-underline transition-colors">
+          </Link>
+          <Link href="/help" className="hover:text-accent no-underline transition-colors">
             {t("help")}
-          </a>
+          </Link>
         </nav>
         <LangSwitcher />
       </div>

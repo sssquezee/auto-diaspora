@@ -123,6 +123,7 @@ export default async function MyListingsPage({
                   status={listing.status}
                   title={`${listing.brand} ${listing.model}`}
                   isTop={listing.badges.includes("top")}
+                  isPremium={listing.premium}
                 />
               </div>
             ))

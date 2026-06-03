@@ -5,7 +5,6 @@
   },
   "TopStrip": {
     "howItWorks": "How it works",
-    "telegramBot": "Telegram bot",
     "forDealers": "For dealers",
     "help": "Help"
   },
@@ -36,9 +35,9 @@
   },
   "Hero": {
     "liveBadge": "{count} cars online",
-    "headline": "Cars from Europe.",
-    "headlineAccent": "For our people.",
-    "tagline": "Marketplace of verified cars from Ukrainian-speaking sellers across 14 EU countries. No middlemen, no hidden fees.",
+    "headline": "Cars across Europe.",
+    "headlineAccent": "In your language.",
+    "tagline": "A marketplace for Ukrainian- and Russian-speaking diaspora living in the EU. Find a seller near you — talk directly, no middlemen, no language barrier.",
     "stats": {
       "cars": "Cars",
       "sellers": "Sellers",
@@ -183,8 +182,7 @@
       "manual": "Manual"
     },
     "apply": "Apply filters",
-    "reset": "Reset all filters",
-    "saveToTelegram": "Save search to Telegram"
+    "reset": "Reset all filters"
   },
   "ListingCard": {
     "favorite": "Add to favorites",
@@ -227,12 +225,6 @@
         "listings": "Active listings",
         "favorites": "Favorited",
         "messages": "Unread messages"
-      },
-      "telegram": {
-        "label": "Integration",
-        "title": "Connect the Telegram bot",
-        "desc": "Get instant pings for new matches on your saved searches and messages from buyers.",
-        "cta": "Connect →"
       }
     },
     "dev": {
@@ -307,8 +299,8 @@
     },
     "searches": {
       "title": "Saved searches",
-      "subtitle": "Reopen any saved filter set with one click. Telegram notifications coming soon.",
-      "empty": "Save a search from the catalog — we'll ping you on Telegram or email the moment a new car matches.",
+      "subtitle": "Reopen any saved filter set with one click.",
+      "empty": "Save a search from the catalog — it'll show up here so you can re-run it any time.",
       "newButton": "Open search",
       "open": "Open",
       "remove": "Delete",
@@ -319,7 +311,6 @@
       "title": "Settings",
       "sections": {
         "profile": "Profile",
-        "telegram": "Telegram alerts",
         "language": "Interface language",
         "dataExport": "Your data",
         "danger": "Danger zone"
@@ -333,11 +324,6 @@
       },
       "emailLocked": "Email is locked to your sign-in identity and can't be changed here.",
       "languageHint": "Changing language reloads the page in the new locale.",
-      "telegram": {
-        "desc": "Link your account to @AutoDiasporaBot — get notified about messages and new cars matching your saved filters.",
-        "cta": "Connect Telegram",
-        "soon": "The Telegram bot is coming soon."
-      },
       "saveButton": "Save changes",
       "savingButton": "Saving…",
       "noticeSaved": "Profile saved.",
@@ -422,7 +408,20 @@
       "top": {
         "title": "Boost to top",
         "price": "€5",
-        "desc": "Pin your listing above all others. Paid listings rank by who paid last."
+        "desc": "Pin your listing above all others. Paid listings rank by who paid last.",
+        "short": "One-time boost to the top of the catalog"
+      },
+      "premium_14": {
+        "title": "Premium 14 days",
+        "price": "€9.99",
+        "desc": "PREMIUM badge + auto-pin at the top of the catalog for 14 days.",
+        "short": "PREMIUM badge + auto-pin for 14 days"
+      },
+      "premium_30": {
+        "title": "Premium 30 days",
+        "price": "€19.99",
+        "desc": "PREMIUM badge + auto-pin at the top of the catalog for 30 days.",
+        "short": "PREMIUM badge + auto-pin for 30 days"
       }
     },
     "publish": "Publish listing",
@@ -610,8 +609,7 @@
       "items": {
         "verified": "Verified sellers earn a badge after manual vetting — less risk of running into a scammer.",
         "noFees": "€0 buyer fee. Only sellers pay, and only if they want premium placement.",
-        "languages": "Three languages (UK / RU / EN) — communicate the way you and your counterpart prefer.",
-        "telegram": "Telegram bot with alerts on new cars matching your filters — instant, no need to refresh the site."
+        "languages": "Three languages (UK / RU / EN) — communicate the way you and your counterpart prefer."
       }
     },
     "team": {
@@ -643,14 +641,8 @@
       },
       "buy": {
         "title": "Buy",
-        "body": "The deal happens between you and the seller. We don't take a cut from the buyer. Paperwork and shipping to Ukraine are arranged directly."
+        "body": "The deal happens between you and the seller. We don't take a cut from the buyer. Paperwork, inspection and handover are arranged directly, in the EU country where the car is located."
       }
-    },
-    "telegram": {
-      "label": "Bonus",
-      "title": "Connect the Telegram bot",
-      "body": "Get instant pings in Telegram for new cars matching your saved filters. Track favorites and watch for price drops without ever refreshing.",
-      "cta": "Connect →"
     },
     "finalCta": "Open the catalog →"
   },
@@ -851,9 +843,7 @@
     "buyers": {
       "title": "Buyers",
       "allCars": "All cars",
-      "howToBuy": "How to buy",
-      "vinCheck": "VIN check",
-      "deliveryToUkraine": "Delivery to Ukraine"
+      "howToBuy": "How to buy"
     },
     "sellers": {
       "title": "Sellers",
@@ -872,8 +862,229 @@
     "copyright": "© 2026 Auto Diaspora",
     "legal": "KVK · Netherlands · GDPR"
   },
-  "Boost": {
-    "cta": "Boost to top · €5",
-    "alreadyTop": "Already in top"
+  "Pricing": {
+    "kicker": "Pricing",
+    "title": "Simple and transparent",
+    "subtitle": "Listing is free. To get more visibility, pick one of three paid options: a single TOP boost for €5, or Premium for 14 / 30 days with a PREMIUM badge and auto-pin.",
+    "popular": "Popular",
+    "tiers": {
+      "free": {
+        "kicker": "Standard",
+        "title": "Free",
+        "priceNote": "Forever",
+        "features": {
+          "listing": "List a car with no expiration",
+          "photos": "Up to 12 photos and a detailed description",
+          "chat": "Direct chat with buyers",
+          "stats": "Views and favorites counter"
+        },
+        "cta": "Post a listing"
+      },
+      "top": {
+        "kicker": "One-shot",
+        "title": "TOP",
+        "priceNote": "One-time per listing",
+        "features": {
+          "pin": "Pinned above all free listings",
+          "duration": "Stays on top until someone else buys TOP",
+          "visibility": "5-8× more views in the first 48 hours",
+          "renew": "Can be purchased again"
+        },
+        "cta": "Boost a listing"
+      },
+      "premium_14": {
+        "kicker": "Premium",
+        "title": "14 days",
+        "priceNote": "14 days of auto-pin",
+        "features": {
+          "badge": "PREMIUM badge on the card",
+          "autoPin14": "Automatically at the top for 14 days",
+          "boostViews": "Typically 3-4× more views over the period",
+          "priority": "Priority moderation for edits"
+        },
+        "cta": "Buy Premium 14"
+      },
+      "premium_30": {
+        "kicker": "Premium",
+        "title": "30 days",
+        "priceNote": "30 days of auto-pin",
+        "features": {
+          "badge": "PREMIUM badge on the card",
+          "autoPin30": "Automatically at the top for 30 days",
+          "boostViews": "Best ROI when a car takes longer than a week to sell",
+          "priority": "Priority moderation for edits"
+        },
+        "cta": "Buy Premium 30"
+      }
+    },
+    "faq": {
+      "title": "FAQ",
+      "items": {
+        "howTop": {
+          "q": "What's the difference between TOP and Premium?",
+          "a": "TOP is a one-shot boost that stays on top until someone else buys TOP later. Premium gives a PREMIUM badge on the card and automatically keeps your listing at the top for the entire paid period (14 or 30 days)."
+        },
+        "howPremium": {
+          "q": "What happens when Premium expires?",
+          "a": "Once premium_until is reached, the listing returns to the regular ranking — the badge is dropped and the top-of-catalog spot is lost. You can renew at any time."
+        },
+        "stack": {
+          "q": "Can I buy TOP on top of an active Premium?",
+          "a": "Technically yes, but it's redundant — Premium already keeps you pinned. TOP would just refresh the ranking timestamp."
+        },
+        "noBuyerFee": {
+          "q": "Do buyers pay anything?",
+          "a": "No. Zero buyer fee. Only sellers pay, and only when they want promotion."
+        },
+        "vat": {
+          "q": "Is VAT included?",
+          "a": "Yes — listed prices are final. Payments are processed via Mollie, a licensed PSP in the EU."
+        }
+      }
+    },
+    "finalCta": "Open catalog"
+  },
+  "ForDealers": {
+    "kicker": "For dealers",
+    "title": "A dedicated channel for dealers",
+    "subtitle": "Auto Diaspora reaches Ukrainian- and Russian-speaking buyers across 14 EU countries. If you run a dealership or resell cars privately, these are your buyers.",
+    "stepLabel": "Step {num}",
+    "benefits": {
+      "audience": {
+        "title": "Targeted audience",
+        "body": "Ukrainians and Russian speakers in Germany, Poland, the Netherlands, Czechia, Belgium, France and more EU countries. All searching for cars in their language."
+      },
+      "fees": {
+        "title": "No subscriptions",
+        "body": "You only pay for TOP — €5 per listing. No monthly plans, no cap on the number of active listings."
+      },
+      "language": {
+        "title": "Multilingual interface",
+        "body": "One listing, three languages (uk/ru/en). No duplicating cards or translating manually."
+      },
+      "tools": {
+        "title": "Sales tools",
+        "body": "Built-in chat, view/favorites analytics, spam moderation, seller verification (in progress)."
+      }
+    },
+    "pricing": {
+      "title": "Same pricing as private sellers",
+      "body": "We don't run separate dealer plans yet. Listings are free, TOP is €5 per ad. If you have 50+ active cars and need bulk pricing, reach out — we'll work something out.",
+      "linkLabel": "View pricing"
+    },
+    "steps": {
+      "title": "How to get started",
+      "register": {
+        "title": "Sign up",
+        "body": "Create an account via email or sign in with Google / Telegram."
+      },
+      "verify": {
+        "title": "Fill in your profile",
+        "body": "Business name, contacts, location. We add the Verified badge manually after review."
+      },
+      "publish": {
+        "title": "Post your first car",
+        "body": "Brand, model, year, photos and description. Moderation: up to an hour during business hours."
+      },
+      "manage": {
+        "title": "Manage from your dashboard",
+        "body": "Edit, pause, mark sold, analytics and chats — all under /account."
+      }
+    },
+    "cta": {
+      "kicker": "Get in touch",
+      "title": "Need bulk terms?",
+      "body": "Write to us if you run a dealership, list 20+ cars, or have specific requirements. We're open to integrations and partnerships.",
+      "button": "Contact support"
+    }
+  },
+  "Help": {
+    "kicker": "Help",
+    "title": "Support center",
+    "subtitle": "Quick answers to common questions. If you can't find what you need, email help@autodiaspora.com — we reply within one business day.",
+    "sections": {
+      "account": {
+        "title": "Account",
+        "items": {
+          "register": {
+            "q": "How do I sign up?",
+            "a": "Email + confirmation, or via Google / Telegram. One account per person."
+          },
+          "password": {
+            "q": "I forgot my password — what now?",
+            "a": "On /auth/login click \"Forgot password\". We'll email you a reset link."
+          },
+          "delete": {
+            "q": "How do I delete my account?",
+            "a": "/account/settings → \"Danger zone\" → \"Delete account\". This is permanent: listings, chats, favorites and credentials are wiped."
+          }
+        }
+      },
+      "listings": {
+        "title": "Listings",
+        "items": {
+          "howPublish": {
+            "q": "How do I post a listing?",
+            "a": "Click \"Post\" in the header → fill out the 4-section form (brand/photos/details/contact). After submit it enters moderation (up to 1 hour in business hours)."
+          },
+          "moderation": {
+            "q": "Why is my listing under review?",
+            "a": "All new listings go through manual moderation against spam and fraud. Up to 1 hour during business hours, up to 12 hours overnight and on weekends."
+          },
+          "edit": {
+            "q": "Can I edit a published listing?",
+            "a": "Yes. /account/listings → click the listing → \"Edit\". Significant changes (price, photos) re-enter moderation; minor tweaks publish immediately."
+          },
+          "limits": {
+            "q": "Is there a limit on active listings?",
+            "a": "The first 3 are free as an anti-spam measure. Need more — contact support and we'll raise the cap manually."
+          }
+        }
+      },
+      "payments": {
+        "title": "Payments",
+        "items": {
+          "howTop": {
+            "q": "How do I buy TOP?",
+            "a": "In /account/listings click \"Boost\" next to a listing → pay via Mollie (card, iDEAL, Bancontact, etc.) → activation is automatic."
+          },
+          "refund": {
+            "q": "Can I get a refund for TOP?",
+            "a": "Only in case of a technical failure on our side. The digital service activates immediately, so the 14-day withdrawal right doesn't apply (Burgerlijk Wetboek 6:230o)."
+          },
+          "vat": {
+            "q": "What about VAT?",
+            "a": "€5 is the final price, VAT included. Mollie sends a receipt to the email tied to the payment."
+          }
+        }
+      },
+      "safety": {
+        "title": "Transaction safety",
+        "items": {
+          "meetup": {
+            "q": "Where should I meet the seller?",
+            "a": "Public places only: service shop, police station, mall parking lot. Don't hand over money before signing paperwork."
+          },
+          "documents": {
+            "q": "Which documents should I check?",
+            "a": "Kentekenbewijs (NL), Fahrzeugschein/Fahrzeugbrief (DE), equivalents in other countries. Cross-check VIN on the car, in the paperwork, and on the listing."
+          },
+          "scam": {
+            "q": "I suspect a scam — what should I do?",
+            "a": "On the listing card click \"Report\" → pick a reason. We review within 24 hours. For urgent cases write to help@autodiaspora.com."
+          }
+        }
+      }
+    },
+    "contact": {
+      "title": "Didn't find your answer?",
+      "body": "Email us — we reply within one business day (Europe/Amsterdam)."
+    },
+    "finalCta": "Open catalog"
+  },
+  "Promote": {
+    "cta": "Promote",
+    "ctaUpgrade": "Upgrade to Premium",
+    "alreadyPremium": "Premium active"
   }
 }

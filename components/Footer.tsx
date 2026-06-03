@@ -13,23 +13,21 @@ export async function Footer() {
       links: [
         { label: t("buyers.allCars"), href: "/" },
         { label: t("buyers.howToBuy"), href: "/how-it-works" },
-        { label: t("buyers.vinCheck"), href: "#" },
-        { label: t("buyers.deliveryToUkraine"), href: "#" },
       ],
     },
     {
       title: t("sellers.title"),
       links: [
         { label: t("sellers.publish"), href: "/new" },
-        { label: t("sellers.premium"), href: "#" },
-        { label: t("sellers.forDealers"), href: "#" },
+        { label: t("sellers.premium"), href: "/pricing" },
+        { label: t("sellers.forDealers"), href: "/for-dealers" },
       ],
     },
     {
       title: t("company.title"),
       links: [
         { label: t("company.about"), href: "/about" },
-        { label: t("company.contacts"), href: "#" },
+        { label: t("company.contacts"), href: "/help" },
         { label: t("company.terms"), href: "/terms" },
         { label: t("company.privacy"), href: "/privacy" },
         { label: t("company.impressum"), href: "/impressum" },

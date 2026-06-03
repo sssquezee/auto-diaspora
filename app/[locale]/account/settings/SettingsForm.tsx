@@ -181,21 +181,6 @@ export function SettingsForm({ locale, email, defaults }: Props) {
           </p>
         </SectionCard>
 
-        {/* Telegram — coming soon */}
-        <SectionCard title={t("sections.telegram")}>
-          <p className="font-sans text-[13px] text-ink-muted leading-relaxed">
-            {t("telegram.desc")}
-          </p>
-          <button
-            type="button"
-            disabled
-            className="self-start bg-bg-subtle border-[1.5px] border-line-strong text-ink-faded font-sans font-extrabold text-[12px] uppercase tracking-[0.13em] px-4 py-2.5 cursor-not-allowed"
-            title={t("telegram.soon")}
-          >
-            {t("telegram.cta")}
-          </button>
-        </SectionCard>
-
         {/* Save */}
         <button
           type="submit"

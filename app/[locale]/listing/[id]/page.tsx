@@ -7,7 +7,7 @@ import { ListingGallery } from "@/components/ListingGallery";
 import { ListingActions } from "@/components/ListingActions";
 import { ListingCard } from "@/components/ListingCard";
 import { ReportModal } from "@/components/ReportModal";
-import { BoostTopButton } from "@/components/BoostTopButton";
+import { PromoteButton } from "@/components/PromoteButton";
 import { createClient } from "@/lib/supabase/server";
 import {
   formatMileage,
@@ -88,6 +88,7 @@ export default async function ListingDetailPage({
     ]);
   const isOwner = !!user && user.id === sellerId;
   const isTop = listing.badges.includes("top");
+  const isPremium = listing.premium;
 
   const t = await getTranslations("ListingDetail");
   const tCard = await getTranslations("ListingCard");
@@ -310,7 +311,12 @@ export default async function ListingDetailPage({
               <h3 className="font-sans font-extrabold text-[11px] uppercase tracking-[0.16em] text-ink-muted">
                 {t("boostTitle")}
               </h3>
-              <BoostTopButton listingId={listing.id} isTop={isTop} variant="full" />
+              <PromoteButton
+                listingId={listing.id}
+                isTop={isTop}
+                isPremium={isPremium}
+                variant="full"
+              />
             </div>
           )}
 
