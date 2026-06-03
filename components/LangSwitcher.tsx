@@ -5,6 +5,15 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { useTransition } from "react";
 
+// Display label per locale. Ukrainian shows as "UA" because that's the
+// country code most users recognise — the i18n route prefix is still
+// "uk" (ISO 639-1 for Ukrainian language).
+const LOCALE_LABEL: Record<string, string> = {
+  uk: "UA",
+  ru: "RU",
+  en: "EN",
+};
+
 export function LangSwitcher() {
   const locale = useLocale();
   const router = useRouter();
@@ -34,7 +43,7 @@ export function LangSwitcher() {
             isPending ? "opacity-60 cursor-wait" : ""
           }`}
         >
-          {lng.toUpperCase()}
+          {LOCALE_LABEL[lng] ?? lng.toUpperCase()}
         </button>
       ))}
     </div>

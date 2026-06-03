@@ -51,15 +51,6 @@ export default async function AboutPage({
         </ul>
       </section>
 
-      <section className="mb-8">
-        <h2 className="font-sans font-extrabold text-[20px] uppercase tracking-[-0.02em] text-ink mb-3">
-          {t("team.title")}
-        </h2>
-        <p className="font-sans text-[15px] text-ink leading-[1.7]">
-          {t("team.body")}
-        </p>
-      </section>
-
       <section className="border-t border-line pt-6 font-mono text-[12px] uppercase tracking-[0.14em] text-ink-muted flex flex-col sm:flex-row gap-3 sm:gap-8">
         <span>
           <span className="text-ink-faded">{t("contact.email")}: </span>

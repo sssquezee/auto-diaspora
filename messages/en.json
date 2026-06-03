@@ -1,7 +1,7 @@
 {
   "Site": {
     "title": "Auto Diaspora — Trusted European cars marketplace",
-    "description": "Marketplace of verified European cars for the Ukrainian and Russian-speaking diaspora in the EU. BMW, Audi, Mercedes, VW, Skoda — Germany, Poland, Netherlands, Czechia, Belgium."
+    "description": "Marketplace of verified European cars for the diaspora. Find a seller in your country in your language. BMW, Audi, Mercedes, VW, Skoda across Germany, Poland, the Netherlands, Czechia, Belgium."
   },
   "TopStrip": {
     "howItWorks": "How it works",
@@ -37,7 +37,7 @@
     "liveBadge": "{count} cars online",
     "headline": "Cars across Europe.",
     "headlineAccent": "In your language.",
-    "tagline": "A marketplace for Ukrainian- and Russian-speaking diaspora living in the EU. Find a seller near you — talk directly, no middlemen, no language barrier.",
+    "tagline": "A marketplace for the diaspora across the EU. Find a seller near you — talk directly, no middlemen, no language barrier.",
     "stats": {
       "cars": "Cars",
       "sellers": "Sellers",
@@ -599,10 +599,10 @@
   "About": {
     "kicker": "Who we are",
     "title": "A trusted-cars marketplace for the diaspora",
-    "subtitle": "Auto Diaspora is where Ukrainians and Russian-speakers across the EU find cars without middlemen, resellers, or opaque commissions.",
+    "subtitle": "Auto Diaspora is where the diaspora across the EU finds cars in their own language — no middlemen, no resellers, no opaque fees.",
     "mission": {
       "title": "Mission",
-      "body": "We build an honest marketplace for European cars aimed at the Ukrainian and Russian-speaking diaspora. Direct contact between sellers and buyers, transparent prices in €, verified listings, free access, and paid upgrades only for those who want to amplify their listing."
+      "body": "We build an honest marketplace for European cars aimed at the diaspora. Direct seller-to-buyer chats in your own language, transparent prices in €, verified listings, free access, paid upgrades only for sellers who want extra reach."
     },
     "why": {
       "title": "Why Auto Diaspora",
@@ -611,10 +611,6 @@
         "noFees": "€0 buyer fee. Only sellers pay, and only if they want premium placement.",
         "languages": "Three languages (UK / RU / EN) — communicate the way you and your counterpart prefer."
       }
-    },
-    "team": {
-      "title": "Team",
-      "body": "Auto Diaspora is an early-stage startup. Right now it's a one-person project run from the Netherlands (eenmanszaak, KVK). The team is growing — email us below if you want to join as a dealer, developer, or investor."
     },
     "contact": {
       "email": "Email",
@@ -839,7 +835,7 @@
     }
   },
   "Footer": {
-    "tagline": "Marketplace of verified cars from 14 EU countries for the Ukrainian and Russian-speaking diaspora.",
+    "tagline": "Marketplace of verified cars across 14 EU countries for the diaspora. No language barrier.",
     "buyers": {
       "title": "Buyers",
       "allCars": "All cars",
@@ -947,12 +943,12 @@
   "ForDealers": {
     "kicker": "For dealers",
     "title": "A dedicated channel for dealers",
-    "subtitle": "Auto Diaspora reaches Ukrainian- and Russian-speaking buyers across 14 EU countries. If you run a dealership or resell cars privately, these are your buyers.",
+    "subtitle": "Auto Diaspora reaches buyers across 14 EU countries who look for cars without a language barrier. If you run a dealership or resell privately, these are your buyers.",
     "stepLabel": "Step {num}",
     "benefits": {
       "audience": {
         "title": "Targeted audience",
-        "body": "Ukrainians and Russian speakers in Germany, Poland, the Netherlands, Czechia, Belgium, France and more EU countries. All searching for cars in their language."
+        "body": "The diaspora in Germany, Poland, the Netherlands, Czechia, Belgium, France and other EU countries. All looking for cars in their own language."
       },
       "fees": {
         "title": "No subscriptions",
