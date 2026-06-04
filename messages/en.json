@@ -665,7 +665,7 @@
     "kicker": "Legal",
     "title": "Terms of Service",
     "lastUpdated": "Last updated: May 2026",
-    "intro": "These Terms govern your use of Auto Diaspora (the “Platform”), operated by [OWNER NAME], an eenmanszaak registered in the Netherlands (KVK [KVK NUMBER]). By creating an account or browsing the Platform you accept these Terms in full.",
+    "intro": "These Terms govern your use of Auto Diaspora (the “Platform”), operated by Oleksandr Fomenko, an eenmanszaak registered in the Netherlands (KVK 97036277). By creating an account or browsing the Platform you accept these Terms in full.",
     "operatorNote": "Auto Diaspora is operated under Dutch law. The English version is authoritative; localized translations are provided for convenience.",
     "sections": {
       "account": {
@@ -714,7 +714,7 @@
     "sections": {
       "controller": {
         "title": "Data controller",
-        "body": "[OWNER NAME], operating as Auto Diaspora — eenmanszaak registered with the Dutch Chamber of Commerce, KVK [KVK NUMBER], [REGISTERED ADDRESS]. Privacy contact: autodiasporahelp@gmail.com."
+        "body": "Oleksandr Fomenko, operating as Auto Diaspora — eenmanszaak registered with the Dutch Chamber of Commerce, KVK 97036277, Dorpsstraat 16, 4641HW Ossendrecht, Netherlands. Privacy contact: autodiasporahelp@gmail.com."
       },
       "collected": {
         "title": "Data we collect",
@@ -762,18 +762,18 @@
     "operator": {
       "title": "Operator",
       "name": "Operator",
-      "nameValue": "[OWNER NAME], operating as Auto Diaspora",
+      "nameValue": "Oleksandr Fomenko, operating as Auto Diaspora",
       "form": "Legal form",
       "formValue": "eenmanszaak (Dutch sole proprietorship)",
       "address": "Registered office",
-      "addressValue": "[STREET], [POSTCODE] [CITY], The Netherlands"
+      "addressValue": "Dorpsstraat 16, 4641HW Ossendrecht, The Netherlands"
     },
     "registry": {
       "title": "Registry & VAT",
       "kvk": "Chamber of Commerce (KVK)",
-      "kvkValue": "[KVK NUMBER]",
+      "kvkValue": "97036277",
       "btw": "VAT (BTW)",
-      "btwValue": "NL[XXXXXXXXX]B01"
+      "btwValue": "NL005244652B54"
     },
     "contact": {
       "title": "Contact",
@@ -782,7 +782,7 @@
       "privacy": "Privacy contact",
       "privacyValue": "autodiasporahelp@gmail.com",
       "phone": "Phone",
-      "phoneValue": "[+31 ...]"
+      "phoneValue": "+31 6 87449774"
     },
     "dispute": {
       "title": "Online dispute resolution",

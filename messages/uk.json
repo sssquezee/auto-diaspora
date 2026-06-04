@@ -665,7 +665,7 @@
     "kicker": "Юридичне",
     "title": "Умови використання",
     "lastUpdated": "Останнє оновлення: травень 2026",
-    "intro": "Ці Умови регулюють використання Auto Diaspora («Платформа»), яку оператує [OWNER NAME], eenmanszaak зареєстрована в Нідерландах (KVK [KVK NUMBER]). Створенням акаунту або переглядом Платформи ви приймаєте ці Умови повністю.",
+    "intro": "Ці Умови регулюють використання Auto Diaspora («Платформа»), яку оператує Oleksandr Fomenko, eenmanszaak зареєстрована в Нідерландах (KVK 97036277). Створенням акаунту або переглядом Платформи ви приймаєте ці Умови повністю.",
     "operatorNote": "Auto Diaspora діє за нідерландським правом. Англійська версія Умов є офіційною; переклади надано для зручності.",
     "sections": {
       "account": {
@@ -714,7 +714,7 @@
     "sections": {
       "controller": {
         "title": "Контролер даних",
-        "body": "[OWNER NAME], що діє як Auto Diaspora — eenmanszaak, KVK [KVK NUMBER], [REGISTERED ADDRESS]. Privacy-контакт: autodiasporahelp@gmail.com."
+        "body": "Oleksandr Fomenko, що діє як Auto Diaspora — eenmanszaak, KVK 97036277, Dorpsstraat 16, 4641HW Ossendrecht, Netherlands. Privacy-контакт: autodiasporahelp@gmail.com."
       },
       "collected": {
         "title": "Які дані ми збираємо",
@@ -762,18 +762,18 @@
     "operator": {
       "title": "Оператор",
       "name": "Оператор",
-      "nameValue": "[OWNER NAME], діє як Auto Diaspora",
+      "nameValue": "Oleksandr Fomenko, діє як Auto Diaspora",
       "form": "Юридична форма",
       "formValue": "eenmanszaak (нідерландське одноосібне підприємство)",
       "address": "Юридична адреса",
-      "addressValue": "[STREET], [POSTCODE] [CITY], Нідерланди"
+      "addressValue": "Dorpsstraat 16, 4641HW Ossendrecht, Нідерланди"
     },
     "registry": {
       "title": "Реєстр та ПДВ",
       "kvk": "Торгова палата (KVK)",
-      "kvkValue": "[KVK NUMBER]",
+      "kvkValue": "97036277",
       "btw": "ПДВ (BTW)",
-      "btwValue": "NL[XXXXXXXXX]B01"
+      "btwValue": "NL005244652B54"
     },
     "contact": {
       "title": "Контакти",
@@ -782,7 +782,7 @@
       "privacy": "Privacy-контакт",
       "privacyValue": "autodiasporahelp@gmail.com",
       "phone": "Телефон",
-      "phoneValue": "[+31 ...]"
+      "phoneValue": "+31 6 87449774"
     },
     "dispute": {
       "title": "Онлайн-вирішення спорів",
