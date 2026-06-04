@@ -447,13 +447,6 @@ export function Sidebar() {
           </button>
         )}
 
-        {/* Save to Telegram */}
-        <button
-          type="button"
-          className="text-center font-sans font-bold text-[12px] text-ink cursor-pointer bg-transparent border-0 underline decoration-accent decoration-2 underline-offset-[3px] hover:text-accent transition-colors"
-        >
-          {t("saveToTelegram")}
-        </button>
       </form>
   );
 

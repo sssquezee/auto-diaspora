@@ -191,20 +191,19 @@ function NewListingForm() {
 
         {/* 6. Placement */}
         <SectionCard index={6} title={t("sections.premium")}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <TierCard
-              active
-              value="free"
-              title={t("tiers.free.title")}
-              price={t("tiers.free.price")}
-              desc={t("tiers.free.desc")}
-            />
-            <TierCard
-              value="top"
-              title={t("tiers.top.title")}
-              price={t("tiers.top.price")}
-              desc={t("tiers.top.desc")}
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {(["free", "top", "premium_14", "premium_30"] as const).map(
+              (tier) => (
+                <TierCard
+                  key={tier}
+                  active={tier === "free"}
+                  value={tier}
+                  title={t(`tiers.${tier}.title`)}
+                  price={t(`tiers.${tier}.price`)}
+                  desc={t(`tiers.${tier}.desc`)}
+                />
+              )
+            )}
           </div>
         </SectionCard>
 

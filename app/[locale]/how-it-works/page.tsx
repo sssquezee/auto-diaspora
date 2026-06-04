@@ -49,34 +49,6 @@ export default async function HowItWorksPage({
         ))}
       </div>
 
-      {/* Telegram CTA */}
-      <section className="bg-ink text-white border-[1.5px] border-ink p-6 sm:p-8 relative overflow-hidden mb-10">
-        <div
-          aria-hidden
-          className="absolute -top-16 -right-16 w-[260px] h-[260px] rounded-full opacity-20 pointer-events-none"
-          style={{ background: "var(--accent)" }}
-        />
-        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-          <div className="max-w-[540px]">
-            <p className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-accent mb-2">
-              {t("telegram.label")}
-            </p>
-            <h2 className="font-sans font-black text-[26px] sm:text-[32px] uppercase tracking-[-0.03em] leading-[0.95] mb-2">
-              {t("telegram.title")}
-            </h2>
-            <p className="font-sans text-[14px] text-white/70 leading-[1.55]">
-              {t("telegram.body")}
-            </p>
-          </div>
-          <button
-            type="button"
-            className="bg-accent hover:bg-accent-2 text-white font-sans font-extrabold text-[12px] uppercase tracking-[0.13em] px-5 py-3 cursor-pointer border-0 transition-colors flex-shrink-0"
-          >
-            {t("telegram.cta")}
-          </button>
-        </div>
-      </section>
-
       {/* Final CTA */}
       <div className="text-center">
         <Link

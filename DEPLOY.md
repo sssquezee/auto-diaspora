@@ -48,11 +48,57 @@ deploys can also exercise the full stack).
 | `TELEGRAM_BOT_TOKEN` | from @BotFather | admin pings |
 | `TELEGRAM_ADMIN_CHAT_ID` | from `getUpdates` | where pings go |
 | `TELEGRAM_WEBHOOK_SECRET` | `openssl rand -hex 32` | required only if you want inline Approve/Reject |
+| `RESEND_API_KEY` | `re_…` from resend.com | required for transactional emails (chat / moderation) |
+| `EMAIL_FROM` | `Auto Diaspora <send@yourdomain>` | the verified sender on Resend |
+| `CRON_SECRET` | `openssl rand -hex 32` | required for `/api/cron/expire` to authorise host crontab |
 
-### Not yet used
+### Setting up Resend (transactional email)
 
-`RESEND_API_KEY`, `EMAIL_FROM`, `CRON_SECRET` — wire these when you add
-email notifications + cron jobs.
+1. resend.com → sign up → **Domains → Add domain** → enter the
+   sender domain (e.g. `mail.autodiaspora.com`).
+2. Resend shows DNS records (SPF, DKIM, optional DMARC). Paste them
+   at your registrar. Wait until status flips to **Verified** (5-30 min).
+3. **API keys → Create API key** → scope: *sending access* only →
+   copy the `re_…` value into `RESEND_API_KEY`.
+4. Set `EMAIL_FROM` to a verified address on that domain, e.g.
+   `Auto Diaspora <hello@mail.autodiaspora.com>`. **Must** be on the
+   verified domain or Resend rejects with 403.
+5. Smoke test: open a chat with yourself or a test account and send a
+   message — the recipient's email should land within ~10 seconds.
+
+### Setting up the expiry cron
+
+`POST /api/cron/expire` clears `is_premium` / `is_top` when the
+corresponding `*_until` has passed. The endpoint requires the
+`Authorization: Bearer $CRON_SECRET` header so randos can't hit it.
+
+On the VPS, add a daily crontab entry as root:
+
+```sh
+crontab -e
+# add this line — runs every day at 03:00 UTC
+0 3 * * * curl -fsS -H "Authorization: Bearer $CRON_SECRET" https://autodiaspora.com/api/cron/expire >> /var/log/autodiaspora-cron.log 2>&1
+```
+
+Replace `$CRON_SECRET` with the actual value or define it via
+`/etc/cron.d/autodiaspora` instead so the secret stays in a file
+read-only to root.
+
+Verify with a manual curl from the server:
+```sh
+curl -i -H "Authorization: Bearer <SECRET>" https://autodiaspora.com/api/cron/expire
+# expected: 200 + JSON {"ok": true, "premium_cleared": N, "top_cleared": M}
+```
+
+### Filling legal placeholders
+
+[messages/{en,uk,ru}.json](messages) still contain `[OWNER NAME]`,
+`[KVK NUMBER]`, `[REGISTERED ADDRESS]`, `[STREET]`, `[POSTCODE] [CITY]`,
+`[XXXXXXXXX]` (BTW), `[+31 ...]` (phone) inside `Privacy.sections.*`,
+`Terms.sections.*`, `Impressum.*`. Do a global find-and-replace once
+the eenmanszaak is registered and the actual values are in hand. The
+site can ship without these but the legal pages won't be substitutable
+for real Terms / Privacy / Impressum until they're filled.
 
 ## 3. Custom domain
 

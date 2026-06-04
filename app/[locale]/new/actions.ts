@@ -221,11 +221,12 @@ export async function createListingAction(formData: FormData) {
     })
   );
 
-  // 6. If the user chose to boost to top (€5), send them to payment with the
-  //    freshly-created listing. Otherwise the free listing is done — it goes
-  //    to moderation and the user sees the pending state.
-  if (tier === "top") {
-    redirect(`/${locale}/new/payment?tier=top&listingId=${data.id}`);
+  // 6. If the user picked a paid tier (top / premium_14 / premium_30), send
+  //    them to the payment flow with the freshly-created listing. For free,
+  //    the listing is done — it goes to moderation and the user sees the
+  //    pending state.
+  if (tier !== "free") {
+    redirect(`/${locale}/new/payment?tier=${tier}&listingId=${data.id}`);
   }
 
   redirect(`/${locale}/listing/${data.id}?pending=1`);

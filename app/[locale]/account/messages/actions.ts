@@ -3,7 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { routing } from "@/i18n/routing";
+import { sendNewMessageEmail } from "@/lib/email";
 
 type Locale = (typeof routing.locales)[number];
 
@@ -106,6 +108,69 @@ export async function sendMessageAction(formData: FormData) {
     .insert({ chat_id: chatId, sender_id: user.id, body });
   // No revalidate — the chat page subscribes to Realtime, message will
   // arrive that way. Unread counts in /account get refreshed on next visit.
+
+  // Fire-and-forget email notification to the other side. Realtime
+  // covers the case where they have the chat tab open; email reaches
+  // them when they don't. Failures are swallowed by sendEmail() — never
+  // block a chat message on Resend being down.
+  notifyChatRecipient(chatId, user.id, body).catch((err) => {
+    console.error("[chat] notify email failed:", err);
+  });
+}
+
+async function notifyChatRecipient(
+  chatId: string,
+  senderId: string,
+  body: string
+): Promise<void> {
+  const admin = createAdminClient();
+  const { data: chat } = await admin
+    .from("chats")
+    .select(
+      "buyer_id, seller_id, listing:listings(brand, model)"
+    )
+    .eq("id", chatId)
+    .maybeSingle<{
+      buyer_id: string;
+      seller_id: string;
+      listing: { brand: string; model: string } | null;
+    }>();
+  if (!chat) return;
+
+  const recipientId = chat.buyer_id === senderId ? chat.seller_id : chat.buyer_id;
+  if (!recipientId || recipientId === senderId) return;
+
+  const [{ data: senderUser }, { data: recipientUser }] = await Promise.all([
+    admin.auth.admin.getUserById(senderId),
+    admin.auth.admin.getUserById(recipientId),
+  ]);
+  const recipientEmail = recipientUser.user?.email;
+  if (!recipientEmail) return;
+
+  const { data: senderProfile } = await admin
+    .from("profiles")
+    .select("full_name")
+    .eq("id", senderId)
+    .maybeSingle<{ full_name: string | null }>();
+  const senderName =
+    senderProfile?.full_name?.trim() ||
+    senderUser.user?.email?.split("@")[0] ||
+    "Користувач";
+
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+    "https://autodiaspora.com";
+  const listingTitle = chat.listing
+    ? `${chat.listing.brand} ${chat.listing.model}`
+    : "оголошення";
+
+  await sendNewMessageEmail({
+    to: recipientEmail,
+    fromName: senderName,
+    preview: body,
+    chatUrl: `${siteUrl}/uk/account/messages/${chatId}`,
+    listingTitle,
+  });
 }
 
 /**

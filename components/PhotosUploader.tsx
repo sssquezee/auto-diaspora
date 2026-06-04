@@ -3,7 +3,70 @@
 import { useEffect, useState } from "react";
 
 const MAX_FILES = 15;
-const MAX_SIZE_MB = 10;
+// Max accepted upload — files larger get rejected before compression
+// (so we don't burn time on a 50 MB phone burst). Real wire size after
+// compression is usually < 1 MB.
+const MAX_SIZE_MB = 25;
+// Compression target: longest side capped at 1600 px, JPEG q=0.85. Hits
+// the sweet spot for listing photos — still crisp, ~5-10× smaller than
+// raw DSLR / phone HDR output.
+const MAX_DIMENSION = 1600;
+const JPEG_QUALITY = 0.85;
+
+async function compressImage(file: File): Promise<File> {
+  // GIF / SVG / WebP animations: pass through untouched — we'd lose
+  // animation / vector quality. Re-encoding makes sense only for raster
+  // photos.
+  if (!file.type.startsWith("image/jpeg") && !file.type.startsWith("image/png")) {
+    return file;
+  }
+  if (file.size < 500 * 1024) return file; // already small
+
+  try {
+    const bitmap = await createImageBitmap(file);
+    const ratio = Math.min(
+      1,
+      MAX_DIMENSION / Math.max(bitmap.width, bitmap.height)
+    );
+    const w = Math.round(bitmap.width * ratio);
+    const h = Math.round(bitmap.height * ratio);
+    const canvas =
+      typeof OffscreenCanvas !== "undefined"
+        ? new OffscreenCanvas(w, h)
+        : Object.assign(document.createElement("canvas"), { width: w, height: h });
+    const ctx = canvas.getContext("2d") as
+      | CanvasRenderingContext2D
+      | OffscreenCanvasRenderingContext2D
+      | null;
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, w, h);
+    bitmap.close?.();
+
+    const blob: Blob | null =
+      "convertToBlob" in canvas
+        ? await canvas.convertToBlob({ type: "image/jpeg", quality: JPEG_QUALITY })
+        : await new Promise((resolve) =>
+            (canvas as HTMLCanvasElement).toBlob(
+              (b) => resolve(b),
+              "image/jpeg",
+              JPEG_QUALITY
+            )
+          );
+    if (!blob) return file;
+    // Only swap if compression actually saved bytes.
+    if (blob.size >= file.size) return file;
+
+    const baseName = file.name.replace(/\.(png|jpe?g|webp)$/i, "");
+    return new File([blob], `${baseName}.jpg`, {
+      type: "image/jpeg",
+      lastModified: Date.now(),
+    });
+  } catch {
+    // Worst case (Safari OffscreenCanvas quirks, OOM on huge files):
+    // upload the original.
+    return file;
+  }
+}
 
 type Labels = {
   dropzoneText: string;
@@ -30,14 +93,14 @@ export function PhotosUploader({ files, onChange, labels }: Props) {
     return () => urls.forEach((u) => URL.revokeObjectURL(u));
   }, [files]);
 
-  const handleAdd = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAdd = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const added = Array.from(e.target.files ?? []);
     e.target.value = "";
 
     if (added.length === 0) return;
 
     const rejects: string[] = [];
-    const accepted: File[] = [];
+    const compressed: File[] = [];
     for (const f of added) {
       if (!f.type.startsWith("image/")) {
         rejects.push(labels.notImage);
@@ -47,10 +110,10 @@ export function PhotosUploader({ files, onChange, labels }: Props) {
         rejects.push(labels.tooLarge);
         continue;
       }
-      accepted.push(f);
+      compressed.push(await compressImage(f));
     }
     setWarning(rejects[0] ?? null);
-    const merged = [...files, ...accepted].slice(0, MAX_FILES);
+    const merged = [...files, ...compressed].slice(0, MAX_FILES);
     onChange(merged);
   };
 

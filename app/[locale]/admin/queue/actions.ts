@@ -6,6 +6,10 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getAdminUserId } from "@/lib/admin";
 import { routing } from "@/i18n/routing";
+import {
+  sendListingApprovedEmail,
+  sendListingRejectedEmail,
+} from "@/lib/email";
 
 type Locale = (typeof routing.locales)[number];
 
@@ -35,14 +39,42 @@ export async function approveListingAction(formData: FormData) {
 
   // Admin bypasses owner-RLS by using the service-role client
   const admin = createAdminClient();
-  await admin
+  const { data: updated } = await admin
     .from("listings")
     .update({ status: "active", updated_at: new Date().toISOString() })
     .eq("id", id)
-    .eq("status", "pending_review");
+    .eq("status", "pending_review")
+    .select("user_id, brand, model")
+    .maybeSingle();
+
+  if (updated) {
+    const ownerEmail = await fetchOwnerEmail(admin, updated.user_id);
+    const siteUrl =
+      process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+      "https://autodiaspora.com";
+    if (ownerEmail) {
+      await sendListingApprovedEmail({
+        to: ownerEmail,
+        listingTitle: `${updated.brand} ${updated.model}`,
+        listingUrl: `${siteUrl}/${locale}/listing/${id}`,
+      });
+    }
+  }
 
   revalidatePath(`/${locale}/admin/queue`);
   redirect(`/${locale}/admin/queue?action=approved`);
+}
+
+async function fetchOwnerEmail(
+  admin: ReturnType<typeof createAdminClient>,
+  userId: string
+): Promise<string | null> {
+  try {
+    const { data } = await admin.auth.admin.getUserById(userId);
+    return data.user?.email ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export async function rejectListingAction(formData: FormData) {
@@ -54,6 +86,14 @@ export async function rejectListingAction(formData: FormData) {
   if (!adminId) redirect(`/${locale}`);
 
   const admin = createAdminClient();
+
+  // Snapshot owner + title BEFORE we delete the row, so we can email
+  // the seller a heads-up after the cascade fires.
+  const { data: snapshot } = await admin
+    .from("listings")
+    .select("user_id, brand, model")
+    .eq("id", id)
+    .maybeSingle();
 
   // Best-effort Storage cleanup before delete (CASCADE removes
   // listing_photos rows but leaves the actual files)
@@ -74,6 +114,17 @@ export async function rejectListingAction(formData: FormData) {
 
   // Delete the listing — RLS bypassed by service-role
   await admin.from("listings").delete().eq("id", id);
+
+  if (snapshot) {
+    const ownerEmail = await fetchOwnerEmail(admin, snapshot.user_id);
+    if (ownerEmail) {
+      await sendListingRejectedEmail({
+        to: ownerEmail,
+        listingTitle: `${snapshot.brand} ${snapshot.model}`,
+        reason: null,
+      });
+    }
+  }
 
   revalidatePath(`/${locale}/admin/queue`);
   redirect(`/${locale}/admin/queue?action=rejected`);

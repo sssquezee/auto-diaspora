@@ -156,33 +156,6 @@ export default async function AccountOverviewPage({
         </section>
       )}
 
-      {/* Telegram CTA */}
-      <section className="bg-ink text-white border-[1.5px] border-ink p-5 relative overflow-hidden">
-        <div
-          aria-hidden
-          className="absolute -top-12 -right-12 w-[200px] h-[200px] rounded-full opacity-20 pointer-events-none"
-          style={{ background: "var(--accent)" }}
-        />
-        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div className="font-sans font-extrabold text-[10.5px] uppercase tracking-[0.18em] text-accent mb-2">
-              {t("telegram.label")}
-            </div>
-            <h2 className="font-sans font-black text-[22px] sm:text-[28px] uppercase tracking-[-0.03em] leading-none mb-2">
-              {t("telegram.title")}
-            </h2>
-            <p className="font-sans text-[13px] text-white/70 max-w-md">
-              {t("telegram.desc")}
-            </p>
-          </div>
-          <button
-            type="button"
-            className="bg-accent hover:bg-accent-2 text-white font-sans font-extrabold text-[12px] uppercase tracking-[0.14em] px-5 py-3 cursor-pointer border-0 transition-colors flex-shrink-0"
-          >
-            {t("telegram.cta")}
-          </button>
-        </div>
-      </section>
     </div>
   );
 }
