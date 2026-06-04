@@ -95,8 +95,27 @@
     },
     "reports": {
       "title": "Жалобы",
-      "subtitle": "Жалобы пользователей на активные объявления",
-      "placeholder": "UI для жалоб — следующий шаг. Пока смотри таблицу `reports` в Supabase Dashboard, фильтр status='open'."
+      "subtitleOpen": "{count} открытых",
+      "subtitleAll": "{count} всего",
+      "placeholder": "UI для жалоб — следующий шаг. Пока смотри таблицу `reports` в Supabase Dashboard, фильтр status='open'.",
+      "empty": "Нет жалоб в этой вкладке.",
+      "dismissedNotice": "Жалоба отклонена. Объявление осталось в каталоге.",
+      "actionedNotice": "Объявление удалено, жалоба закрыта.",
+      "anonymousReporter": "Аноним",
+      "listingGone": "Объявление уже удалено",
+      "reportedBy": "От: {name}",
+      "dismissCta": "Отклонить",
+      "actionCta": "Удалить объявление",
+      "tabs": {
+        "open": "Открытые",
+        "all": "Все"
+      },
+      "status": {
+        "open": "Открыто",
+        "reviewed": "Просмотрено",
+        "dismissed": "Отклонено",
+        "actioned": "Применено"
+      }
     }
   },
   "NotFound": {

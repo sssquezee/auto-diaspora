@@ -95,8 +95,27 @@
     },
     "reports": {
       "title": "Reports",
-      "subtitle": "User-submitted complaints about active listings",
-      "placeholder": "Reports UI is coming next. For now check the `reports` table in Supabase Dashboard for rows with status='open'."
+      "subtitleOpen": "{count} open",
+      "subtitleAll": "{count} total",
+      "placeholder": "Reports UI is coming next. For now check the `reports` table in Supabase Dashboard for rows with status='open'.",
+      "empty": "No reports in this tab.",
+      "dismissedNotice": "Report dismissed. Listing stays in the catalog.",
+      "actionedNotice": "Listing deleted, report closed.",
+      "anonymousReporter": "Anonymous",
+      "listingGone": "Listing already deleted",
+      "reportedBy": "From: {name}",
+      "dismissCta": "Dismiss",
+      "actionCta": "Delete listing",
+      "tabs": {
+        "open": "Open",
+        "all": "All"
+      },
+      "status": {
+        "open": "Open",
+        "reviewed": "Reviewed",
+        "dismissed": "Dismissed",
+        "actioned": "Actioned"
+      }
     }
   },
   "NotFound": {

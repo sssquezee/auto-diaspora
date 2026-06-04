@@ -95,8 +95,27 @@
     },
     "reports": {
       "title": "Скарги",
-      "subtitle": "Скарги юзерів на активні оголошення",
-      "placeholder": "UI для скарг — наступний крок. Поки що дивись таблицю `reports` в Supabase Dashboard, фільтр status='open'."
+      "subtitleOpen": "{count} відкритих",
+      "subtitleAll": "{count} всього",
+      "placeholder": "UI для скарг — наступний крок. Поки що дивись таблицю `reports` в Supabase Dashboard, фільтр status='open'.",
+      "empty": "Немає скарг у цій вкладці.",
+      "dismissedNotice": "Скаргу відхилено. Оголошення залишилось у каталозі.",
+      "actionedNotice": "Оголошення видалено, скаргу закрито.",
+      "anonymousReporter": "Анонім",
+      "listingGone": "Оголошення вже видалено",
+      "reportedBy": "Від: {name}",
+      "dismissCta": "Відхилити",
+      "actionCta": "Видалити оголошення",
+      "tabs": {
+        "open": "Відкриті",
+        "all": "Всі"
+      },
+      "status": {
+        "open": "Відкрито",
+        "reviewed": "Переглянуто",
+        "dismissed": "Відхилено",
+        "actioned": "Застосовано"
+      }
     }
   },
   "NotFound": {
