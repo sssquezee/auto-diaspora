@@ -4,7 +4,11 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { BRANDS, getModelsForBrand } from "@/lib/brands";
 
-const COUNTRIES = ["DE", "PL", "NL", "CZ", "BE", "FR"] as const;
+const COUNTRIES = [
+  "AT", "BE", "BG", "CH", "CZ", "DE", "DK", "EE", "ES", "FI",
+  "FR", "GR", "HR", "HU", "IE", "IT", "LT", "LU", "LV", "NL",
+  "NO", "PL", "PT", "RO", "SE", "SI", "SK",
+] as const;
 
 const fieldClass =
   "w-full border-[1.5px] border-line-strong bg-white px-3 py-2.5 font-sans text-[14px] text-ink outline-none focus:border-ink focus:border-2 focus:px-[11px] focus:py-[9px]";

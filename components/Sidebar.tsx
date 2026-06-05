@@ -13,7 +13,14 @@ import {
 import type { BodyTypeKey, FuelKey, TransmissionKey } from "@/lib/mock-listings";
 import { BRANDS, getModelsForBrand } from "@/lib/brands";
 
-const COUNTRIES: string[] = ["DE", "PL", "NL", "CZ", "BE", "FR"];
+// Sorted alphabetically by ISO code so the dropdown is predictable
+// across all three locales (we'd need per-locale sort to honour the
+// native alphabet, which is overkill for a 27-item list).
+const COUNTRIES: string[] = [
+  "AT", "BE", "BG", "CH", "CZ", "DE", "DK", "EE", "ES", "FI",
+  "FR", "GR", "HR", "HU", "IE", "IT", "LT", "LU", "LV", "NL",
+  "NO", "PL", "PT", "RO", "SE", "SI", "SK",
+];
 
 const FUELS: FuelKey[] = ["diesel", "petrol", "hybrid", "electric"];
 

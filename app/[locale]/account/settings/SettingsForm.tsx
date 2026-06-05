@@ -4,7 +4,11 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { updateProfileAction, deleteAccountAction } from "./actions";
 
-const COUNTRIES = ["DE", "PL", "NL", "CZ", "BE", "FR"] as const;
+const COUNTRIES = [
+  "AT", "BE", "BG", "CH", "CZ", "DE", "DK", "EE", "ES", "FI",
+  "FR", "GR", "HR", "HU", "IE", "IT", "LT", "LU", "LV", "NL",
+  "NO", "PL", "PT", "RO", "SE", "SI", "SK",
+] as const;
 const LANGUAGES = ["uk", "ru", "en"] as const;
 
 const fieldClass =
