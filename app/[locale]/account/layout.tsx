@@ -20,7 +20,7 @@ export default async function AccountLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const locale = (await getLocale()) as "uk" | "ru" | "en";
+  const locale = (await getLocale()) as "uk" | "ru";
   const t = await getTranslations("Account");
 
   // Gate: must be signed in

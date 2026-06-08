@@ -11,7 +11,6 @@ import { useTransition } from "react";
 const LOCALE_LABEL: Record<string, string> = {
   uk: "UA",
   ru: "RU",
-  en: "EN",
 };
 
 export function LangSwitcher() {

@@ -9,7 +9,7 @@ const COUNTRIES = [
   "FR", "GR", "HR", "HU", "IE", "IT", "LT", "LU", "LV", "NL",
   "NO", "PL", "PT", "RO", "SE", "SI", "SK",
 ] as const;
-const LANGUAGES = ["uk", "ru", "en"] as const;
+const LANGUAGES = ["uk", "ru"] as const;
 
 const fieldClass =
   "w-full border-[1.5px] border-line-strong bg-white px-3 py-2.5 font-sans text-[14px] text-ink outline-none focus:border-ink focus:border-2 focus:px-[11px] focus:py-[9px]";
@@ -163,7 +163,7 @@ export function SettingsForm({ locale, email, defaults }: Props) {
 
         {/* Language */}
         <SectionCard title={t("sections.language")}>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {LANGUAGES.map((lng) => (
               <label
                 key={lng}
