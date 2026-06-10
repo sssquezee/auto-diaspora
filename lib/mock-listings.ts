@@ -80,6 +80,21 @@ const CITIES: Record<string, LocalizedString> = {
   brno: { uk: "Брно", ru: "Брно", en: "Brno" },
   antwerp: { uk: "Антверпен", ru: "Антверпен", en: "Antwerp" },
   brussels: { uk: "Брюссель", ru: "Брюссель", en: "Brussels" },
+  vienna: { uk: "Відень", ru: "Вена", en: "Vienna" },
+  paris: { uk: "Париж", ru: "Париж", en: "Paris" },
+  lyon: { uk: "Ліон", ru: "Лион", en: "Lyon" },
+  madrid: { uk: "Мадрид", ru: "Мадрид", en: "Madrid" },
+  barcelona: { uk: "Барселона", ru: "Барселона", en: "Barcelona" },
+  lisbon: { uk: "Лісабон", ru: "Лиссабон", en: "Lisbon" },
+  milan: { uk: "Мілан", ru: "Милан", en: "Milan" },
+  rome: { uk: "Рим", ru: "Рим", en: "Rome" },
+  zurich: { uk: "Цюрих", ru: "Цюрих", en: "Zürich" },
+  vilnius: { uk: "Вільнюс", ru: "Вильнюс", en: "Vilnius" },
+  budapest: { uk: "Будапешт", ru: "Будапешт", en: "Budapest" },
+  stockholm: { uk: "Стокгольм", ru: "Стокгольм", en: "Stockholm" },
+  copenhagen: { uk: "Копенгаген", ru: "Копенгаген", en: "Copenhagen" },
+  dublin: { uk: "Дублін", ru: "Дублин", en: "Dublin" },
+  bucharest: { uk: "Бухарест", ru: "Бухарест", en: "Bucharest" },
 };
 
 const COLORS: Record<string, LocalizedString> = {
@@ -105,6 +120,12 @@ const SELLERS: Record<string, Seller> = {
   olexandrK: { name: "Олександр К.", memberSinceYear: 2024, listingsCount: 8, verified: true },
   andriyB: { name: "Андрій Б.", memberSinceYear: 2024, listingsCount: 6, verified: true },
   sergiyM: { name: "Сергій М.", memberSinceYear: 2025, listingsCount: 3, verified: false },
+  gerdS: { name: "Gerd S.", memberSinceYear: 2024, listingsCount: 9, verified: true },
+  lukaszP: { name: "Łukasz P.", memberSinceYear: 2025, listingsCount: 4, verified: false },
+  mariaG: { name: "María G.", memberSinceYear: 2024, listingsCount: 6, verified: true },
+  joaoP: { name: "João P.", memberSinceYear: 2025, listingsCount: 2, verified: false },
+  oksanaT: { name: "Оксана Т.", memberSinceYear: 2024, listingsCount: 5, verified: true },
+  dmytroL: { name: "Дмитро Л.", memberSinceYear: 2025, listingsCount: 3, verified: true },
 };
 
 const COMMON_DESCRIPTION: LocalizedString = {
@@ -207,7 +228,7 @@ function makeListing(seed: ListingSeed): Listing {
   };
 }
 
-// =========== 30 listings ===========
+// =========== 50 listings ===========
 
 const SEEDS: ListingSeed[] = [
   // The original 6 from auto-diaspora-mono.html
@@ -255,6 +276,28 @@ const SEEDS: ListingSeed[] = [
   { id: "28", brand: "Ford", model: "Mondeo Hybrid", year: 2019, mileageKm: 142000, engineSpecLatin: "2.0 Hybrid", priceEur: 13900, fuel: "hybrid", transmission: "auto", country: "NL", city: "rotterdam", photoCount: 13, imageVariant: 4, daysAgo: 14, bodyType: "sedan", driveType: "fwd", powerHp: 187, engineVolumeL: 2.0, color: "grey", customsCleared: true, views: 376, favorites: 18, seller: "pieterV" },
   { id: "29", brand: "Volvo", model: "XC60", year: 2018, mileageKm: 119000, engineSpecLatin: "2.0 D4", priceEur: 24800, fuel: "diesel", transmission: "auto", country: "DE", city: "berlin", photoCount: 17, imageVariant: 5, daysAgo: 4, badges: ["verified"], bodyType: "suv", driveType: "awd", powerHp: 190, engineVolumeL: 2.0, color: "darkBlue", views: 692, favorites: 38, seller: "olexandrK" },
   { id: "30", brand: "Volvo", model: "V60 Recharge", year: 2022, mileageKm: 31000, engineSpecLatin: "T6 PHEV", priceEur: 36500, fuel: "hybrid", transmission: "auto", country: "NL", city: "amsterdam", photoCount: 19, imageVariant: 6, daysAgo: 11, badges: ["new"], premium: true, bodyType: "wagon", driveType: "awd", powerHp: 340, engineVolumeL: 2.0, color: "black", views: 1421, favorites: 96, seller: "pieterV" },
+
+  // ===== Expansion to 50 — wider country & brand spread =====
+  { id: "31", brand: "Hyundai", model: "Tucson", year: 2020, mileageKm: 71000, engineSpecLatin: "1.6 CRDi", priceEur: 21900, fuel: "diesel", transmission: "auto", country: "DE", city: "munich", photoCount: 14, imageVariant: 2, daysAgo: 2, badges: ["verified"], bodyType: "suv", driveType: "fwd", powerHp: 136, engineVolumeL: 1.6, color: "grey", views: 402, favorites: 21, seller: "gerdS" },
+  { id: "32", brand: "Kia", model: "Sportage", year: 2019, mileageKm: 94000, engineSpecLatin: "1.6 CRDi", priceEur: 17400, fuel: "diesel", transmission: "manual", country: "PL", city: "warsaw", photoCount: 12, imageVariant: 4, daysAgo: 3, bodyType: "suv", driveType: "fwd", powerHp: 136, engineVolumeL: 1.6, color: "white", customsCleared: true, views: 351, favorites: 17, seller: "lukaszP" },
+  { id: "33", brand: "Nissan", model: "Qashqai", year: 2018, mileageKm: 116000, engineSpecLatin: "1.5 dCi", priceEur: 13200, fuel: "diesel", transmission: "manual", country: "NL", city: "utrecht", photoCount: 10, imageVariant: 5, daysAgo: 6, bodyType: "suv", driveType: "fwd", powerHp: 110, engineVolumeL: 1.5, color: "silver", views: 288, favorites: 12, seller: "pieterV" },
+  { id: "34", brand: "Mazda", model: "CX-5", year: 2019, mileageKm: 82000, engineSpecLatin: "2.2 Skyactiv-D", priceEur: 19900, fuel: "diesel", transmission: "auto", country: "ES", city: "madrid", photoCount: 15, imageVariant: 1, daysAgo: 1, badges: ["verified"], bodyType: "suv", driveType: "awd", powerHp: 184, engineVolumeL: 2.2, color: "red", views: 514, favorites: 27, seller: "mariaG" },
+  { id: "35", brand: "Seat", model: "Leon", year: 2018, mileageKm: 103000, engineSpecLatin: "1.5 TSI", priceEur: 12600, fuel: "petrol", transmission: "manual", country: "ES", city: "barcelona", photoCount: 9, imageVariant: 3, daysAgo: 4, bodyType: "hatchback", driveType: "fwd", powerHp: 130, engineVolumeL: 1.5, color: "grey", views: 233, favorites: 10, seller: "mariaG" },
+  { id: "36", brand: "Fiat", model: "500", year: 2019, mileageKm: 64000, engineSpecLatin: "1.2", priceEur: 8400, fuel: "petrol", transmission: "manual", country: "IT", city: "milan", photoCount: 8, imageVariant: 6, daysAgo: 0, badges: ["urgent"], bodyType: "hatchback", driveType: "fwd", powerHp: 69, engineVolumeL: 1.2, color: "white", views: 176, favorites: 9, seller: "joaoP" },
+  { id: "37", brand: "Alfa Romeo", model: "Giulia", year: 2019, mileageKm: 88000, engineSpecLatin: "2.2 JTDm", priceEur: 23900, fuel: "diesel", transmission: "auto", country: "IT", city: "rome", photoCount: 18, imageVariant: 2, daysAgo: 7, badges: ["top"], premium: true, bodyType: "sedan", driveType: "rwd", powerHp: 190, engineVolumeL: 2.2, color: "red", views: 967, favorites: 58, seller: "joaoP" },
+  { id: "38", brand: "Citroën", model: "C4", year: 2020, mileageKm: 69000, engineSpecLatin: "1.5 BlueHDi", priceEur: 14200, fuel: "diesel", transmission: "auto", country: "FR", city: "lyon", photoCount: 11, imageVariant: 4, daysAgo: 5, bodyType: "hatchback", driveType: "fwd", powerHp: 130, engineVolumeL: 1.5, color: "darkBlue", views: 312, favorites: 15, seller: "gerdS" },
+  { id: "39", brand: "Renault", model: "Clio V", year: 2021, mileageKm: 41000, engineSpecLatin: "1.0 TCe", priceEur: 13900, fuel: "petrol", transmission: "manual", country: "FR", city: "paris", photoCount: 12, imageVariant: 5, daysAgo: 2, badges: ["new"], bodyType: "hatchback", driveType: "fwd", powerHp: 100, engineVolumeL: 1.0, color: "white", views: 421, favorites: 22, seller: "mariaG" },
+  { id: "40", brand: "Porsche", model: "Macan", year: 2019, mileageKm: 78000, engineSpecLatin: "3.0 V6", priceEur: 49900, fuel: "petrol", transmission: "auto", country: "CH", city: "zurich", photoCount: 24, imageVariant: 1, daysAgo: 9, badges: ["top", "verified"], premium: true, bodyType: "suv", driveType: "awd", powerHp: 354, engineVolumeL: 3.0, color: "black", views: 2104, favorites: 167, seller: "gerdS" },
+  { id: "41", brand: "Mini", model: "Cooper", year: 2018, mileageKm: 97000, engineSpecLatin: "1.5", priceEur: 12900, fuel: "petrol", transmission: "auto", country: "AT", city: "vienna", photoCount: 10, imageVariant: 3, daysAgo: 3, bodyType: "hatchback", driveType: "fwd", powerHp: 136, engineVolumeL: 1.5, color: "green", views: 287, favorites: 16, seller: "klausW" },
+  { id: "42", brand: "Volvo", model: "XC40", year: 2021, mileageKm: 49000, engineSpecLatin: "2.0 B4", priceEur: 30900, fuel: "hybrid", transmission: "auto", country: "SE", city: "stockholm", photoCount: 17, imageVariant: 6, daysAgo: 6, badges: ["verified"], bodyType: "suv", driveType: "awd", powerHp: 197, engineVolumeL: 2.0, color: "silver", views: 731, favorites: 44, seller: "oksanaT" },
+  { id: "43", brand: "BMW", model: "1 Series 118i F40", year: 2019, mileageKm: 84000, engineSpecLatin: "1.5 TSI", priceEur: 19200, fuel: "petrol", transmission: "auto", country: "DK", city: "copenhagen", photoCount: 13, imageVariant: 2, daysAgo: 4, bodyType: "hatchback", driveType: "fwd", powerHp: 140, engineVolumeL: 1.5, color: "grey", views: 398, favorites: 19, seller: "gerdS" },
+  { id: "44", brand: "Audi", model: "Q3 Sportback", year: 2020, mileageKm: 73000, engineSpecLatin: "2.0 TDI", priceEur: 27800, fuel: "diesel", transmission: "auto", country: "HU", city: "budapest", photoCount: 16, imageVariant: 4, daysAgo: 8, badges: ["verified"], bodyType: "suv", driveType: "awd", powerHp: 150, engineVolumeL: 2.0, color: "white", customsCleared: true, views: 642, favorites: 36, seller: "dmytroL" },
+  { id: "45", brand: "VW", model: "Polo", year: 2020, mileageKm: 58000, engineSpecLatin: "1.0 TSI", priceEur: 12800, fuel: "petrol", transmission: "manual", country: "LT", city: "vilnius", photoCount: 9, imageVariant: 5, daysAgo: 1, badges: ["new"], bodyType: "hatchback", driveType: "fwd", powerHp: 95, engineVolumeL: 1.0, color: "red", customsCleared: true, views: 254, favorites: 13, seller: "dmytroL" },
+  { id: "46", brand: "Toyota", model: "Yaris", year: 2021, mileageKm: 36000, engineSpecLatin: "1.5 Hybrid", priceEur: 17200, fuel: "hybrid", transmission: "auto", country: "IE", city: "dublin", photoCount: 12, imageVariant: 1, daysAgo: 5, badges: ["verified"], bodyType: "hatchback", driveType: "fwd", powerHp: 116, engineVolumeL: 1.5, color: "white", views: 489, favorites: 25, seller: "oksanaT" },
+  { id: "47", brand: "Mercedes", model: "A-Class A180d W177", year: 2019, mileageKm: 91000, engineSpecLatin: "1.5 diesel", priceEur: 19800, fuel: "diesel", transmission: "auto", country: "PT", city: "lisbon", photoCount: 14, imageVariant: 3, daysAgo: 3, badges: ["verified"], bodyType: "hatchback", driveType: "fwd", powerHp: 116, engineVolumeL: 1.5, color: "black", views: 537, favorites: 31, seller: "joaoP" },
+  { id: "48", brand: "Dacia", model: "Duster", year: 2020, mileageKm: 67000, engineSpecLatin: "1.5 dCi", priceEur: 13400, fuel: "diesel", transmission: "manual", country: "RO", city: "bucharest", photoCount: 11, imageVariant: 4, daysAgo: 2, bodyType: "suv", driveType: "awd", powerHp: 115, engineVolumeL: 1.5, color: "beige", customsCleared: true, views: 366, favorites: 18, seller: "lukaszP" },
+  { id: "49", brand: "Tesla", model: "Model S", year: 2021, mileageKm: 54000, engineSpecLatin: "Electric", priceEur: 52900, fuel: "electric", transmission: "auto", country: "NL", city: "rotterdam", photoCount: 22, imageVariant: 5, daysAgo: 10, badges: ["top"], premium: true, bodyType: "sedan", driveType: "awd", powerHp: 670, color: "white", views: 1976, favorites: 151, seller: "pieterV" },
+  { id: "50", brand: "Škoda", model: "Fabia", year: 2020, mileageKm: 62000, engineSpecLatin: "1.0 TSI", priceEur: 11900, fuel: "petrol", transmission: "manual", country: "CZ", city: "brno", photoCount: 10, imageVariant: 6, daysAgo: 1, badges: ["new"], bodyType: "hatchback", driveType: "fwd", powerHp: 95, engineVolumeL: 1.0, color: "silver", views: 271, favorites: 14, seller: "tomasH" },
 ];
 
 export const MOCK_LISTINGS: Listing[] = SEEDS.map(makeListing);

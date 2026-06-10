@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getAdminUserId } from "@/lib/admin";
 import { MOCK_LISTINGS } from "@/lib/mock-listings";
 import { routing } from "@/i18n/routing";
 
@@ -16,7 +17,7 @@ function pickLocale(value: FormDataEntryValue | null): Locale {
 }
 
 /**
- * One-shot dev helper: insert all 30 mock listings owned by the current
+ * One-shot dev helper: insert all 50 mock listings owned by the current
  * authenticated user. Idempotent — refuses if the user already owns
  * listings.
  *
@@ -33,6 +34,14 @@ export async function seedListingsAction(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect(`/${locale}/auth/login`);
+
+  // 1.5. In production only a whitelisted admin may seed — otherwise any
+  //      logged-in visitor could spam 50 rows into their own account.
+  const isDev = process.env.NODE_ENV !== "production";
+  if (!isDev) {
+    const adminId = await getAdminUserId();
+    if (!adminId) redirect(`/${locale}/account`);
+  }
 
   // 2. Bail if user already has listings
   const { count: existing } = await supabase
@@ -51,7 +60,7 @@ export async function seedListingsAction(formData: FormData) {
     return {
       user_id: user.id,
       title: `${l.brand} ${l.model}`,
-      description: l.details.description.en,
+      description: l.details.description.uk,
       brand: l.brand,
       model: l.model,
       year: l.year,
@@ -62,9 +71,9 @@ export async function seedListingsAction(formData: FormData) {
       drive_type: l.details.driveType,
       engine_volume: l.details.engineVolumeL ?? null,
       power_hp: l.details.powerHp,
-      color: l.details.color.en,
+      color: l.details.color.uk,
       country: l.country,
-      city: l.city.en,
+      city: l.city.uk,
       price: l.priceEur,
       currency: "EUR",
       price_negotiable: false,

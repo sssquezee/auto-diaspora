@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getFavoritesCount } from "@/lib/favorites-server";
+import { getAdminUserId } from "@/lib/admin";
 import { seedListingsAction } from "./dev-actions";
 
 function StatCard({
@@ -43,7 +44,11 @@ export default async function AccountOverviewPage({
   const tDev = await getTranslations("Account.dev");
   const locale = await getLocale();
   const sp = await searchParams;
+  // Seed tool is available in dev, and to whitelisted admins in production
+  // (so the owner can populate the live catalogue once).
   const isDev = process.env.NODE_ENV !== "production";
+  const adminId = await getAdminUserId();
+  const canSeed = isDev || adminId !== null;
 
   const supabase = await createClient();
   const {
@@ -119,7 +124,7 @@ export default async function AccountOverviewPage({
       </div>
 
       {/* Dev tools — seed catalog */}
-      {isDev && (
+      {canSeed && (
         <section className="bg-white border-[1.5px] border-dashed border-line-strong p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-faded mb-1">
