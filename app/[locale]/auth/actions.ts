@@ -19,6 +19,13 @@ function localePath(locale: Locale, path: string): string {
   return `/${locale}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
+// Only honour internal paths (single leading "/") so a crafted ?next= can't
+// bounce the user to an external site after login.
+function safeNext(value: FormDataEntryValue | null): string | null {
+  const v = typeof value === "string" ? value : "";
+  return v.startsWith("/") && !v.startsWith("//") ? v : null;
+}
+
 function authErrorKey(message: string): string {
   const m = message.toLowerCase();
   if (m.includes("invalid login") || m.includes("invalid_credentials")) {
@@ -35,23 +42,26 @@ function authErrorKey(message: string): string {
 
 export async function signInAction(formData: FormData) {
   const locale = pickLocale(formData.get("locale"));
+  const next = safeNext(formData.get("next"));
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
 
   if (!email || !password) {
-    redirect(`${localePath(locale, "/auth/login")}?error=missing_fields`);
+    const nextQs = next ? `&next=${encodeURIComponent(next)}` : "";
+    redirect(`${localePath(locale, "/auth/login")}?error=missing_fields${nextQs}`);
   }
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
+    const nextQs = next ? `&next=${encodeURIComponent(next)}` : "";
     redirect(
-      `${localePath(locale, "/auth/login")}?error=${authErrorKey(error.message)}`
+      `${localePath(locale, "/auth/login")}?error=${authErrorKey(error.message)}${nextQs}`
     );
   }
 
-  redirect(localePath(locale, "/account"));
+  redirect(next ?? localePath(locale, "/account"));
 }
 
 export async function signUpAction(formData: FormData) {

@@ -1,8 +1,9 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
+import { Link } from "@/i18n/navigation";
 import { PhotosUploader } from "@/components/PhotosUploader";
 import { ListingFormBody } from "@/components/ListingFormBody";
 import { createClient } from "@/lib/supabase/client";
@@ -85,6 +86,20 @@ function NewListingForm() {
   const [submitting, setSubmitting] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
+  // Check auth on mount so an unauthenticated visitor is told up-front that
+  // publishing requires an account — instead of filling the whole form and
+  // only hitting the wall at submit time. null = still checking.
+  const [authed, setAuthed] = useState<boolean | null>(null);
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      setAuthed(!!data.user);
+    });
+  }, []);
+
+  // Where to send the user back after they log in / register.
+  const returnTo = encodeURIComponent(`/${locale}/new`);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (submitting) return;
@@ -137,6 +152,31 @@ function NewListingForm() {
           {t("subtitle")}
         </p>
       </header>
+
+      {authed === false && (
+        <div
+          role="alert"
+          className="bg-white border-[1.5px] border-ink shadow-[3px_3px_0_var(--accent)] p-4 mb-6 flex flex-col sm:flex-row sm:items-center gap-3"
+        >
+          <p className="font-sans text-[14px] text-ink leading-relaxed flex-1">
+            {t("authPrompt.text")}
+          </p>
+          <div className="flex gap-2 shrink-0">
+            <Link
+              href={`/auth/login?next=${returnTo}`}
+              className="bg-accent hover:bg-accent-2 text-white font-sans font-extrabold text-[12px] uppercase tracking-[0.12em] px-4 py-2.5 no-underline border-[1.5px] border-ink transition-colors"
+            >
+              {t("authPrompt.signIn")}
+            </Link>
+            <Link
+              href={`/auth/register?next=${returnTo}`}
+              className="bg-white hover:border-ink text-ink font-sans font-extrabold text-[12px] uppercase tracking-[0.12em] px-4 py-2.5 no-underline border-[1.5px] border-line-strong transition-colors"
+            >
+              {t("authPrompt.register")}
+            </Link>
+          </div>
+        </div>
+      )}
 
       {submitError && (
         <div

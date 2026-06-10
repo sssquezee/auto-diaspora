@@ -15,17 +15,23 @@ export default async function LoginPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ error?: string; notice?: string }>;
+  searchParams: Promise<{ error?: string; notice?: string; next?: string }>;
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // Already logged in → redirect to account
+  const sp = await searchParams;
+  // Only honour internal paths to avoid open-redirect. Must start with a
+  // single "/" (not "//" — that's a protocol-relative external URL).
+  const next =
+    sp?.next && sp.next.startsWith("/") && !sp.next.startsWith("//")
+      ? sp.next
+      : null;
+
+  // Already logged in → go to the intended destination (or account).
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (user) redirect(`/${locale}/account`);
-
-  const sp = await searchParams;
+  if (user) redirect(next ?? `/${locale}/account`);
   const t = await getTranslations("Auth");
   const tL = await getTranslations("Auth.login");
   const tErr = await getTranslations("Auth.errors");
@@ -63,6 +69,7 @@ export default async function LoginPage({
 
         <form action={signInAction} className="flex flex-col gap-4">
           <input type="hidden" name="locale" value={locale} />
+          {next && <input type="hidden" name="next" value={next} />}
 
           <div>
             <label
@@ -133,7 +140,7 @@ export default async function LoginPage({
         <p className="text-center font-sans text-[13px] text-ink-muted mt-6">
           {tL("noAccount")}{" "}
           <Link
-            href="/auth/register"
+            href={next ? `/auth/register?next=${encodeURIComponent(next)}` : "/auth/register"}
             className="text-ink font-bold no-underline hover:text-accent underline decoration-accent decoration-2 underline-offset-[3px]"
           >
             {tL("registerLink")}
