@@ -46,8 +46,17 @@ export async function GET(request: NextRequest) {
   const redirectUri =
     process.env.GOOGLE_REDIRECT_URI ?? `${origin}/api/auth/google/callback`;
 
+  // Optional post-login destination. Only internal paths (single leading
+  // "/") are honoured. Packed into `state` as a base64url 3rd segment so it
+  // survives the round-trip to Google without colliding with the "." split.
+  const nextRaw = url.searchParams.get("next") ?? "";
+  const next =
+    nextRaw.startsWith("/") && !nextRaw.startsWith("//") ? nextRaw : "";
+
   const nonce = crypto.randomUUID();
-  const state = `${nonce}.${locale}`;
+  const state = next
+    ? `${nonce}.${locale}.${Buffer.from(next).toString("base64url")}`
+    : `${nonce}.${locale}`;
 
   const authUrl = new URL(GOOGLE_AUTH_URL);
   authUrl.searchParams.set("client_id", clientId);

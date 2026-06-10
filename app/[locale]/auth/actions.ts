@@ -66,15 +66,17 @@ export async function signInAction(formData: FormData) {
 
 export async function signUpAction(formData: FormData) {
   const locale = pickLocale(formData.get("locale"));
+  const next = safeNext(formData.get("next"));
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const fullName = String(formData.get("fullName") ?? "").trim();
+  const nextQs = next ? `&next=${encodeURIComponent(next)}` : "";
 
   if (!email || password.length < 8) {
     redirect(
       `${localePath(locale, "/auth/register")}?error=${
         password.length < 8 ? "weak_password" : "missing_fields"
-      }`
+      }${nextQs}`
     );
   }
 
@@ -82,11 +84,19 @@ export async function signUpAction(formData: FormData) {
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
+  // Carry `next` through the email-confirmation link so the user lands back
+  // on their intended page (e.g. /new) after clicking it. The callback route
+  // reads ?next= and redirects there.
+  const callbackPath = localePath(locale, "/auth/callback");
+  const emailRedirectTo = next
+    ? `${siteUrl}${callbackPath}?next=${encodeURIComponent(next)}`
+    : `${siteUrl}${callbackPath}`;
+
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${siteUrl}${localePath(locale, "/auth/callback")}`,
+      emailRedirectTo,
       data: {
         language: locale,
         full_name: fullName || undefined,
@@ -96,13 +106,13 @@ export async function signUpAction(formData: FormData) {
 
   if (error) {
     redirect(
-      `${localePath(locale, "/auth/register")}?error=${authErrorKey(error.message)}`
+      `${localePath(locale, "/auth/register")}?error=${authErrorKey(error.message)}${nextQs}`
     );
   }
 
   // Supabase sends a confirmation email by default. Land on a "check inbox"
-  // state on the login page.
-  redirect(`${localePath(locale, "/auth/login")}?notice=check_email`);
+  // state on the login page (keeping `next` so a manual login also returns).
+  redirect(`${localePath(locale, "/auth/login")}?notice=check_email${nextQs}`);
 }
 
 export async function signOutAction(formData: FormData) {

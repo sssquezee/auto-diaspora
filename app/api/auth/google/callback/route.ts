@@ -51,14 +51,26 @@ export async function GET(request: NextRequest) {
   const origin =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || url.origin;
 
-  // Recover locale from state (set in the initiate route); fall back safely.
+  // Recover locale (+ optional post-login destination) from state, set in
+  // the initiate route; fall back safely.
   const state = url.searchParams.get("state") ?? "";
-  const [stateNonce, stateLocaleRaw] = state.split(".");
+  const [stateNonce, stateLocaleRaw, stateNextRaw] = state.split(".");
   const locale = (routing.locales as readonly string[]).includes(
     stateLocaleRaw
   )
     ? stateLocaleRaw
     : routing.defaultLocale;
+
+  // Decode the base64url 3rd segment back into an internal path, if present.
+  let next: string | null = null;
+  if (stateNextRaw) {
+    try {
+      const decoded = Buffer.from(stateNextRaw, "base64url").toString("utf8");
+      if (decoded.startsWith("/") && !decoded.startsWith("//")) next = decoded;
+    } catch {
+      // bad segment — ignore, fall back to /account
+    }
+  }
 
   const redirectTo = (path: string) =>
     NextResponse.redirect(`${origin}${path}`);
@@ -176,7 +188,7 @@ export async function GET(request: NextRequest) {
   });
   if (signErr) return fail();
 
-  const res = redirectTo(`/${locale}/account`);
+  const res = redirectTo(next ?? `/${locale}/account`);
   res.cookies.delete(STATE_COOKIE);
   return res;
 }

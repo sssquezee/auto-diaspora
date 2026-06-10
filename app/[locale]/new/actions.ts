@@ -55,6 +55,28 @@ export async function createListingAction(formData: FormData) {
   } = await supabase.auth.getUser();
   if (!user) redirect(`/${locale}/auth/login`);
 
+  // Funnel analytics — anonymous per-visit id forwarded from the client so
+  // server-side outcomes (created / submit_error) join the same funnel as
+  // the client-side view / publish_click events. Best-effort, never blocks.
+  const funnelSid = str(formData, "funnel_sid") || null;
+  const recordFunnel = async (
+    event: "new_created" | "new_submit_error",
+    extra: { listingId?: string; reason?: string } = {}
+  ) => {
+    try {
+      await supabase.from("funnel_events").insert({
+        event,
+        session_id: funnelSid,
+        authed: true,
+        locale,
+        listing_id: extra.listingId ?? null,
+        meta: extra.reason ? { reason: extra.reason } : {},
+      });
+    } catch {
+      // analytics must never break the publish flow
+    }
+  };
+
   // 1.5. Parse pre-uploaded photo paths NOW so they can be cleaned up
   //      on any subsequent failure. Without this, a moderation block
   //      (or rate-limit, or validation error) leaves files in Storage
@@ -106,6 +128,7 @@ export async function createListingAction(formData: FormData) {
 
   if (missing) {
     await cleanupOrphans();
+    await recordFunnel("new_submit_error", { reason: "missing_fields" });
     redirect(`/${locale}/new?error=missing_fields`);
   }
 
@@ -133,6 +156,7 @@ export async function createListingAction(formData: FormData) {
     .gte("created_at", sinceIso);
   if ((recentCount ?? 0) >= RATE_LIMIT_MAX_INSERTS) {
     await cleanupOrphans();
+    await recordFunnel("new_submit_error", { reason: "rate_limit" });
     redirect(`/${locale}/new?error=rate_limit`);
   }
 
@@ -140,6 +164,7 @@ export async function createListingAction(formData: FormData) {
   const mod = moderateListing({ title: `${brand} ${model}`, description });
   if (!mod.ok) {
     await cleanupOrphans();
+    await recordFunnel("new_submit_error", { reason: `moderation_${mod.reason}` });
     redirect(`/${locale}/new?error=moderation_${mod.reason}`);
   }
 
@@ -188,9 +213,13 @@ export async function createListingAction(formData: FormData) {
 
   if (error || !data) {
     await cleanupOrphans();
+    await recordFunnel("new_submit_error", { reason: "server" });
     const msg = encodeURIComponent(error?.message ?? "insert failed");
     redirect(`/${locale}/new?error=server&msg=${msg}`);
   }
+
+  // Funnel step 3: a listing row was successfully created.
+  await recordFunnel("new_created", { listingId: data.id });
 
   // 5. Persist uploaded photo paths (already in Storage at this point)
   if (photoPaths.length > 0) {

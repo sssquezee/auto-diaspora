@@ -24,18 +24,22 @@ function GoogleIcon() {
 export function GoogleSignInButton({
   label,
   locale,
+  next,
 }: {
   label: string;
   locale: string;
+  /** Optional internal path to return to after a successful login. */
+  next?: string;
 }) {
   const [loading, setLoading] = useState(false);
 
   const onClick = () => {
     setLoading(true);
     // Full-page navigation to the initiate route, which redirects to Google.
+    const nextQs = next ? `&next=${encodeURIComponent(next)}` : "";
     window.location.href = `/api/auth/google?locale=${encodeURIComponent(
       locale
-    )}`;
+    )}${nextQs}`;
   };
 
   return (

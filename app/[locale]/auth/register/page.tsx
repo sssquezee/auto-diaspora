@@ -15,17 +15,22 @@ export default async function RegisterPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; next?: string }>;
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // Already logged in → redirect to account
+  const sp = await searchParams;
+  // Only honour internal paths to avoid open-redirect (no "//" external URLs).
+  const next =
+    sp?.next && sp.next.startsWith("/") && !sp.next.startsWith("//")
+      ? sp.next
+      : null;
+
+  // Already logged in → go to the intended destination (or account).
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (user) redirect(`/${locale}/account`);
-
-  const sp = await searchParams;
+  if (user) redirect(next ?? `/${locale}/account`);
   const t = await getTranslations("Auth");
   const tR = await getTranslations("Auth.register");
   const tErr = await getTranslations("Auth.errors");
@@ -54,6 +59,7 @@ export default async function RegisterPage({
 
         <form action={signUpAction} className="flex flex-col gap-4">
           <input type="hidden" name="locale" value={locale} />
+          {next && <input type="hidden" name="next" value={next} />}
 
           <div>
             <label
@@ -132,16 +138,17 @@ export default async function RegisterPage({
           <span className="flex-1 h-px bg-line" />
         </div>
 
-        <GoogleSignInButton label={t("googleButton")} locale={locale} />
+        <GoogleSignInButton label={t("googleButton")} locale={locale} next={next ?? undefined} />
         <TelegramLoginButton
           botUsername={process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME}
           locale={locale}
+          next={next ?? undefined}
         />
 
         <p className="text-center font-sans text-[13px] text-ink-muted mt-6">
           {tR("haveAccount")}{" "}
           <Link
-            href="/auth/login"
+            href={next ? `/auth/login?next=${encodeURIComponent(next)}` : "/auth/login"}
             className="text-ink font-bold no-underline hover:text-accent underline decoration-accent decoration-2 underline-offset-[3px]"
           >
             {tR("loginLink")}

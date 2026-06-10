@@ -131,10 +131,11 @@ export default async function LoginPage({
           <span className="flex-1 h-px bg-line" />
         </div>
 
-        <GoogleSignInButton label={t("googleButton")} locale={locale} />
+        <GoogleSignInButton label={t("googleButton")} locale={locale} next={next ?? undefined} />
         <TelegramLoginButton
           botUsername={process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME}
           locale={locale}
+          next={next ?? undefined}
         />
 
         <p className="text-center font-sans text-[13px] text-ink-muted mt-6">

@@ -14,9 +14,12 @@ import { useEffect, useRef } from "react";
 export function TelegramLoginButton({
   botUsername,
   locale,
+  next,
 }: {
   botUsername?: string;
   locale: string;
+  /** Optional internal path to return to after a successful login. */
+  next?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -25,6 +28,7 @@ export function TelegramLoginButton({
     if (!container || !botUsername) return;
     container.innerHTML = "";
 
+    const nextQs = next ? `&next=${encodeURIComponent(next)}` : "";
     const script = document.createElement("script");
     script.src = "https://telegram.org/js/telegram-widget.js?22";
     script.async = true;
@@ -33,7 +37,7 @@ export function TelegramLoginButton({
     script.setAttribute("data-radius", "0");
     script.setAttribute(
       "data-auth-url",
-      `${window.location.origin}/api/auth/telegram?locale=${locale}`
+      `${window.location.origin}/api/auth/telegram?locale=${locale}${nextQs}`
     );
     script.setAttribute("data-request-access", "write");
     container.appendChild(script);
@@ -41,7 +45,7 @@ export function TelegramLoginButton({
     return () => {
       container.innerHTML = "";
     };
-  }, [botUsername, locale]);
+  }, [botUsername, locale, next]);
 
   if (!botUsername) return null;
   return <div ref={ref} className="flex justify-center mt-3" />;

@@ -66,10 +66,16 @@ export async function GET(request: NextRequest) {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   if (!botToken) return fail();
 
-  // Collect Telegram-supplied params (ignore our own `locale`).
+  // Optional post-login destination — our own param, not Telegram's, so it
+  // is excluded from the hash check below. Only internal paths are honoured.
+  const nextRaw = url.searchParams.get("next") ?? "";
+  const next =
+    nextRaw.startsWith("/") && !nextRaw.startsWith("//") ? nextRaw : null;
+
+  // Collect Telegram-supplied params (ignore our own `locale` / `next`).
   const params: Record<string, string> = {};
   for (const [key, value] of url.searchParams.entries()) {
-    if (key !== "locale") params[key] = value;
+    if (key !== "locale" && key !== "next") params[key] = value;
   }
 
   if (!params.id || !params.hash || !params.auth_date) return fail();
@@ -145,5 +151,5 @@ export async function GET(request: NextRequest) {
   });
   if (signErr) return fail();
 
-  return redirectTo(`/${locale}/account`);
+  return redirectTo(next ?? `/${locale}/account`);
 }

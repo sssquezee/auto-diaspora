@@ -20,7 +20,12 @@ export async function GET(
 
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const next = url.searchParams.get("next") ?? `/${locale}/account`;
+  // Only honour internal paths (single leading "/") to avoid open-redirect.
+  const nextRaw = url.searchParams.get("next");
+  const next =
+    nextRaw && nextRaw.startsWith("/") && !nextRaw.startsWith("//")
+      ? nextRaw
+      : `/${locale}/account`;
 
   // Behind nginx, request.url is the internal http://localhost:3001 — build
   // redirects from the public origin so users don't land on a dead localhost.

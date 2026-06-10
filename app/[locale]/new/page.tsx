@@ -1,53 +1,51 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { PhotosUploader } from "@/components/PhotosUploader";
-import { ListingFormBody } from "@/components/ListingFormBody";
+import { ListingFormBody, type ListingDefaults } from "@/components/ListingFormBody";
 import { createClient } from "@/lib/supabase/client";
+import { track, getFunnelSessionId } from "@/lib/track";
+import {
+  loadDraft,
+  saveDraft,
+  clearDraft,
+  markSubmitted,
+  consumeSubmittedFlag,
+  type DraftFields,
+} from "@/lib/listing-draft";
 import { createListingAction } from "./actions";
 
-function TierCard({
-  active,
-  title,
-  price,
-  desc,
-  value,
-}: {
-  active?: boolean;
-  title: string;
-  price: string;
-  desc: string;
-  value: string;
-}) {
-  return (
-    <label
-      className={`relative flex flex-col gap-2 border-[1.5px] p-4 cursor-pointer transition-all ${
-        active
-          ? "border-ink shadow-[3px_3px_0_var(--accent)]"
-          : "border-line-strong hover:border-ink"
-      }`}
-    >
-      <input
-        type="radio"
-        name="tier"
-        value={value}
-        defaultChecked={active}
-        className="absolute top-3 right-3 w-3.5 h-3.5 accent-[#0052ff]"
-      />
-      <div className="font-sans font-extrabold text-[13px] uppercase tracking-[0.08em] text-ink pr-7">
-        {title}
-      </div>
-      <div className="font-mono font-bold text-[22px] text-ink tracking-[-0.02em]">
-        {price}
-      </div>
-      <div className="font-sans text-[12px] text-ink-muted leading-relaxed">
-        {desc}
-      </div>
-    </label>
-  );
+/** Coerce the flat string draft back into typed form defaults. */
+function draftToDefaults(d: DraftFields): ListingDefaults {
+  const numOrUndef = (v?: string) => {
+    if (v == null || v === "") return undefined;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  };
+  return {
+    brand: d.brand || undefined,
+    model: d.model || undefined,
+    year: numOrUndef(d.year),
+    mileage: numOrUndef(d.mileage),
+    fuel_type: d.fuel_type || undefined,
+    transmission: d.transmission || undefined,
+    body_type: d.body_type || undefined,
+    drive_type: d.drive_type || undefined,
+    engine_volume: numOrUndef(d.engine_volume),
+    power_hp: numOrUndef(d.power_hp),
+    color: d.color || undefined,
+    vin: d.vin || undefined,
+    country: d.country || undefined,
+    city: d.city || undefined,
+    condition: d.condition || undefined,
+    customs: d.customs === "yes" ? "yes" : d.customs === "no" ? "no" : undefined,
+    price: numOrUndef(d.price),
+    price_negotiable: d.price_negotiable === "on",
+    description: d.description || undefined,
+  };
 }
 
 function SectionCard({
@@ -93,12 +91,48 @@ function NewListingForm() {
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => {
-      setAuthed(!!data.user);
+      const isAuthed = !!data.user;
+      setAuthed(isAuthed);
+      // Funnel step 1: page opened. The authed flag is the key signal —
+      // it tells us how many viewers were logged out at this point.
+      track("new_view", { authed: isAuthed, locale });
     });
-  }, []);
+  }, [locale]);
 
   // Where to send the user back after they log in / register.
   const returnTo = encodeURIComponent(`/${locale}/new`);
+
+  // Restore a saved draft so progress survives the login round-trip / reload.
+  // Computed once on mount: if a previous submit succeeded (flag set + no
+  // error on this load), the draft was published — discard it; otherwise
+  // rehydrate the form from it.
+  const [initialDefaults] = useState<ListingDefaults>(() => {
+    const justSubmitted = consumeSubmittedFlag();
+    if (justSubmitted && !submitError) {
+      clearDraft();
+      return {};
+    }
+    const d = loadDraft();
+    return d ? draftToDefaults(d) : {};
+  });
+
+  // Debounced autosave of text fields on every change to the form.
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleFormChange = (e: React.FormEvent<HTMLFormElement>) => {
+    const form = e.currentTarget;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      const fd = new FormData(form);
+      const draft: DraftFields = {};
+      for (const [k, v] of fd.entries()) {
+        // Skip non-draftable fields and file inputs.
+        if (typeof v !== "string") continue;
+        if (k === "locale" || k === "funnel_sid" || k === "photo_paths") continue;
+        if (v !== "") draft[k] = v;
+      }
+      saveDraft(draft);
+    }, 400);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -106,8 +140,20 @@ function NewListingForm() {
     setSubmitting(true);
     setUploadError(null);
 
+    // Funnel step 2: the user filled the form and pressed Publish.
+    track("new_publish_click", { authed: authed ?? undefined, locale });
+
+    // Mark the attempt so the draft is cleared once we confirm success
+    // (i.e. next /new load with no error). Server bounces keep the draft.
+    markSubmitted();
+
     const form = e.currentTarget;
     const formData = new FormData(form);
+
+    // Carry the anonymous funnel id so the server-side new_created /
+    // new_submit_error events land in the same visit's funnel.
+    const sid = getFunnelSessionId();
+    if (sid) formData.append("funnel_sid", sid);
 
     if (files.length > 0) {
       const supabase = createClient();
@@ -208,13 +254,13 @@ function NewListingForm() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} onChange={handleFormChange} className="flex flex-col gap-4">
         <input type="hidden" name="locale" value={locale} />
 
-        <ListingFormBody />
+        <ListingFormBody defaults={initialDefaults} />
 
-        {/* 5. Photos */}
-        <SectionCard index={5} title={t("sections.photos")}>
+        {/* 3. Photos */}
+        <SectionCard index={3} title={t("sections.photos")}>
           <PhotosUploader
             files={files}
             onChange={setFiles}
@@ -229,23 +275,10 @@ function NewListingForm() {
           />
         </SectionCard>
 
-        {/* 6. Placement */}
-        <SectionCard index={6} title={t("sections.premium")}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {(["free", "top", "premium_14", "premium_30"] as const).map(
-              (tier) => (
-                <TierCard
-                  key={tier}
-                  active={tier === "free"}
-                  value={tier}
-                  title={t(`tiers.${tier}.title`)}
-                  price={t(`tiers.${tier}.price`)}
-                  desc={t(`tiers.${tier}.desc`)}
-                />
-              )
-            )}
-          </div>
-        </SectionCard>
+        {/* Paid placement (TOP / Premium) is intentionally NOT shown here —
+            publishing is free and one-click. The upsell is offered AFTER the
+            listing is created, so the create flow never feels like it costs
+            money. The listing is created with the implicit "free" tier. */}
 
         {/* Publish */}
         <div className="sticky bottom-3 z-10 mt-2">
