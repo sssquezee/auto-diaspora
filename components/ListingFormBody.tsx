@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { BRANDS, getModelsForBrand } from "@/lib/brands";
+import { getCitiesForCountry } from "@/lib/cities";
 
 const COUNTRIES = [
   "AT", "BE", "BG", "CH", "CZ", "DE", "DK", "EE", "ES", "FI",
@@ -86,6 +87,9 @@ export function ListingFormBody({ defaults = {} }: { defaults?: ListingDefaults 
 
   const [brand, setBrand] = useState(defaults.brand ?? "");
   const [model, setModel] = useState(defaults.model ?? "");
+  // Controlled so the city picker can suggest cities for the chosen country.
+  const [country, setCountry] = useState(defaults.country ?? "");
+  const cityOptions = getCitiesForCountry(country);
 
   // Optional fields live in a collapsed block so the form looks short and
   // unintimidating. Auto-expand if a draft already filled any of them.
@@ -226,7 +230,8 @@ export function ListingFormBody({ defaults = {} }: { defaults?: ListingDefaults 
             <FieldLabel>{t("fields.country")}</FieldLabel>
             <select
               name="country"
-              defaultValue={defaults.country ?? ""}
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
               className={fieldClass}
               required
             >
@@ -242,14 +247,23 @@ export function ListingFormBody({ defaults = {} }: { defaults?: ListingDefaults 
           </div>
           <div>
             <FieldLabel>{t("fields.city")}</FieldLabel>
+            {/* datalist: pick a city from the selected country's list, or
+                type a custom one (small towns aren't in the list). */}
             <input
               name="city"
               type="text"
+              list="city-options"
+              autoComplete="off"
               defaultValue={defaults.city ?? ""}
               placeholder=""
               className={fieldClass}
               required
             />
+            <datalist id="city-options">
+              {cityOptions.map((c) => (
+                <option key={c} value={c} />
+              ))}
+            </datalist>
           </div>
         </div>
 
