@@ -8,6 +8,8 @@ export type Locale = "uk" | "ru" | "en";
 export type LocalizedString = Record<Locale, string>;
 
 export type ListingBadge = "top" | "new" | "urgent" | "verified";
+/** Top-level vehicle category. "parts" exists in the UI but isn't postable yet. */
+export type VehicleCategory = "car" | "moto" | "commercial" | "trailer";
 export type FuelKey = "diesel" | "petrol" | "electric" | "hybrid";
 export type TransmissionKey = "auto" | "manual";
 export type BodyTypeKey = "sedan" | "suv" | "wagon" | "hatchback" | "coupe";
@@ -37,6 +39,7 @@ export type Listing = {
   id: string;
   /** Owning profile id. Only populated for DB-backed listings. */
   userId?: string;
+  category: VehicleCategory;
   brand: string;
   model: string;
   year: number;
@@ -161,6 +164,7 @@ function priceUahFromEur(eur: number): string {
 
 type ListingSeed = {
   id: string;
+  category?: VehicleCategory;
   brand: string;
   model: string;
   year: number;
@@ -196,6 +200,7 @@ function engineSpecFor(seed: ListingSeed): LocalizedString {
 function makeListing(seed: ListingSeed): Listing {
   return {
     id: seed.id,
+    category: seed.category ?? "car",
     brand: seed.brand,
     model: seed.model,
     year: seed.year,

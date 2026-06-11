@@ -16,6 +16,7 @@ import type {
   ListingBadge,
   Locale,
   TransmissionKey,
+  VehicleCategory,
 } from "@/lib/mock-listings";
 import type { FilterState } from "@/lib/filters";
 
@@ -24,6 +25,7 @@ type DbListing = {
   user_id: string;
   title: string;
   description: string | null;
+  category: VehicleCategory;
   brand: string;
   model: string;
   year: number;
@@ -54,7 +56,7 @@ type DbListing = {
 };
 
 const LISTING_COLUMNS =
-  "id,user_id,title,description,brand,model,year,mileage,fuel_type,transmission,body_type,drive_type,engine_volume,power_hp,color,country,city,price,currency,customs_cleared,status,is_premium,is_top,is_urgent,is_verified,views_count,favorites_count,created_at,bumped_at,topped_at,listing_photos(storage_path,position)";
+  "id,user_id,title,description,category,brand,model,year,mileage,fuel_type,transmission,body_type,drive_type,engine_volume,power_hp,color,country,city,price,currency,customs_cleared,status,is_premium,is_top,is_urgent,is_verified,views_count,favorites_count,created_at,bumped_at,topped_at,listing_photos(storage_path,position)";
 
 const STORAGE_BUCKET = "listings";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
@@ -138,6 +140,7 @@ function dbToListing(db: DbListing): Listing {
   return {
     id: db.id,
     userId: db.user_id,
+    category: db.category ?? "car",
     brand: db.brand,
     model: db.model,
     year: db.year,
@@ -343,6 +346,7 @@ export async function getFilteredListings(
     }
   }
 
+  if (filters.category) query = query.eq("category", filters.category);
   if (filters.brand) query = query.eq("brand", filters.brand);
   if (filters.model) query = query.ilike("model", `${filters.model}%`);
   if (filters.countries && filters.countries.length > 0)

@@ -58,6 +58,7 @@ function SectionCard({
 }
 
 export type ListingDefaults = {
+  category?: string;
   brand?: string;
   model?: string;
   year?: number;
@@ -85,11 +86,16 @@ export function ListingFormBody({ defaults = {} }: { defaults?: ListingDefaults 
   const tDetail = useTranslations("ListingDetail");
   const tSidebar = useTranslations("Sidebar");
 
+  const [category, setCategory] = useState(defaults.category ?? "car");
   const [brand, setBrand] = useState(defaults.brand ?? "");
   const [model, setModel] = useState(defaults.model ?? "");
   // Controlled so the city picker can suggest cities for the chosen country.
   const [country, setCountry] = useState(defaults.country ?? "");
   const cityOptions = getCitiesForCountry(country);
+
+  // Brand/model are car-specific dropdowns. For moto / commercial / trailers
+  // the car catalogue doesn't apply, so those become free-text inputs.
+  const isCar = category === "car";
 
   // Optional fields live in a collapsed block so the form looks short and
   // unintimidating. Auto-expand if a draft already filled any of them.
@@ -110,48 +116,88 @@ export function ListingFormBody({ defaults = {} }: { defaults?: ListingDefaults 
     <>
       {/* 1. Vehicle essentials (all required — these are NOT NULL in the DB) */}
       <SectionCard index={1} title={t("sections.vehicle")}>
+        <div>
+          <FieldLabel>{t("fields.category")}</FieldLabel>
+          <select
+            name="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className={fieldClass}
+            required
+          >
+            {(["car", "moto", "commercial", "trailer"] as const).map((c) => (
+              <option key={c} value={c}>
+                {t(`categories.${c}`)}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <FieldLabel>{t("fields.brand")}</FieldLabel>
-            <select
-              name="brand"
-              value={brand}
-              onChange={(e) => {
-                setBrand(e.target.value);
-                setModel("");
-              }}
-              className={fieldClass}
-              required
-            >
-              <option value="" disabled>
-                {tSidebar("placeholders.anyBrand")}
-              </option>
-              {BRANDS.map((b) => (
-                <option key={b} value={b}>
-                  {b}
+            {isCar ? (
+              <select
+                name="brand"
+                value={brand}
+                onChange={(e) => {
+                  setBrand(e.target.value);
+                  setModel("");
+                }}
+                className={fieldClass}
+                required
+              >
+                <option value="" disabled>
+                  {tSidebar("placeholders.anyBrand")}
                 </option>
-              ))}
-            </select>
+                {BRANDS.map((b) => (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                name="brand"
+                type="text"
+                value={brand}
+                onChange={(e) => setBrand(e.target.value)}
+                placeholder="Yamaha, Mercedes, Hörmann…"
+                className={fieldClass}
+                required
+              />
+            )}
           </div>
           <div>
             <FieldLabel>{t("fields.model")}</FieldLabel>
-            <select
-              name="model"
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-              className={`${fieldClass} disabled:cursor-not-allowed disabled:text-ink-faded`}
-              disabled={!brand}
-              required={!!brand}
-            >
-              <option value="" disabled>
-                {tSidebar("placeholders.anyModel")}
-              </option>
-              {getModelsForBrand(brand).map((m) => (
-                <option key={m} value={m}>
-                  {m}
+            {isCar ? (
+              <select
+                name="model"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                className={`${fieldClass} disabled:cursor-not-allowed disabled:text-ink-faded`}
+                disabled={!brand}
+                required={!!brand}
+              >
+                <option value="" disabled>
+                  {tSidebar("placeholders.anyModel")}
                 </option>
-              ))}
-            </select>
+                {getModelsForBrand(brand).map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                name="model"
+                type="text"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                placeholder=""
+                className={fieldClass}
+                required
+              />
+            )}
           </div>
           <div>
             <FieldLabel>{t("fields.year")}</FieldLabel>

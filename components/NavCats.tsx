@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
-import type { BodyTypeKey, FuelKey } from "@/lib/mock-listings";
+import type { BodyTypeKey, FuelKey, VehicleCategory } from "@/lib/mock-listings";
 
 type CategoryDef = {
   key: string;
@@ -14,6 +14,8 @@ type CategoryDef = {
     bodyTypes?: BodyTypeKey[];
     fuels?: FuelKey[];
   };
+  /** Top-level category this tab selects (moto / commercial / trailer). */
+  category?: VehicleCategory;
   disabled?: boolean;
 };
 
@@ -39,9 +41,9 @@ const CATEGORIES: CategoryDef[] = [
     query: "fuel=hybrid",
     signature: { fuels: ["hybrid"] },
   },
-  { key: "moto", query: "", signature: {}, disabled: true },
-  { key: "commercial", query: "", signature: {}, disabled: true },
-  { key: "trailers", query: "", signature: {}, disabled: true },
+  { key: "moto", query: "category=moto", signature: {}, category: "moto" },
+  { key: "commercial", query: "category=commercial", signature: {}, category: "commercial" },
+  { key: "trailers", query: "category=trailer", signature: {}, category: "trailer" },
   { key: "parts", query: "", signature: {}, disabled: true },
 ];
 
@@ -64,8 +66,9 @@ export function NavCats() {
   const urlFuel = searchParams.get("fuel")?.split(",").filter(Boolean) as
     | FuelKey[]
     | undefined;
+  const urlCategory = searchParams.get("category");
   const hasOtherFilters = Array.from(searchParams.keys()).some(
-    (k) => k !== "body" && k !== "fuel" && k !== "page"
+    (k) => k !== "body" && k !== "fuel" && k !== "page" && k !== "category"
   );
 
   // On the catalog route, derive active. On other routes nothing is active.
@@ -73,8 +76,13 @@ export function NavCats() {
 
   const activeKey = (() => {
     if (!isCatalog) return null;
+    // A category in the URL (moto / commercial / trailer) wins outright.
+    if (urlCategory) {
+      const match = CATEGORIES.find((c) => c.category === urlCategory);
+      return match ? match.key : null;
+    }
     for (const cat of CATEGORIES) {
-      if (cat.disabled) continue;
+      if (cat.disabled || cat.category) continue;
       const sigBody = cat.signature.bodyTypes;
       const sigFuel = cat.signature.fuels;
       const bodyMatch = sigBody

@@ -8,6 +8,7 @@ import type {
   FuelKey,
   TransmissionKey,
   BodyTypeKey,
+  VehicleCategory,
 } from "./mock-listings";
 import { listingMatchesModel } from "./brands";
 
@@ -24,10 +25,13 @@ const FUEL_KEYS: FuelKey[] = ["diesel", "petrol", "hybrid", "electric"];
 const TRANSMISSION_KEYS: TransmissionKey[] = ["auto", "manual"];
 const BODY_KEYS: BodyTypeKey[] = ["sedan", "suv", "wagon", "hatchback", "coupe"];
 const COUNTRY_CODES = ["DE", "PL", "NL", "CZ", "BE", "FR"] as const;
+const CATEGORY_KEYS: VehicleCategory[] = ["car", "moto", "commercial", "trailer"];
 
 export type FilterState = {
   /** Free-text query — matched against brand + model. */
   q?: string;
+  /** Top-level vehicle category (nav tabs). Undefined = all categories. */
+  category?: VehicleCategory;
   brand?: string;
   model?: string;
   countries?: string[];
@@ -82,8 +86,15 @@ export function parseFilters(
   const pageRaw = pickNumber(raw.page);
   const page = pageRaw && pageRaw >= 1 ? Math.floor(pageRaw) : 1;
 
+  const categoryRaw = pickString(raw.category);
+  const category =
+    categoryRaw && (CATEGORY_KEYS as string[]).includes(categoryRaw)
+      ? (categoryRaw as VehicleCategory)
+      : undefined;
+
   return {
     q: pickString(raw.q),
+    category,
     brand: pickString(raw.brand),
     model: pickString(raw.model),
     countries: pickList(raw.country, COUNTRY_CODES),
@@ -174,6 +185,7 @@ export function applySort(listings: Listing[], sort: SortKey): Listing[] {
 export function buildSearchString(f: Partial<FilterState>): string {
   const sp = new URLSearchParams();
   if (f.q) sp.set("q", f.q);
+  if (f.category) sp.set("category", f.category);
   if (f.brand) sp.set("brand", f.brand);
   if (f.model) sp.set("model", f.model);
   if (f.countries && f.countries.length > 0) sp.set("country", f.countries.join(","));
