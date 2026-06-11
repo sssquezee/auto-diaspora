@@ -9,6 +9,7 @@ import { moderateListing } from "@/lib/moderation";
 type Locale = (typeof routing.locales)[number];
 type Status = "active" | "paused" | "sold";
 
+const CATEGORY_KEYS = ["car", "moto", "commercial", "trailer", "parts"] as const;
 const FUEL_KEYS = ["diesel", "petrol", "hybrid", "electric"] as const;
 const TRANSMISSION_KEYS = ["auto", "manual"] as const;
 const BODY_KEYS = ["sedan", "suv", "wagon", "hatchback", "coupe"] as const;
@@ -141,6 +142,8 @@ export async function updateListingAction(formData: FormData) {
   if (!user) redirect(`/${locale}/auth/login`);
 
   // Parse + validate (same shape as create, but for an existing row)
+  const category = oneOf(str(formData, "category"), CATEGORY_KEYS) ?? "car";
+  const isVehicle = category !== "parts";
   const brand = str(formData, "brand");
   const model = str(formData, "model");
   const year = num(formData, "year");
@@ -154,10 +157,7 @@ export async function updateListingAction(formData: FormData) {
   const missing =
     !brand ||
     !model ||
-    year === null ||
-    mileage === null ||
-    !fuel ||
-    !transmission ||
+    (isVehicle && (year === null || mileage === null || !fuel || !transmission)) ||
     !country ||
     !city ||
     price === null;
@@ -191,6 +191,7 @@ export async function updateListingAction(formData: FormData) {
     .update({
       title: `${brand} ${model}`,
       description,
+      category,
       brand,
       model,
       year,

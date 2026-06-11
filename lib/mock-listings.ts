@@ -8,8 +8,9 @@ export type Locale = "uk" | "ru" | "en";
 export type LocalizedString = Record<Locale, string>;
 
 export type ListingBadge = "top" | "new" | "urgent" | "verified";
-/** Top-level vehicle category. "parts" exists in the UI but isn't postable yet. */
-export type VehicleCategory = "car" | "moto" | "commercial" | "trailer";
+/** Top-level vehicle category. "parts" is a non-vehicle category: it has no
+ *  year / mileage / fuel / transmission (those fields are undefined for it). */
+export type VehicleCategory = "car" | "moto" | "commercial" | "trailer" | "parts";
 export type FuelKey = "diesel" | "petrol" | "electric" | "hybrid";
 export type TransmissionKey = "auto" | "manual";
 export type BodyTypeKey = "sedan" | "suv" | "wagon" | "hatchback" | "coupe";
@@ -42,13 +43,17 @@ export type Listing = {
   category: VehicleCategory;
   brand: string;
   model: string;
-  year: number;
-  mileageKm: number;
+  /** Undefined for non-vehicle categories (parts). */
+  year?: number;
+  /** Undefined for non-vehicle categories (parts). */
+  mileageKm?: number;
   engineSpec: LocalizedString;
   priceEur: number;
   priceUah: string;
-  fuel: FuelKey;
-  transmission: TransmissionKey;
+  /** Undefined for non-vehicle categories (parts). */
+  fuel?: FuelKey;
+  /** Undefined for non-vehicle categories (parts). */
+  transmission?: TransmissionKey;
   country: string;
   city: LocalizedString;
   photoCount: number;

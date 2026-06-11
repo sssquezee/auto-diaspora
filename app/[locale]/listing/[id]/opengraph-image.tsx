@@ -46,9 +46,10 @@ export default async function ListingOG({ params }: { params: { id: string } }) 
   const photo = listing.photoUrls?.[0];
   const title = `${listing.brand} ${listing.model}`.toUpperCase();
   const price = `€${listing.priceEur.toLocaleString("en-US")}`;
-  const meta = `${listing.year} · ${listing.mileageKm.toLocaleString(
-    "en-US"
-  )} km · ${listing.country}`;
+  const meta =
+    listing.year != null && listing.mileageKm != null
+      ? `${listing.year} · ${listing.mileageKm.toLocaleString("en-US")} km · ${listing.country}`
+      : listing.country;
 
   return new ImageResponse(
     (

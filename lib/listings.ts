@@ -28,10 +28,11 @@ type DbListing = {
   category: VehicleCategory;
   brand: string;
   model: string;
-  year: number;
-  mileage: number;
-  fuel_type: FuelKey;
-  transmission: TransmissionKey;
+  // null for non-vehicle categories (parts)
+  year: number | null;
+  mileage: number | null;
+  fuel_type: FuelKey | null;
+  transmission: TransmissionKey | null;
   body_type: BodyTypeKey | null;
   drive_type: DriveTypeKey | null;
   engine_volume: number | null;
@@ -143,13 +144,15 @@ function dbToListing(db: DbListing): Listing {
     category: db.category ?? "car",
     brand: db.brand,
     model: db.model,
-    year: db.year,
-    mileageKm: db.mileage,
-    engineSpec: engineSpec(db.engine_volume, fuel),
+    year: db.year ?? undefined,
+    mileageKm: db.mileage ?? undefined,
+    engineSpec: fuel
+      ? engineSpec(db.engine_volume, fuel)
+      : { uk: "", ru: "", en: "" },
     priceEur: Number(db.price),
     priceUah: priceUah(Number(db.price)),
-    fuel,
-    transmission: db.transmission,
+    fuel: fuel ?? undefined,
+    transmission: db.transmission ?? undefined,
     country: db.country,
     city: { uk: city, ru: city, en: city },
     photoCount: photoUrls.length > 0 ? photoUrls.length : 1,

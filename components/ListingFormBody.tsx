@@ -96,6 +96,8 @@ export function ListingFormBody({ defaults = {} }: { defaults?: ListingDefaults 
   // Brand/model are car-specific dropdowns. For moto / commercial / trailers
   // the car catalogue doesn't apply, so those become free-text inputs.
   const isCar = category === "car";
+  // Parts aren't a vehicle: no year / mileage / fuel / transmission.
+  const isVehicle = category !== "parts";
 
   // Optional fields live in a collapsed block so the form looks short and
   // unintimidating. Auto-expand if a draft already filled any of them.
@@ -125,7 +127,7 @@ export function ListingFormBody({ defaults = {} }: { defaults?: ListingDefaults 
             className={fieldClass}
             required
           >
-            {(["car", "moto", "commercial", "trailer"] as const).map((c) => (
+            {(["car", "moto", "commercial", "trailer", "parts"] as const).map((c) => (
               <option key={c} value={c}>
                 {t(`categories.${c}`)}
               </option>
@@ -199,6 +201,8 @@ export function ListingFormBody({ defaults = {} }: { defaults?: ListingDefaults 
               />
             )}
           </div>
+          {isVehicle && (
+          <>
           <div>
             <FieldLabel>{t("fields.year")}</FieldLabel>
             <select
@@ -266,6 +270,8 @@ export function ListingFormBody({ defaults = {} }: { defaults?: ListingDefaults 
               ))}
             </select>
           </div>
+          </>
+          )}
         </div>
       </SectionCard>
 

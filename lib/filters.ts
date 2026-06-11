@@ -25,7 +25,7 @@ const FUEL_KEYS: FuelKey[] = ["diesel", "petrol", "hybrid", "electric"];
 const TRANSMISSION_KEYS: TransmissionKey[] = ["auto", "manual"];
 const BODY_KEYS: BodyTypeKey[] = ["sedan", "suv", "wagon", "hatchback", "coupe"];
 const COUNTRY_CODES = ["DE", "PL", "NL", "CZ", "BE", "FR"] as const;
-const CATEGORY_KEYS: VehicleCategory[] = ["car", "moto", "commercial", "trailer"];
+const CATEGORY_KEYS: VehicleCategory[] = ["car", "moto", "commercial", "trailer", "parts"];
 
 export type FilterState = {
   /** Free-text query — matched against brand + model. */
@@ -132,11 +132,14 @@ export function applyFilters(listings: Listing[], f: FilterState): Listing[] {
     if (f.model && !listingMatchesModel(l.model, f.model)) return false;
     if (f.countries && f.countries.length > 0 && !f.countries.includes(l.country))
       return false;
-    if (f.fuels && f.fuels.length > 0 && !f.fuels.includes(l.fuel)) return false;
+    // Vehicle-only filters: a listing without the attribute (e.g. parts) is
+    // excluded whenever such a filter is active.
+    if (f.fuels && f.fuels.length > 0 && (!l.fuel || !f.fuels.includes(l.fuel)))
+      return false;
     if (
       f.transmissions &&
       f.transmissions.length > 0 &&
-      !f.transmissions.includes(l.transmission)
+      (!l.transmission || !f.transmissions.includes(l.transmission))
     )
       return false;
     if (
@@ -145,12 +148,22 @@ export function applyFilters(listings: Listing[], f: FilterState): Listing[] {
       !f.bodyTypes.includes(l.details.bodyType)
     )
       return false;
-    if (f.yearFrom !== undefined && l.year < f.yearFrom) return false;
-    if (f.yearTo !== undefined && l.year > f.yearTo) return false;
+    if (f.yearFrom !== undefined && (l.year === undefined || l.year < f.yearFrom))
+      return false;
+    if (f.yearTo !== undefined && (l.year === undefined || l.year > f.yearTo))
+      return false;
     if (f.priceFrom !== undefined && l.priceEur < f.priceFrom) return false;
     if (f.priceTo !== undefined && l.priceEur > f.priceTo) return false;
-    if (f.mileageFrom !== undefined && l.mileageKm < f.mileageFrom) return false;
-    if (f.mileageTo !== undefined && l.mileageKm > f.mileageTo) return false;
+    if (
+      f.mileageFrom !== undefined &&
+      (l.mileageKm === undefined || l.mileageKm < f.mileageFrom)
+    )
+      return false;
+    if (
+      f.mileageTo !== undefined &&
+      (l.mileageKm === undefined || l.mileageKm > f.mileageTo)
+    )
+      return false;
     return true;
   });
 }
@@ -174,7 +187,7 @@ export function applySort(listings: Listing[], sort: SortKey): Listing[] {
       arr.sort((a, b) => b.priceEur - a.priceEur);
       break;
     case "mileage":
-      arr.sort((a, b) => a.mileageKm - b.mileageKm);
+      arr.sort((a, b) => (a.mileageKm ?? 0) - (b.mileageKm ?? 0));
       break;
   }
   return arr;

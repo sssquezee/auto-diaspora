@@ -121,7 +121,8 @@ export function newListingNotification(input: {
   listingId: string;
   brand: string;
   model: string;
-  year: number;
+  /** Undefined for non-vehicle categories (parts). */
+  year?: number;
   price: number;
   city: string;
   country: string;
@@ -129,7 +130,9 @@ export function newListingNotification(input: {
   siteUrl: string;
   locale: string;
 }): SendMessageInput {
-  const title = `${input.brand} ${input.model} · ${input.year}`;
+  const title = input.year
+    ? `${input.brand} ${input.model} · ${input.year}`
+    : `${input.brand} ${input.model}`;
   const text =
     `🚗 <b>New listing for review</b>\n\n` +
     `${title}\n` +

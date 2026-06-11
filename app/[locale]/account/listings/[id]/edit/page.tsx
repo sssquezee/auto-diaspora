@@ -7,12 +7,13 @@ import { EditListingForm } from "./EditListingForm";
 type DbRow = {
   id: string;
   user_id: string;
+  category: string;
   brand: string;
   model: string;
-  year: number;
-  mileage: number;
-  fuel_type: string;
-  transmission: string;
+  year: number | null;
+  mileage: number | null;
+  fuel_type: string | null;
+  transmission: string | null;
   body_type: string | null;
   drive_type: string | null;
   engine_volume: number | null;
@@ -50,7 +51,7 @@ export default async function EditListingPage({
   const { data } = await supabase
     .from("listings")
     .select(
-      "id,user_id,brand,model,year,mileage,fuel_type,transmission,body_type,drive_type,engine_volume,power_hp,color,vin,country,city,price,price_negotiable,condition,customs_cleared,description"
+      "id,user_id,category,brand,model,year,mileage,fuel_type,transmission,body_type,drive_type,engine_volume,power_hp,color,vin,country,city,price,price_negotiable,condition,customs_cleared,description"
     )
     .eq("id", id)
     .maybeSingle<DbRow>();
@@ -104,12 +105,13 @@ export default async function EditListingPage({
         userId={user.id}
         existingPhotos={existingPhotos}
         defaults={{
+          category: data.category,
           brand: data.brand,
           model: data.model,
-          year: data.year,
-          mileage: data.mileage,
-          fuel_type: data.fuel_type,
-          transmission: data.transmission,
+          year: data.year ?? undefined,
+          mileage: data.mileage ?? undefined,
+          fuel_type: data.fuel_type ?? undefined,
+          transmission: data.transmission ?? undefined,
           body_type: data.body_type ?? undefined,
           drive_type: data.drive_type ?? undefined,
           engine_volume: data.engine_volume,

@@ -44,7 +44,7 @@ const CATEGORIES: CategoryDef[] = [
   { key: "moto", query: "category=moto", signature: {}, category: "moto" },
   { key: "commercial", query: "category=commercial", signature: {}, category: "commercial" },
   { key: "trailers", query: "category=trailer", signature: {}, category: "trailer" },
-  { key: "parts", query: "", signature: {}, disabled: true },
+  { key: "parts", query: "category=parts", signature: {}, category: "parts" },
 ];
 
 function sameSet<T extends string>(a: T[] | undefined, b: T[]): boolean {

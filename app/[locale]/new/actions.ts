@@ -35,6 +35,7 @@ function num(formData: FormData, key: string): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+const CATEGORY_KEYS = ["car", "moto", "commercial", "trailer", "parts"] as const;
 const FUEL_KEYS = ["diesel", "petrol", "hybrid", "electric"] as const;
 const TRANSMISSION_KEYS = ["auto", "manual"] as const;
 const BODY_KEYS = ["sedan", "suv", "wagon", "hatchback", "coupe"] as const;
@@ -105,6 +106,10 @@ export async function createListingAction(formData: FormData) {
   };
 
   // 2. Parse + validate
+  const category = oneOf(str(formData, "category"), CATEGORY_KEYS) ?? "car";
+  // Parts are not a vehicle: year / mileage / fuel / transmission don't apply
+  // and are nullable in the DB, so they're only required for the others.
+  const isVehicle = category !== "parts";
   const brand = str(formData, "brand");
   const model = str(formData, "model");
   const year = num(formData, "year");
@@ -118,10 +123,7 @@ export async function createListingAction(formData: FormData) {
   const missing =
     !brand ||
     !model ||
-    year === null ||
-    mileage === null ||
-    !fuel ||
-    !transmission ||
+    (isVehicle && (year === null || mileage === null || !fuel || !transmission)) ||
     !country ||
     !city ||
     price === null;
@@ -180,6 +182,7 @@ export async function createListingAction(formData: FormData) {
     user_id: user.id,
     title: `${brand} ${model}`,
     description,
+    category,
     brand,
     model,
     year,
@@ -240,7 +243,7 @@ export async function createListingAction(formData: FormData) {
       listingId: data.id,
       brand,
       model,
-      year: year!,
+      year: year ?? undefined,
       price: price!,
       city,
       country,

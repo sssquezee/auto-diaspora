@@ -58,11 +58,19 @@ export function ListingCardClient({ listing, isAuthed, isFavorite }: Props) {
   const locale = useLocale() as Locale;
   const t = useTranslations("ListingCard");
 
-  const mileage = formatMileage(listing.mileageKm, locale);
+  // Parts have no year / mileage / fuel / transmission.
+  const isVehicle = listing.category !== "parts";
+  const mileage =
+    listing.mileageKm != null ? formatMileage(listing.mileageKm, locale) : "";
   const price = formatPriceEur(listing.priceEur, locale);
-  const mileageShort = `${Math.round(listing.mileageKm / 1000)} ${t("thousand")}`;
-  const fuelLabel = t(`fuel.${listing.fuel}`);
-  const transmissionLabel = t(`transmission.${listing.transmission}`);
+  const mileageShort =
+    listing.mileageKm != null
+      ? `${Math.round(listing.mileageKm / 1000)} ${t("thousand")}`
+      : "";
+  const fuelLabel = listing.fuel ? t(`fuel.${listing.fuel}`) : "";
+  const transmissionLabel = listing.transmission
+    ? t(`transmission.${listing.transmission}`)
+    : "";
 
   const baseShadow = listing.premium ? "shadow-[3px_3px_0_var(--accent)]" : "";
 
@@ -140,7 +148,9 @@ export function ListingCardClient({ listing, isAuthed, isFavorite }: Props) {
             {listing.brand} {listing.model}
           </h3>
           <p className="font-mono text-[12px] text-ink-muted mb-2.5">
-            {listing.year} · {mileage} км · {listing.engineSpec[locale]}
+            {isVehicle
+              ? `${listing.year} · ${mileage} км · ${listing.engineSpec[locale]}`
+              : t(`category.${listing.category}`)}
           </p>
 
           <div className="flex items-baseline gap-2 mb-2.5 pb-2.5 border-b border-dashed border-line-strong">
@@ -152,6 +162,7 @@ export function ListingCardClient({ listing, isAuthed, isFavorite }: Props) {
             </span>
           </div>
 
+          {isVehicle && (
           <div className="grid grid-cols-2 gap-x-2 gap-y-1 mb-2.5">
             <div className="flex items-center gap-[5px] text-[11.5px] text-ink-muted">
               <span className="text-accent">
@@ -172,6 +183,7 @@ export function ListingCardClient({ listing, isAuthed, isFavorite }: Props) {
               {mileageShort}
             </div>
           </div>
+          )}
 
           <div className="flex justify-between items-center font-mono text-[11px] text-ink-faded">
             <div className="flex items-center gap-[5px] text-ink font-bold uppercase tracking-[0.04em]">

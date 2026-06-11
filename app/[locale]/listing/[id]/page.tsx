@@ -32,8 +32,12 @@ export async function generateMetadata({
 
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const title = `${listing.brand} ${listing.model} · ${listing.year}`;
-  const description = `${listing.brand} ${listing.model}, ${listing.year}, ${listing.mileageKm.toLocaleString()} km — €${listing.priceEur.toLocaleString()}`;
+  const title = listing.year
+    ? `${listing.brand} ${listing.model} · ${listing.year}`
+    : `${listing.brand} ${listing.model}`;
+  const description = listing.year
+    ? `${listing.brand} ${listing.model}, ${listing.year}, ${listing.mileageKm?.toLocaleString() ?? ""} km — €${listing.priceEur.toLocaleString()}`
+    : `${listing.brand} ${listing.model} — €${listing.priceEur.toLocaleString()}`;
 
   const languages: Record<string, string> = {};
   for (const l of routing.locales) languages[l] = `${siteUrl}/${l}/listing/${id}`;
@@ -95,7 +99,8 @@ export default async function ListingDetailPage({
   const tSeller = await getTranslations("SellerProfile");
 
   const price = formatPriceEur(listing.priceEur, locale);
-  const mileage = formatMileage(listing.mileageKm, locale);
+  const mileage =
+    listing.mileageKm != null ? formatMileage(listing.mileageKm, locale) : "";
   const views = formatMileage(listing.details.views, locale);
   const favorites = formatMileage(listing.details.favorites, locale);
   const sellerName =
@@ -115,22 +120,30 @@ export default async function ListingDetailPage({
   const sellerVerified =
     sellerProfile?.is_verified ?? listing.details.seller.verified;
 
-  // Build specs rows
+  // Build specs rows. Parts have no vehicle attributes, so those rows are
+  // omitted entirely and only the universal ones (colour / customs / location)
+  // remain.
+  const isVehicle = listing.category !== "parts";
+  const vehicleSpecs: Array<{ label: string; value: React.ReactNode }> = isVehicle
+    ? [
+        { label: t("specs.year"), value: listing.year },
+        { label: t("specs.mileage"), value: `${mileage} ${t("kmUnit")}` },
+        { label: t("specs.fuel"), value: tCard(`fuel.${listing.fuel}`) },
+        {
+          label: t("specs.engine"),
+          value:
+            listing.details.engineVolumeL !== undefined
+              ? `${listing.details.engineVolumeL} L · ${listing.engineSpec[locale]}`
+              : listing.engineSpec[locale],
+        },
+        { label: t("specs.power"), value: `${listing.details.powerHp} ${t("powerUnit")}` },
+        { label: t("specs.transmission"), value: tCard(`transmission.${listing.transmission}`) },
+        { label: t("specs.bodyType"), value: t(`bodyType.${listing.details.bodyType}`) },
+        { label: t("specs.driveType"), value: t(`driveType.${listing.details.driveType}`) },
+      ]
+    : [];
   const specs: Array<{ label: string; value: React.ReactNode }> = [
-    { label: t("specs.year"), value: listing.year },
-    { label: t("specs.mileage"), value: `${mileage} ${t("kmUnit")}` },
-    { label: t("specs.fuel"), value: tCard(`fuel.${listing.fuel}`) },
-    {
-      label: t("specs.engine"),
-      value:
-        listing.details.engineVolumeL !== undefined
-          ? `${listing.details.engineVolumeL} L · ${listing.engineSpec[locale]}`
-          : listing.engineSpec[locale],
-    },
-    { label: t("specs.power"), value: `${listing.details.powerHp} ${t("powerUnit")}` },
-    { label: t("specs.transmission"), value: tCard(`transmission.${listing.transmission}`) },
-    { label: t("specs.bodyType"), value: t(`bodyType.${listing.details.bodyType}`) },
-    { label: t("specs.driveType"), value: t(`driveType.${listing.details.driveType}`) },
+    ...vehicleSpecs,
     { label: t("specs.color"), value: listing.details.color[locale] },
     {
       label: t("specs.customs"),
@@ -243,7 +256,9 @@ export default async function ListingDetailPage({
                 {listing.brand} {listing.model}
               </h1>
               <p className="font-mono text-[13px] text-ink-muted mt-2">
-                {listing.year} · {mileage} {t("kmUnit")} · {listing.engineSpec[locale]} · {tCard(`transmission.${listing.transmission}`)}
+                {isVehicle
+                  ? `${listing.year} · ${mileage} ${t("kmUnit")} · ${listing.engineSpec[locale]} · ${tCard(`transmission.${listing.transmission}`)}`
+                  : tCard(`category.${listing.category}`)}
               </p>
             </div>
             <div className="text-right">
