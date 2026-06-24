@@ -1,6 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  DndContext,
+  closestCenter,
+  MouseSensor,
+  TouchSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  rectSortingStrategy,
+  useSortable,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const MAX_FILES = 15;
 // Max accepted upload — files larger get rejected before compression
@@ -83,9 +101,128 @@ type Props = {
   labels: Labels;
 };
 
+/** One draggable thumbnail. Drag the tile to reorder; works with mouse,
+ *  touch (press-and-hold) and keyboard (focus + space + arrows). */
+function SortablePhoto({
+  id,
+  url,
+  isFirst,
+  onRemove,
+  removeAria,
+}: {
+  id: string;
+  url: string;
+  isFirst: boolean;
+  onRemove: () => void;
+  removeAria: string;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id });
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 10 : undefined,
+    opacity: isDragging ? 0.85 : 1,
+  };
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="relative aspect-[4/3] bg-bg-subtle border border-line-strong overflow-hidden cursor-grab active:cursor-grabbing select-none"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={url}
+        alt=""
+        draggable={false}
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+      />
+      <button
+        type="button"
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+        onClick={onRemove}
+        aria-label={removeAria}
+        className="absolute top-1 right-1 w-6 h-6 bg-white border-[1.5px] border-ink hover:bg-ink hover:text-white grid place-items-center cursor-pointer transition-colors"
+      >
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+      {/* drag grip cue (visual only) */}
+      <span
+        aria-hidden
+        className="absolute top-1 left-1 w-5 h-5 bg-white/85 border border-ink/60 grid place-items-center text-ink"
+      >
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <circle cx="9" cy="6" r="1.6" />
+          <circle cx="15" cy="6" r="1.6" />
+          <circle cx="9" cy="12" r="1.6" />
+          <circle cx="15" cy="12" r="1.6" />
+          <circle cx="9" cy="18" r="1.6" />
+          <circle cx="15" cy="18" r="1.6" />
+        </svg>
+      </span>
+      {isFirst && (
+        <span className="absolute bottom-1 left-1 bg-accent text-white text-[9px] font-mono font-bold px-1.5 py-0.5 uppercase tracking-[0.06em]">
+          1
+        </span>
+      )}
+    </div>
+  );
+}
+
 export function PhotosUploader({ files, onChange, labels }: Props) {
   const [previews, setPreviews] = useState<string[]>([]);
   const [warning, setWarning] = useState<string | null>(null);
+
+  // Stable id per File so drag tracking survives reordering (index is not
+  // stable — it changes the moment you move an item).
+  const idMap = useRef(new WeakMap<File, string>());
+  const idCounter = useRef(0);
+  const idFor = (f: File): string => {
+    let id = idMap.current.get(f);
+    if (!id) {
+      id = `f${idCounter.current++}`;
+      idMap.current.set(f, id);
+    }
+    return id;
+  };
+  const ids = files.map(idFor);
+
+  const sensors = useSensors(
+    // Mouse: a small drag distance must be crossed, so clicking the ✕
+    // button doesn't start a drag.
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    // Touch: press-and-hold to start dragging, so a normal swipe still
+    // scrolls the page.
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 200, tolerance: 8 },
+    }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const oldIndex = ids.indexOf(String(active.id));
+    const newIndex = ids.indexOf(String(over.id));
+    if (oldIndex === -1 || newIndex === -1) return;
+    onChange(arrayMove(files, oldIndex, newIndex));
+  };
 
   useEffect(() => {
     const urls = files.map((f) => URL.createObjectURL(f));
@@ -160,47 +297,26 @@ export function PhotosUploader({ files, onChange, labels }: Props) {
 
   return (
     <div>
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 mb-3">
-        {previews.map((url, i) => (
-          <div
-            key={i}
-            className="relative aspect-[4/3] bg-bg-subtle border border-line-strong overflow-hidden"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={url}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-            <button
-              type="button"
-              onClick={() => removeAt(i)}
-              aria-label={labels.removeAria}
-              className="absolute top-1 right-1 w-6 h-6 bg-white border-[1.5px] border-ink hover:bg-ink hover:text-white grid place-items-center cursor-pointer transition-colors"
-            >
-              <svg
-                width="10"
-                height="10"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden
-              >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-            {i === 0 && (
-              <span className="absolute bottom-1 left-1 bg-accent text-white text-[9px] font-mono font-bold px-1.5 py-0.5 uppercase tracking-[0.06em]">
-                1
-              </span>
-            )}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={ids} strategy={rectSortingStrategy}>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 mb-3">
+            {previews.map((url, i) => (
+              <SortablePhoto
+                key={ids[i]}
+                id={ids[i]}
+                url={url}
+                isFirst={i === 0}
+                onRemove={() => removeAt(i)}
+                removeAria={labels.removeAria}
+              />
+            ))}
           </div>
-        ))}
-      </div>
+        </SortableContext>
+      </DndContext>
       <label className="inline-block cursor-pointer">
         <input
           type="file"

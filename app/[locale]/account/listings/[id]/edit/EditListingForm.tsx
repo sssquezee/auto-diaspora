@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { ListingFormBody, type ListingDefaults } from "@/components/ListingFormBody";
 import {
   PhotosEditor,
   type ExistingPhoto,
+  type EditorChange,
 } from "@/components/PhotosEditor";
 import { createClient } from "@/lib/supabase/client";
 import { updateListingAction } from "@/app/[locale]/account/listings/actions";
@@ -33,10 +34,17 @@ export function EditListingForm({
   const submitError = searchParams.get("error");
   const errorMsg = searchParams.get("msg");
 
-  const [removedIds, setRemovedIds] = useState<Set<string>>(new Set());
-  const [newFiles, setNewFiles] = useState<File[]>([]);
+  const [editor, setEditor] = useState<EditorChange>({
+    order: [],
+    newFiles: [],
+    removedIds: [],
+  });
   const [submitting, setSubmitting] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+
+  const handleEditorChange = useCallback((change: EditorChange) => {
+    setEditor(change);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -47,12 +55,13 @@ export function EditListingForm({
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    // 1. Upload new photos to Storage under the listing's existing folder
-    if (newFiles.length > 0) {
+    // 1. Upload new photos (in their chosen order); map each temp key to
+    //    the Storage path it landed at.
+    const pathByKey: Record<string, string> = {};
+    if (editor.newFiles.length > 0) {
       const supabase = createClient();
-      const newPaths: string[] = [];
-      for (let i = 0; i < newFiles.length; i++) {
-        const file = newFiles[i];
+      for (let i = 0; i < editor.newFiles.length; i++) {
+        const { fileKey, file } = editor.newFiles[i];
         const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase();
         const path = `${userId}/${listingId}/new-${Date.now()}-${i}.${ext}`;
         const { error } = await supabase.storage
@@ -63,17 +72,24 @@ export function EditListingForm({
           setUploadError(`${tNew("errors.uploadFailed")}: ${error.message}`);
           return;
         }
-        newPaths.push(path);
+        pathByKey[fileKey] = path;
       }
-      formData.append("new_photo_paths", JSON.stringify(newPaths));
     }
 
-    // 2. Mark existing photos for deletion
-    if (removedIds.size > 0) {
-      formData.append(
-        "removed_photo_ids",
-        JSON.stringify(Array.from(removedIds))
-      );
+    // 2. Final unified order: existing kept by id, new swapped for paths.
+    //    Position in this array = display order; first = primary.
+    const photoOrder = editor.order
+      .map((o) =>
+        o.kind === "existing"
+          ? { kind: "existing" as const, id: o.id }
+          : { kind: "new" as const, path: pathByKey[o.fileKey] }
+      )
+      .filter((o) => o.kind === "existing" || !!o.path);
+    formData.append("photo_order", JSON.stringify(photoOrder));
+
+    // 3. Existing photos marked for deletion.
+    if (editor.removedIds.length > 0) {
+      formData.append("removed_photo_ids", JSON.stringify(editor.removedIds));
     }
 
     await updateListingAction(formData);
@@ -128,10 +144,7 @@ export function EditListingForm({
           <div className="p-5">
             <PhotosEditor
               existing={existingPhotos}
-              removedIds={removedIds}
-              onRemovedChange={setRemovedIds}
-              files={newFiles}
-              onFilesChange={setNewFiles}
+              onChange={handleEditorChange}
               labels={{
                 existingHeading: t("photosExisting"),
                 newHeading: t("photosNew"),

@@ -53,10 +53,9 @@ export function ListingGallery({
   return (
     <div className="bg-white border-[1.5px] border-ink">
       <div
-        className="w-full relative overflow-hidden"
+        className="relative overflow-hidden w-full max-w-[600px] mx-auto aspect-square"
         style={{
           background: gradients[index % gradients.length],
-          height: "clamp(260px, 48vh, 520px)",
         }}
       >
         {hasPhotos && (

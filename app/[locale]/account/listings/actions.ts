@@ -222,32 +222,58 @@ export async function updateListingAction(formData: FormData) {
     );
   }
 
-  // 4. Photo changes: removed_photo_ids + new_photo_paths
+  // 4. Photo changes: removed_photo_ids + photo_order
+  //    photo_order is the full final sequence (existing kept by id, new by
+  //    Storage path). Its index = position; index 0 = primary.
+  const UUID_RE =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  type OrderEntry =
+    | { kind: "existing"; id: string }
+    | { kind: "new"; path: string };
   let removedIds: string[] = [];
-  let newPaths: string[] = [];
+  let photoOrder: OrderEntry[] = [];
+
   const removedRaw = str(formData, "removed_photo_ids");
-  const newPathsRaw = str(formData, "new_photo_paths");
   if (removedRaw) {
     try {
       const parsed = JSON.parse(removedRaw);
       if (Array.isArray(parsed)) {
         removedIds = parsed.filter(
-          (x): x is string =>
-            typeof x === "string" &&
-            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(x)
+          (x): x is string => typeof x === "string" && UUID_RE.test(x)
         );
       }
     } catch {
       // ignore
     }
   }
-  if (newPathsRaw) {
+
+  const orderRaw = str(formData, "photo_order");
+  if (orderRaw) {
     try {
-      const parsed = JSON.parse(newPathsRaw);
+      const parsed = JSON.parse(orderRaw);
       if (Array.isArray(parsed)) {
-        newPaths = parsed.filter(
-          (x): x is string => typeof x === "string" && x.length > 0
-        );
+        // New paths must live inside this user's folder for this listing —
+        // never trust a client-supplied arbitrary Storage path.
+        const prefix = `${user.id}/${id}/`;
+        photoOrder = parsed.flatMap((x): OrderEntry[] => {
+          if (
+            x &&
+            x.kind === "existing" &&
+            typeof x.id === "string" &&
+            UUID_RE.test(x.id)
+          ) {
+            return [{ kind: "existing", id: x.id }];
+          }
+          if (
+            x &&
+            x.kind === "new" &&
+            typeof x.path === "string" &&
+            x.path.startsWith(prefix)
+          ) {
+            return [{ kind: "new", path: x.path }];
+          }
+          return [];
+        });
       }
     } catch {
       // ignore
@@ -282,31 +308,38 @@ export async function updateListingAction(formData: FormData) {
     }
   }
 
-  if (newPaths.length > 0) {
-    // Compute next position based on what's left after deletions
-    const { data: maxRow } = await supabase
-      .from("listing_photos")
-      .select("position")
-      .eq("listing_id", id)
-      .order("position", { ascending: false })
-      .limit(1)
-      .maybeSingle<{ position: number }>();
-    const startPos = (maxRow?.position ?? -1) + 1;
+  if (photoOrder.length > 0) {
+    const orderCapped = photoOrder.slice(0, 15);
 
-    // If the listing has no photos left, the first new one becomes primary
-    const { count: remainingCount } = await supabase
-      .from("listing_photos")
-      .select("id", { count: "exact", head: true })
-      .eq("listing_id", id);
-    const noneLeft = (remainingCount ?? 0) === 0;
+    // Insert the newly-uploaded photos at their target position.
+    const newRows = orderCapped
+      .map((entry, i) => ({ entry, i }))
+      .filter(
+        (e): e is { entry: Extract<OrderEntry, { kind: "new" }>; i: number } =>
+          e.entry.kind === "new"
+      )
+      .map(({ entry, i }) => ({
+        listing_id: id,
+        storage_path: entry.path,
+        position: i,
+        is_primary: i === 0,
+      }));
+    if (newRows.length > 0) {
+      await supabase.from("listing_photos").insert(newRows);
+    }
 
-    const rows = newPaths.slice(0, 15).map((path, i) => ({
-      listing_id: id,
-      storage_path: path,
-      position: startPos + i,
-      is_primary: noneLeft && i === 0,
-    }));
-    await supabase.from("listing_photos").insert(rows);
+    // Re-position the existing photos that were kept, so dragging in the
+    // editor actually persists.
+    for (let i = 0; i < orderCapped.length; i++) {
+      const entry = orderCapped[i];
+      if (entry.kind === "existing") {
+        await supabase
+          .from("listing_photos")
+          .update({ position: i, is_primary: i === 0 })
+          .eq("listing_id", id)
+          .eq("id", entry.id);
+      }
+    }
   }
 
   revalidatePath(`/${locale}/account/listings`);
