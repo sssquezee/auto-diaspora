@@ -53,7 +53,7 @@ export function ListingGallery({
   return (
     <div className="bg-white border-[1.5px] border-ink">
       <div
-        className="relative overflow-hidden w-full aspect-square"
+        className="relative overflow-hidden w-full max-w-[640px] mx-auto aspect-[4/3]"
         style={{
           background: gradients[index % gradients.length],
         }}
