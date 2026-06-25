@@ -40,9 +40,11 @@ function verifyInitData(
 
   const pairs: string[] = [];
   for (const [key, value] of params.entries()) {
-    // `hash` is the signature itself; `signature` is Telegram's separate
-    // Ed25519 field — both are excluded from the check string.
-    if (key === "hash" || key === "signature") continue;
+    // Only `hash` (the HMAC itself) is excluded. The newer `signature`
+    // field (Telegram's separate Ed25519 signature) MUST stay in the
+    // check string — Telegram computes `hash` with it included.
+    // Verified empirically against tdesktop 9.6 initData.
+    if (key === "hash") continue;
     pairs.push(`${key}=${value}`);
   }
   pairs.sort();
