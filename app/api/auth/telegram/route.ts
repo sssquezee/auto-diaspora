@@ -18,8 +18,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import crypto from "node:crypto";
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { establishTelegramSession } from "@/lib/telegram-auth";
 import { routing } from "@/i18n/routing";
 
 // Reject payloads older than this — limits replay of a leaked auth URL.
@@ -95,61 +94,13 @@ export async function GET(request: NextRequest) {
     .join(" ")
     .trim();
 
-  const admin = createAdminClient();
-
-  // Telegram-supplied display fields, refreshed on every login.
-  const tgFields = {
-    telegram_username: params.username ?? null,
-    full_name: fullName || null,
-    avatar_url: params.photo_url ?? null,
-  };
-
-  // 1. Find existing user by telegram_id, else create one.
-  const { data: existing } = await admin
-    .from("profiles")
-    .select("id,email")
-    .eq("telegram_id", telegramId)
-    .maybeSingle<{ id: string; email: string }>();
-
-  let userId: string;
-  let email: string;
-
-  if (existing) {
-    userId = existing.id;
-    email = existing.email;
-    await admin.from("profiles").update(tgFields).eq("id", userId);
-  } else {
-    // No email from Telegram → synthetic, unique, satisfies NOT NULL.
-    email = `tg${telegramId}@telegram.autodiaspora.app`;
-    const { data: created, error: createErr } =
-      await admin.auth.admin.createUser({
-        email,
-        email_confirm: true,
-        user_metadata: { provider: "telegram", telegram_id: telegramId, ...tgFields },
-      });
-    if (createErr || !created.user) return fail();
-    userId = created.user.id;
-    // The handle_new_user trigger already inserted the profile row;
-    // fill in the Telegram-specific columns.
-    await admin
-      .from("profiles")
-      .update({ telegram_id: telegramId, ...tgFields })
-      .eq("id", userId);
-  }
-
-  // 2. Establish a session via a one-time random password.
-  const password = `${crypto.randomUUID()}${crypto.randomUUID()}`;
-  const { error: pwErr } = await admin.auth.admin.updateUserById(userId, {
-    password,
+  const ok = await establishTelegramSession({
+    telegramId,
+    username: params.username ?? null,
+    fullName: fullName || null,
+    photoUrl: params.photo_url ?? null,
   });
-  if (pwErr) return fail();
-
-  const supabase = await createClient();
-  const { error: signErr } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-  if (signErr) return fail();
+  if (!ok) return fail();
 
   return redirectTo(next ?? `/${locale}/account`);
 }

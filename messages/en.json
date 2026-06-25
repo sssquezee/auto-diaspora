@@ -518,6 +518,7 @@
     "passwordLabel": "Password",
     "or": "or",
     "googleButton": "Continue with Google",
+    "telegramConnecting": "Signing in via Telegram…",
     "login": {
       "title": "Sign in",
       "subtitle": "Welcome back to Auto Diaspora",

@@ -542,6 +542,7 @@
     "passwordLabel": "Пароль",
     "or": "или",
     "googleButton": "Через Google",
+    "telegramConnecting": "Вход через Telegram…",
     "login": {
       "title": "Войти",
       "subtitle": "Войдите в аккаунт Auto Diaspora",

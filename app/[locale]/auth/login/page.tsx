@@ -5,7 +5,7 @@ import { Logo } from "@/components/Logo";
 import { signInAction } from "../actions";
 import { createClient } from "@/lib/supabase/server";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
-import { TelegramLoginButton } from "@/components/TelegramLoginButton";
+import { TelegramAuth } from "@/components/TelegramAuth";
 
 const fieldClass =
   "w-full border-[1.5px] border-line-strong bg-white px-3 py-2.5 font-sans text-[14px] text-ink outline-none focus:border-ink focus:border-2 focus:px-[11px] focus:py-[9px]";
@@ -132,10 +132,12 @@ export default async function LoginPage({
         </div>
 
         <GoogleSignInButton label={t("googleButton")} locale={locale} next={next ?? undefined} />
-        <TelegramLoginButton
+        <TelegramAuth
           botUsername={process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME}
           locale={locale}
           next={next ?? undefined}
+          connectingLabel={t("telegramConnecting")}
+          errorLabel={tErr("telegram")}
         />
 
         <p className="text-center font-sans text-[13px] text-ink-muted mt-6">
