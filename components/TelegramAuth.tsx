@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Script from "next/script";
 import { TelegramLoginButton } from "./TelegramLoginButton";
 
 /**
@@ -96,12 +95,6 @@ export function TelegramAuth({
 
   return (
     <>
-      {/* Telegram Mini App SDK — exposes window.Telegram.WebApp. */}
-      <Script
-        src="https://telegram.org/js/telegram-web-app.js"
-        strategy="afterInteractive"
-      />
-
       {mode === "browser" && (
         <TelegramLoginButton
           botUsername={botUsername}
