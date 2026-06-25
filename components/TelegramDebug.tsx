@@ -40,18 +40,19 @@ export function TelegramDebug({ locale }: { locale: string }) {
         `location.hash length: ${window.location.hash.length}`,
       ]);
 
-      // Once we actually have initData, hit the server once and show the code.
+      // Once we actually have initData, ask the diagnostic endpoint which
+      // signature strategy matches (and which bot the token belongs to).
       if (tg && initData && !posted) {
         posted = true;
         tg.ready?.();
-        fetch("/api/auth/telegram/miniapp", {
+        fetch("/api/auth/telegram/miniapp/debug", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ initData, locale }),
         })
           .then(async (res) => {
-            const text = await res.text();
-            setServerResult(`HTTP ${res.status} — ${text.slice(0, 200)}`);
+            const json = await res.json();
+            setServerResult(JSON.stringify(json, null, 2));
           })
           .catch((e) => setServerResult(`fetch error: ${String(e)}`));
       }
