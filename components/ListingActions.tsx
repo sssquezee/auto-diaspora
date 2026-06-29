@@ -13,7 +13,8 @@ type Props = {
   listingId: string;
   isAuthed: boolean;
   initiallyFavorited: boolean;
-  phone: { full: string; masked: string };
+  /** Omitted when the seller has no phone — the reveal control is hidden. */
+  phone?: { full: string; masked: string } | null;
   writeLabel: string;
   showPhoneLabel: string;
   addFavLabel: string;
@@ -74,7 +75,8 @@ export function ListingActions({
         </button>
       </form>
 
-      {phoneShown ? (
+      {phone ? (
+        phoneShown ? (
         <a
           href={`tel:${phone.full.replace(/\s/g, "")}`}
           className={`${secondaryBtn} no-underline flex items-center justify-center gap-2 font-mono tabular-nums tracking-[0.04em]`}
@@ -105,7 +107,8 @@ export function ListingActions({
             {phone.masked}
           </span>
         </button>
-      )}
+        )
+      ) : null}
 
       <button
         type="button"

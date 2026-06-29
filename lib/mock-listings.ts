@@ -376,6 +376,24 @@ function hashString(s: string): number {
   return h;
 }
 
+/**
+ * Format a real seller phone for the contact reveal: `full` is dialable,
+ * `masked` hides the middle digits and shows only the last two (same visual
+ * style as the legacy mock). Returns null for an empty/blank input so the
+ * caller can hide the phone control entirely rather than show a fake number.
+ */
+export function formatPhoneReveal(
+  raw: string | null | undefined
+): { full: string; masked: string } | null {
+  const full = (raw ?? "").trim();
+  const digits = full.replace(/\D/g, "");
+  if (digits.length < 4) return null;
+  const last2 = digits.slice(-2);
+  const lead = full.startsWith("+") ? `+${digits.slice(0, 2)}` : digits.slice(0, 2);
+  const masked = `${lead} ••• ••• •${last2}`;
+  return { full, masked };
+}
+
 /** Stable mock phone for a listing — used on the detail page contact reveal. */
 export function getMockPhone(listing: Listing): { full: string; masked: string } {
   const code = COUNTRY_DIAL[listing.country] ?? "+49";

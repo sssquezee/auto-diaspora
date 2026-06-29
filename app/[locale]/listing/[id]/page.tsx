@@ -12,7 +12,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   formatMileage,
   formatPriceEur,
-  getMockPhone,
+  formatPhoneReveal,
   getPhotoGradients,
   type Listing,
   type Locale,
@@ -340,7 +340,7 @@ export default async function ListingDetailPage({
             listingId={listing.id}
             isAuthed={favState.isAuthed}
             initiallyFavorited={favState.favoriteIds.has(listing.id)}
-            phone={getMockPhone(listing)}
+            phone={formatPhoneReveal(sellerProfile?.phone)}
             writeLabel={t("actions.writeToSeller")}
             showPhoneLabel={t("actions.showPhone")}
             addFavLabel={t("actions.addToFavorites")}

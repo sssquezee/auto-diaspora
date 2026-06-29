@@ -48,6 +48,7 @@ export type SellerProfile = {
   id: string;
   full_name: string | null;
   avatar_url: string | null;
+  phone: string | null;
   city: string | null;
   country: string | null;
   is_verified: boolean;
@@ -63,7 +64,7 @@ export async function getSellerProfile(
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "id,full_name,avatar_url,city,country,is_verified,is_dealer,created_at"
+      "id,full_name,avatar_url,phone,city,country,is_verified,is_dealer,created_at"
     )
     .eq("id", sellerId)
     .maybeSingle<SellerProfile>();
