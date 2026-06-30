@@ -467,6 +467,7 @@
     "publish": "Publish listing",
     "errors": {
       "missing_fields": "Please fill in all required fields.",
+      "no_photos": "Add at least one photo to publish the listing.",
       "server": "Could not save the listing. Please try again.",
       "notAuthed": "You need to be signed in.",
       "uploadFailed": "Photo upload failed",

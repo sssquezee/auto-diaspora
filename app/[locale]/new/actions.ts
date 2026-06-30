@@ -134,6 +134,14 @@ export async function createListingAction(formData: FormData) {
     redirect(`/${locale}/new?error=missing_fields`);
   }
 
+  // At least one photo is required. Enforced here (not just client-side) so
+  // the rule can't be bypassed by posting the form directly.
+  if (photoPaths.length === 0) {
+    await cleanupOrphans();
+    await recordFunnel("new_submit_error", { reason: "no_photos" });
+    redirect(`/${locale}/new?error=no_photos`);
+  }
+
   const body_type = oneOf(str(formData, "body_type"), BODY_KEYS);
   const drive_type = oneOf(str(formData, "drive_type"), DRIVE_KEYS);
   const engine_volume = num(formData, "engine_volume");

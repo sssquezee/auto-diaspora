@@ -137,6 +137,15 @@ function NewListingForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (submitting) return;
+
+    // At least one photo is required (also enforced server-side). Block here
+    // with a clear message instead of a silent server bounce.
+    if (files.length === 0) {
+      setUploadError(t("errors.no_photos"));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     setSubmitting(true);
     setUploadError(null);
 
@@ -232,6 +241,7 @@ function NewListingForm() {
           {tErr(
             submitError as
               | "missing_fields"
+              | "no_photos"
               | "server"
               | "moderation_stop_word"
               | "moderation_external_url"
